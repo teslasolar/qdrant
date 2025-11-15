@@ -84,7 +84,7 @@
                 log('❌ ModuleLoader not found. Loading from modules/module-loader.md...', '#ff0044');
 
                 try {
-                    const response = await fetch('/modules/module-loader.md');
+                    const response = await fetch('./modules/module-loader.md');
                     const markdown = await response.text();
                     const jsCode = markdown.match(/```(?:javascript|js)\s*\n([\s\S]*?)```/)[1];
                     eval(jsCode);

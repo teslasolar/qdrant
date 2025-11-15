@@ -339,7 +339,10 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:8000';
+        // Auto-detect API URL based on environment
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:8000'
+            : 'https://your-backend.railway.app'; // Deploy backend separately for production
 
         async function search() {
             const query = document.getElementById('query').value;
