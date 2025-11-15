@@ -4,8 +4,11 @@ This directory is organized for multi-agent and multi-user collaboration on the 
 
 ## Directory Structure
 
-- **agent-1/**: Work area for Claude Code Agent 1
-- **agent-2/**: Work area for Claude Code Agent 2
+- **agent-1/**: Work area for Claude Code Agent 1 (Tom's agent)
+- **agent-2/**: Work area for Claude Code Agent 2 (Tom's agent)
+- **agent-3/**: Work area for Claude Code Agent 3 (Tom's agent)
+- **agent-4/**: Work area for Claude Code Agent 4 (Tom's agent)
+- **agent-5/**: Work area for Claude Code Agent 5 (Tom's agent)
 - **tom/**: Work area for Tom (human collaborator)
 - **miracle/**: Work area for Miracle (human collaborator)
 
