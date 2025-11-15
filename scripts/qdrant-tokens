@@ -1,0 +1,235 @@
+#!/usr/bin/env python3
+"""
+Qdrant Token Counter & Validator
+Validates that all markdown files are under 250 tokens (Chazon OS standard)
+"""
+
+import sys
+import os
+from pathlib import Path
+from typing import List, Tuple, Dict
+import re
+import json
+
+class TokenCounter:
+    """Count tokens in markdown files"""
+
+    def __init__(self, method='word_count'):
+        self.method = method
+
+    def count_words(self, text: str) -> int:
+        """Count words in text"""
+        # Remove code blocks for more accurate count
+        text_no_code = re.sub(r'```[\s\S]*?```', '', text)
+        words = text_no_code.split()
+        return len(words)
+
+    def estimate_tokens(self, text: str) -> int:
+        """Estimate tokens from text"""
+        words = self.count_words(text)
+
+        # Estimate: ~0.75 words per token for English
+        # Code is more token-dense, so we use 1.2 multiplier
+        has_code = '```' in text
+
+        if has_code:
+            # Rough estimation for code-heavy files
+            return int(words * 1.2)
+        else:
+            # Standard estimation for markdown
+            return int(words / 0.75)
+
+    def count_file(self, file_path: Path) -> Tuple[int, int]:
+        """Count words and tokens in a file"""
+        try:
+            content = file_path.read_text(encoding='utf-8')
+            words = self.count_words(content)
+            tokens = self.estimate_tokens(content)
+            return words, tokens
+        except Exception as e:
+            print(f"Error reading {file_path}: {e}", file=sys.stderr)
+            return 0, 0
+
+class Validator:
+    """Validate markdown files against token limits"""
+
+    def __init__(self, max_tokens=250, counter=None):
+        self.max_tokens = max_tokens
+        self.counter = counter or TokenCounter()
+
+    def validate_file(self, file_path: Path) -> Dict:
+        """Validate a single file"""
+        words, tokens = self.counter.count_file(file_path)
+
+        status = 'pass' if tokens <= self.max_tokens else 'fail'
+        overage = max(0, tokens - self.max_tokens)
+
+        return {
+            'file': str(file_path),
+            'words': words,
+            'tokens': tokens,
+            'limit': self.max_tokens,
+            'status': status,
+            'overage': overage
+        }
+
+    def validate_directory(self, directory: Path, pattern='**/*.md') -> List[Dict]:
+        """Validate all markdown files in directory"""
+        results = []
+
+        for file_path in directory.glob(pattern):
+            if file_path.is_file():
+                result = self.validate_file(file_path)
+                results.append(result)
+
+        return results
+
+    def generate_report(self, results: List[Dict], format='text') -> str:
+        """Generate validation report"""
+        if format == 'json':
+            return json.dumps(results, indent=2)
+
+        elif format == 'markdown':
+            lines = ['# Token Validation Report\n']
+            lines.append(f'**Total Files:** {len(results)}')
+
+            passed = [r for r in results if r['status'] == 'pass']
+            failed = [r for r in results if r['status'] == 'fail']
+
+            lines.append(f'**Passed:** {len(passed)}')
+            lines.append(f'**Failed:** {len(failed)}\n')
+
+            if failed:
+                lines.append('## Failed Files (Over Limit)\n')
+                lines.append('| File | Words | Tokens | Overage |')
+                lines.append('|------|-------|--------|---------|')
+
+                for r in sorted(failed, key=lambda x: x['overage'], reverse=True):
+                    lines.append(f"| {r['file']} | {r['words']} | {r['tokens']} | +{r['overage']} |")
+
+                lines.append('')
+
+            if passed:
+                lines.append('## Passed Files\n')
+                for r in passed:
+                    lines.append(f"- {r['file']}: {r['tokens']} tokens ✅")
+
+            return '\n'.join(lines)
+
+        else:  # text format
+            lines = ['Token Validation Report']
+            lines.append('=' * 50)
+
+            passed = [r for r in results if r['status'] == 'pass']
+            failed = [r for r in results if r['status'] == 'fail']
+
+            lines.append(f'Total files: {len(results)}')
+            lines.append(f'Passed: {len(passed)}')
+            lines.append(f'Failed: {len(failed)}')
+            lines.append('')
+
+            if failed:
+                lines.append('FAILED (Over Limit):')
+                lines.append('-' * 50)
+
+                for r in sorted(failed, key=lambda x: x['overage'], reverse=True):
+                    lines.append(f"❌ {r['file']}")
+                    lines.append(f"   Words: {r['words']}, Tokens: {r['tokens']}, Overage: +{r['overage']}")
+                    lines.append('')
+
+            if passed:
+                lines.append('PASSED:')
+                lines.append('-' * 50)
+                for r in passed[:10]:  # Show first 10
+                    lines.append(f"✅ {r['file']}: {r['tokens']} tokens")
+
+                if len(passed) > 10:
+                    lines.append(f"... and {len(passed) - 10} more")
+
+            return '\n'.join(lines)
+
+def main():
+    """Main CLI entry point"""
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Token Counter & Validator for Qdrant')
+    subparsers = parser.add_subparsers(dest='command', help='Command to run')
+
+    # Count command
+    count = subparsers.add_parser('count', help='Count tokens in a file')
+    count.add_argument('file', type=Path, help='File to count')
+
+    # Validate command
+    validate = subparsers.add_parser('validate', help='Validate file against token limit')
+    validate.add_argument('file', type=Path, help='File to validate')
+    validate.add_argument('--max', type=int, default=250, help='Maximum tokens (default: 250)')
+
+    # Validate-all command
+    validate_all = subparsers.add_parser('validate-all', help='Validate all files in directory')
+    validate_all.add_argument('directory', type=Path, help='Directory to scan')
+    validate_all.add_argument('--max', type=int, default=250, help='Maximum tokens (default: 250)')
+    validate_all.add_argument('--format', choices=['text', 'json', 'markdown'], default='text')
+    validate_all.add_argument('--output', type=Path, help='Output file (default: stdout)')
+
+    # CI command
+    ci = subparsers.add_parser('ci', help='CI mode - exit 1 if any file fails')
+    ci.add_argument('directory', type=Path, help='Directory to scan')
+    ci.add_argument('--max', type=int, default=250, help='Maximum tokens (default: 250)')
+
+    args = parser.parse_args()
+
+    if args.command == 'count':
+        counter = TokenCounter()
+        words, tokens = counter.count_file(args.file)
+        print(f"File: {args.file}")
+        print(f"Words: {words}")
+        print(f"Estimated tokens: {tokens}")
+
+    elif args.command == 'validate':
+        validator = Validator(max_tokens=args.max)
+        result = validator.validate_file(args.file)
+
+        print(f"File: {result['file']}")
+        print(f"Words: {result['words']}")
+        print(f"Tokens: {result['tokens']}")
+        print(f"Limit: {result['limit']}")
+        print(f"Status: {result['status'].upper()}")
+
+        if result['status'] == 'fail':
+            print(f"Overage: +{result['overage']} tokens")
+            sys.exit(1)
+        else:
+            print("✅ PASS")
+
+    elif args.command == 'validate-all':
+        validator = Validator(max_tokens=args.max)
+        results = validator.validate_directory(args.directory)
+
+        report = validator.generate_report(results, format=args.format)
+
+        if args.output:
+            args.output.write_text(report)
+            print(f"Report written to {args.output}")
+        else:
+            print(report)
+
+    elif args.command == 'ci':
+        validator = Validator(max_tokens=args.max)
+        results = validator.validate_directory(args.directory)
+
+        failed = [r for r in results if r['status'] == 'fail']
+
+        if failed:
+            print(f"❌ CI FAILED: {len(failed)} files over token limit")
+            for r in failed:
+                print(f"  {r['file']}: {r['tokens']} tokens (+{r['overage']} over limit)")
+            sys.exit(1)
+        else:
+            print(f"✅ CI PASSED: All {len(results)} files under {args.max} token limit")
+            sys.exit(0)
+
+    else:
+        parser.print_help()
+
+if __name__ == '__main__':
+    main()
