@@ -3,108 +3,153 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Medical Imaging CHAZON - Patient Portal</title>
-<link rel="stylesheet" href="../../os/medical/styles/isa101-theme.css">
-<link rel="stylesheet" href="../../styles/frontend-portal.css">
+<title>Medical Imaging Portal</title>
+<script src="/scripts/theme-loader.js"></script>
+<script src="/scripts/config-loader.js"></script>
 <style>
-  body {
-    margin: 0;
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, var(--bg-primary) 0%, #1a0f26 100%);
-    color: var(--cream);
-  }
+:root {
+  --primary-color: #b794f4;
+  --secondary-color: #f5f2e8;
+  --background-color: #2a1a3a;
+  --text-color: #f5f2e8;
+  --accent-color: #00bfff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Courier New', monospace;
+  background: var(--background-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.header h1 {
+  font-size: 2.5em;
+  color: var(--text-color);
+  margin-bottom: 10px;
+}
+
+.header p {
+  color: var(--accent-color);
+  font-size: 1.1em;
+}
+
+.screens-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.screen-card {
+  background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+  border: 2px solid var(--text-color);
+  border-radius: 12px;
+  padding: 25px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.screen-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+  border-color: var(--accent-color);
+}
+
+.screen-icon {
+  font-size: 3em;
+  margin-bottom: 15px;
+}
+
+.screen-name {
+  font-size: 1.3em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: var(--accent-color);
+}
+
+.screen-description {
+  font-size: 0.9em;
+  color: #999;
+  line-height: 1.5;
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid var(--text-color);
+  border-radius: 4px;
+  font-size: 0.8em;
+  margin-top: 10px;
+}
 </style>
 </head>
 <body>
 
-<div class="portal-header">
-  <h1>🏥 Medical Imaging CHAZON</h1>
-  <div class="subtitle">Advanced AI-Powered Medical Image Analysis</div>
+<div class="header">
+  <h1>🏥 CHAZON Medical Imaging Portal</h1>
+  <p>AI-Powered Medical Imaging SCADA System</p>
 </div>
 
-<div class="main-container">
-  <div class="welcome-banner">
-    <h2>Welcome to Medical Imaging Portal</h2>
-    <p>Access cutting-edge AI/ML tools for medical image analysis, including CT/MRI viewing, AI segmentation, tumor detection, and AlF-DETECT screening.</p>
-    <div class="quick-stats">
-      <div class="stat-item">
-        <div class="stat-value">8</div>
-        <div class="stat-label">AI Models</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value">6</div>
-        <div class="stat-label">Imaging Modalities</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value">768D</div>
-        <div class="stat-label">BiomedCLIP Embeddings</div>
-      </div>
-    </div>
-  </div>
+<div class="screens-grid">
 
-  <h2 style="color: var(--cream); margin-bottom: 20px;">🔬 Imaging Tools</h2>
-  <div class="tool-grid">
-    <a href="../../os/medical/screens/ct-viewer.html" class="tool-card">
-      <div class="tool-icon">🩻</div>
-      <div class="tool-title">CT Scan Viewer</div>
-      <div class="tool-description">Advanced CT image viewing with window/level controls and slice navigation</div>
-    </a>
+  <a href="pacs-dashboard.html" class="screen-card">
+    <div class="screen-icon">🏥</div>
+    <div class="screen-name">PACS Dashboard</div>
+    <div class="screen-description">Main PACS system dashboard</div>
+    <div class="category-badge">overview</div>
+  </a>
 
-    <a href="../../os/medical/screens/mri-viewer.html" class="tool-card">
-      <div class="tool-icon">🧠</div>
-      <div class="tool-title">MRI Viewer</div>
-      <div class="tool-description">Multi-sequence MRI viewing (T1, T2, FLAIR, DWI)</div>
-    </a>
+  <a href="ct-workstation.html" class="screen-card">
+    <div class="screen-icon">🔲</div>
+    <div class="screen-name">CT Workstation</div>
+    <div class="screen-description">Computed Tomography imaging workstation</div>
+    <div class="category-badge">modality</div>
+  </a>
 
-    <a href="../../os/medical/screens/segmentation-tool.html" class="tool-card">
-      <div class="tool-icon">✂️</div>
-      <div class="tool-title">AI Segmentation</div>
-      <div class="tool-description">U-Net, Mask R-CNN, DeepLab v3+ for organ and tumor segmentation</div>
-    </a>
+  <a href="mri-workstation.html" class="screen-card">
+    <div class="screen-icon">🧲</div>
+    <div class="screen-name">MRI Workstation</div>
+    <div class="screen-description">Magnetic Resonance Imaging workstation</div>
+    <div class="category-badge">modality</div>
+  </a>
 
-    <a href="../../os/medical/screens/detection-tool.html" class="tool-card">
-      <div class="tool-icon">🎯</div>
-      <div class="tool-title">Tumor Detection</div>
-      <div class="tool-description">YOLOv8 and Faster R-CNN for nodule, lesion, and tumor detection</div>
-    </a>
+  <a href="xray-workstation.html" class="screen-card">
+    <div class="screen-icon">📷</div>
+    <div class="screen-name">X-Ray Workstation</div>
+    <div class="screen-description">Digital radiography workstation</div>
+    <div class="category-badge">modality</div>
+  </a>
 
-    <a href="../../os/medical/screens/alf-screening.html" class="tool-card">
-      <div class="tool-icon">🔬</div>
-      <div class="tool-title">AlF-DETECT Screening</div>
-      <div class="tool-description">Alzheimer's & Autism screening via dual-energy X-ray aluminum detection</div>
-    </a>
+  <a href="alf-screening.html" class="screen-card">
+    <div class="screen-icon">🧠</div>
+    <div class="screen-name">AlF-DETECT Screening</div>
+    <div class="screen-description">Alzheimer's/Autism AI screening system</div>
+    <div class="category-badge">ai-analysis</div>
+  </a>
 
-    <a href="../../os/medical/screens/vector-search.html" class="tool-card">
-      <div class="tool-icon">🔍</div>
-      <div class="tool-title">Similar Image Search</div>
-      <div class="tool-description">Qdrant vector search with BiomedCLIP embeddings</div>
-    </a>
-
-    <a href="../../os/medical/screens/batch-processing.html" class="tool-card">
-      <div class="tool-icon">⚙️</div>
-      <div class="tool-title">Batch Processing</div>
-      <div class="tool-description">Automated batch image analysis and DICOM workflow processing</div>
-    </a>
-
-    <a href="../../os/medical/screens/quality-control.html" class="tool-card">
-      <div class="tool-icon">✓</div>
-      <div class="tool-title">Quality Control</div>
-      <div class="tool-description">Image quality metrics, SNR, contrast analysis, and validation</div>
-    </a>
-  </div>
-
-  <div style="margin-top: 40px; text-align: center; padding: 20px; border-top: 2px solid var(--purple-accent);">
-    <p style="color: #d4cdb4;">
-      🔒 HIPAA Compliant | 📋 FDA 21 CFR Part 11 | 🛡️ Enterprise Security
-    </p>
-    <p style="color: #9b7eb8; margin-top: 10px; font-size: 0.9em;">
-      <a href="../Enterprise/enterprise-portal.html" style="color: var(--purple-accent); text-decoration: none;">
-        🏢 Access Enterprise Portal →
-      </a>
-    </p>
-  </div>
 </div>
+
+<script>
+async function init() {
+  if (window.chazonConfig) {
+    await window.chazonConfig.load();
+    console.log('Portal loaded in', window.chazonConfig.environment, 'mode');
+  }
+}
+init();
+</script>
 
 </body>
 </html>
