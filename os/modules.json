@@ -1,0 +1,241 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "description": "Medical Imaging OS Module Registry - Tag-based system for GitHub Pages",
+    "updated": "2025-11-17T00:00:00Z"
+  },
+  "modules": {
+    "ai": {
+      "segmentation": {
+        "uuid": "os-ai-seg-001",
+        "name": "Medical Segmentation",
+        "path": "/os/medical/ai/segmentation.js",
+        "type": "module",
+        "category": "ai",
+        "description": "U-Net and Mask R-CNN segmentation algorithms",
+        "tags": ["AI", "Segmentation", "U-Net", "Mask-RCNN"],
+        "exports": ["MedicalSegmentation", "unetSegment", "maskRCNNSegment"],
+        "size": "15KB",
+        "dependencies": []
+      },
+      "detection": {
+        "uuid": "os-ai-det-001",
+        "name": "Object Detection",
+        "path": "/os/medical/ai/detection.js",
+        "type": "module",
+        "category": "ai",
+        "description": "YOLOv8 medical object detection",
+        "tags": ["AI", "Detection", "YOLO"],
+        "exports": ["MedicalDetection", "detectObjects"],
+        "size": "12KB",
+        "dependencies": []
+      },
+      "classification": {
+        "uuid": "os-ai-cls-001",
+        "name": "Image Classification",
+        "path": "/os/medical/ai/classification.js",
+        "type": "module",
+        "category": "ai",
+        "description": "ResNet, VGG, EfficientNet classifiers",
+        "tags": ["AI", "Classification"],
+        "exports": ["MedicalClassification", "classify"],
+        "size": "14KB",
+        "dependencies": []
+      },
+      "biomedclip": {
+        "uuid": "os-ai-clip-001",
+        "name": "BiomedCLIP",
+        "path": "/os/medical/ai/biomedclip.js",
+        "type": "module",
+        "category": "ai",
+        "description": "768-dimensional medical image embeddings",
+        "tags": ["AI", "Embeddings", "CLIP", "Vector"],
+        "exports": ["BiomedCLIP", "generateEmbedding"],
+        "size": "18KB",
+        "dependencies": []
+      },
+      "reconstruction": {
+        "uuid": "os-ai-recon-001",
+        "name": "3D Reconstruction",
+        "path": "/os/medical/ai/reconstruction.js",
+        "type": "module",
+        "category": "ai",
+        "description": "Medical image 3D reconstruction",
+        "tags": ["AI", "3D", "Reconstruction"],
+        "exports": ["MedicalReconstruction", "reconstruct3D"],
+        "size": "16KB",
+        "dependencies": []
+      },
+      "alf-detect": {
+        "uuid": "os-ai-alf-001",
+        "name": "AlF-DETECT",
+        "path": "/os/medical/ai/alf-detect.js",
+        "type": "module",
+        "category": "ai",
+        "description": "Alzheimer's and Autism screening AI",
+        "tags": ["AI", "Alzheimers", "Autism", "Screening"],
+        "exports": ["AlfDetect", "screenAlzheimers", "screenAutism"],
+        "size": "20KB",
+        "dependencies": []
+      }
+    },
+    "data": {
+      "dicom-loader": {
+        "uuid": "os-data-dicom-001",
+        "name": "DICOM Loader",
+        "path": "/os/medical/data/dicom-loader.js",
+        "type": "module",
+        "category": "data",
+        "description": "Load and parse DICOM medical images",
+        "tags": ["DICOM", "Imaging", "Loader"],
+        "exports": ["DICOMLoader", "loadDICOM", "parseDICOM"],
+        "size": "25KB",
+        "dependencies": []
+      },
+      "nifti-loader": {
+        "uuid": "os-data-nifti-001",
+        "name": "NIfTI Loader",
+        "path": "/os/medical/data/nifti-loader.js",
+        "type": "module",
+        "category": "data",
+        "description": "Load NIfTI neuroimaging format",
+        "tags": ["NIfTI", "Neuroimaging", "Loader"],
+        "exports": ["NIfTILoader", "loadNIfTI"],
+        "size": "15KB",
+        "dependencies": []
+      },
+      "pacs-client": {
+        "uuid": "os-data-pacs-001",
+        "name": "PACS Client",
+        "path": "/os/medical/data/pacs-client.js",
+        "type": "module",
+        "category": "data",
+        "description": "PACS system client for study retrieval",
+        "tags": ["PACS", "DICOM", "Client"],
+        "exports": ["PACSClient", "queryStudies", "retrieveStudy"],
+        "size": "22KB",
+        "dependencies": ["dicom-loader"]
+      }
+    },
+    "visualization": {
+      "dicom-viewer": {
+        "uuid": "os-viz-dicom-001",
+        "name": "DICOM Viewport",
+        "path": "/os/medical/visualization/dicom-viewer.js",
+        "type": "module",
+        "category": "visualization",
+        "description": "Interactive DICOM image viewer with tools",
+        "tags": ["Viewer", "DICOM", "Visualization"],
+        "exports": ["DICOMViewer", "createViewport"],
+        "size": "35KB",
+        "dependencies": ["dicom-loader"]
+      },
+      "mpr-viewer": {
+        "uuid": "os-viz-mpr-001",
+        "name": "MPR Viewer",
+        "path": "/os/medical/visualization/mpr-viewer.js",
+        "type": "module",
+        "category": "visualization",
+        "description": "Multi-planar reconstruction viewer",
+        "tags": ["MPR", "3D", "Visualization"],
+        "exports": ["MPRViewer", "createMPR"],
+        "size": "30KB",
+        "dependencies": ["dicom-loader"]
+      }
+    },
+    "vector-search": {
+      "qdrant-client": {
+        "uuid": "os-vec-qdrant-001",
+        "name": "Qdrant Client",
+        "path": "/os/medical/vector/qdrant-client.js",
+        "type": "module",
+        "category": "vector",
+        "description": "Qdrant vector database client for similarity search",
+        "tags": ["Qdrant", "Vector", "Search", "Similarity"],
+        "exports": ["QdrantClient", "searchSimilar", "upsertVectors"],
+        "size": "18KB",
+        "dependencies": []
+      }
+    },
+    "utils": {
+      "image-processor": {
+        "uuid": "os-util-img-001",
+        "name": "Image Processor",
+        "path": "/os/medical/utils/image-processor.js",
+        "type": "module",
+        "category": "utils",
+        "description": "Image preprocessing and augmentation",
+        "tags": ["Image", "Processing", "Utils"],
+        "exports": ["ImageProcessor", "normalize", "resize", "augment"],
+        "size": "20KB",
+        "dependencies": []
+      },
+      "windowing": {
+        "uuid": "os-util-win-001",
+        "name": "Windowing Utils",
+        "path": "/os/medical/utils/windowing.js",
+        "type": "module",
+        "category": "utils",
+        "description": "DICOM windowing/leveling utilities",
+        "tags": ["Windowing", "DICOM", "Utils"],
+        "exports": ["applyWindowing", "calculateHU"],
+        "size": "8KB",
+        "dependencies": []
+      }
+    }
+  },
+  "controls": {
+    "boot": {
+      "uuid": "os-ctrl-boot-001",
+      "name": "Boot Control",
+      "path": "/os/boot/",
+      "type": "control",
+      "category": "system",
+      "description": "System boot sequence controller",
+      "tags": ["Boot", "System", "L0"],
+      "isa_level": "L0_Device"
+    },
+    "backend": {
+      "uuid": "os-ctrl-backend-001",
+      "name": "Backend Control",
+      "path": "/os/backend/",
+      "type": "control",
+      "category": "system",
+      "description": "Backend services controller",
+      "tags": ["Backend", "Services", "L1"],
+      "isa_level": "L1_Control"
+    },
+    "frontend": {
+      "uuid": "os-ctrl-frontend-001",
+      "name": "Frontend Control",
+      "path": "/os/frontend/",
+      "type": "control",
+      "category": "system",
+      "description": "Frontend UI controller",
+      "tags": ["Frontend", "UI", "L2"],
+      "isa_level": "L2_Supervisory"
+    },
+    "medical": {
+      "uuid": "os-ctrl-medical-001",
+      "name": "Medical Control",
+      "path": "/os/medical/",
+      "type": "control",
+      "category": "medical",
+      "description": "Medical imaging system controller",
+      "tags": ["Medical", "Imaging", "L3"],
+      "isa_level": "L3_MES"
+    }
+  },
+  "registry": {
+    "total_modules": 16,
+    "total_controls": 4,
+    "categories": {
+      "ai": 6,
+      "data": 3,
+      "visualization": 2,
+      "vector": 1,
+      "utils": 2,
+      "control": 4
+    }
+  }
+}
