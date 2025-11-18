@@ -1,0 +1,83 @@
+name: Run Backend Temporarily (Qdrant + localtunnel)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ feature/medical-vercel-docker, main ]
+
+permissions:
+  contents: write
+
+jobs:
+  run-temp-backend:
+    runs-on: ubuntu-latest
+    services:
+      qdrant:
+        image: qdrant/qdrant:latest
+        ports:
+          - 6333:6333
+        options: >-
+          --health-cmd="curl -f http://localhost:6333 || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=6
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install fastapi uvicorn[standard] qdrant-client python-dotenv pillow numpy
+
+      - name: Start backend
+        working-directory: ./os/backend
+        run: |
+          nohup python -m uvicorn api:app --host 0.0.0.0 --port 8000 > uvicorn.log 2>&1 &
+          sleep 5
+          cat uvicorn.log || true
+
+      - name: Install localtunnel (npm)
+        run: |
+          npm ci --no-audit --no-fund || true
+          npm i -g localtunnel
+
+      - name: Expose backend with localtunnel and write URL
+        id: expose
+        run: |
+          # start localtunnel and capture the URL
+          npx localtunnel --port 8000 --print-requests > lt.out 2>&1 &
+          sleep 3
+          # wait and extract the URL
+          for i in {1..20}; do
+            if grep -Eo 'https?://[a-z0-9.-]+' lt.out >/dev/null 2>&1; then
+              break
+            fi
+            sleep 1
+          done
+          URL=$(grep -Eo 'https?://[a-z0-9.-]+' lt.out | head -n1 || true)
+          if [ -z "$URL" ]; then
+            echo "No URL found in lt.out:" && sed -n '1,200p' lt.out
+            exit 1
+          fi
+          echo "Public URL: $URL"
+          echo "$URL" > collab/miracle/TEMP_PUBLIC_BACKEND.md
+
+      - name: Commit public URL file
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: github-actions
+          author_email: actions@github.com
+          message: 'ci: add temporary public backend URL'
+          add: 'collab/miracle/TEMP_PUBLIC_BACKEND.md'
+
+      - name: Show file
+        run: |
+          echo '--- TEMP_PUBLIC_BACKEND.md ---'
+          cat collab/miracle/TEMP_PUBLIC_BACKEND.md
