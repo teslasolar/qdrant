@@ -39,8 +39,21 @@ jobs:
           push: true
           tags: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
+      - name: Check SSH secrets
+        id: check_ssh
+        run: |
+          # make secrets available as env vars, then detect presence
+          SSH_HOST="${{ secrets.SSH_HOST }}"
+          SSH_USER="${{ secrets.SSH_USER }}"
+          SSH_KEY="${{ secrets.SSH_PRIVATE_KEY }}"
+          if [ -n "$SSH_HOST" ] && [ -n "$SSH_USER" ] && [ -n "$SSH_KEY" ]; then
+            echo "ssh_present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ssh_present=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: 'Optional: Deploy to remote via SSH'
-        if: ${{ secrets.SSH_HOST && secrets.SSH_USER && secrets.SSH_PRIVATE_KEY }}
+        if: steps.check_ssh.outputs.ssh_present == 'true'
         uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ secrets.SSH_HOST }}
