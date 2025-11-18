@@ -1,0 +1,27 @@
+name: Deploy Frontend to GitHub Pages
+
+on:
+  push:
+    branches: [ feature/medical-vercel-docker ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy `collab/miracle` to GitHub Pages
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upload `collab/miracle` artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: collab/miracle
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v1
