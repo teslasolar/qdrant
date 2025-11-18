@@ -39,6 +39,13 @@ try:
 except ImportError:
     PIL_AVAILABLE = False
 
+# DICOM support
+try:
+    import pydicom
+    DICOM_AVAILABLE = True
+except ImportError:
+    DICOM_AVAILABLE = False
+
 # Image embedding models
 try:
     import torch
@@ -214,8 +221,10 @@ async def root():
         "qdrant": "connected",
         "cohere": COHERE_AVAILABLE,
         "openai": OPENAI_AVAILABLE,
+        "dicom": DICOM_AVAILABLE,
         "image_model": IMAGE_MODEL_TYPE,
-        "gpu_available": torch.cuda.is_available() if TORCH_AVAILABLE else False
+        "gpu_available": torch.cuda.is_available() if TORCH_AVAILABLE else False,
+        "supported_formats": ["JPEG", "PNG", "DICOM (.dcm)"] if DICOM_AVAILABLE else ["JPEG", "PNG"]
     }
 
 @app.get("/health")
@@ -372,6 +381,40 @@ async def list_collections():
 
 # Medical Imaging Endpoints
 
+def process_dicom_image(dicom_bytes: bytes) -> np.ndarray:
+    """Process DICOM file to numpy array"""
+    if not DICOM_AVAILABLE:
+        raise HTTPException(status_code=500, detail="pydicom not available - install: pip install pydicom")
+
+    try:
+        # Read DICOM file
+        ds = pydicom.dcmread(io.BytesIO(dicom_bytes))
+
+        # Get pixel data
+        pixel_array = ds.pixel_array
+
+        # Normalize to 0-255 range
+        pixel_min = pixel_array.min()
+        pixel_max = pixel_array.max()
+        if pixel_max > pixel_min:
+            pixel_array = ((pixel_array - pixel_min) / (pixel_max - pixel_min) * 255).astype(np.uint8)
+        else:
+            pixel_array = pixel_array.astype(np.uint8)
+
+        # Convert to RGB if grayscale
+        if len(pixel_array.shape) == 2:
+            pixel_array = np.stack([pixel_array] * 3, axis=-1)
+
+        # Convert to PIL Image for resizing
+        image = Image.fromarray(pixel_array)
+        image = image.resize((224, 224))
+
+        return np.array(image)
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid DICOM file: {str(e)}")
+
+
 def process_medical_image(image_base64: str) -> np.ndarray:
     """Process base64 image to numpy array"""
     if not PIL_AVAILABLE:
@@ -383,6 +426,12 @@ def process_medical_image(image_base64: str) -> np.ndarray:
 
     # Decode base64
     image_bytes = base64.b64decode(image_base64)
+
+    # Try to detect DICOM format (starts with specific bytes)
+    if DICOM_AVAILABLE and (image_bytes[:4] == b'DICM' or len(image_bytes) > 128 and image_bytes[128:132] == b'DICM'):
+        return process_dicom_image(image_bytes)
+
+    # Process as regular image (JPEG, PNG, etc.)
     image = Image.open(io.BytesIO(image_bytes))
 
     # Convert to RGB if needed
@@ -509,7 +558,11 @@ async def upload_medical_image(
     diagnosis: str = Form(""),
     notes: str = Form("")
 ):
-    """Upload and index medical image"""
+    """Upload and index medical image
+
+    Supports: JPEG, PNG, DICOM (.dcm)
+    Automatically detects and processes DICOM files
+    """
     try:
         # Read image file
         contents = await file.read()
