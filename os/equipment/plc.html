@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Models SCADA Interface - CHAZON Control Interface</title>
+<title>Equipment PLC Interface - CHAZON Control Interface</title>
 
 <!-- Load theme and config -->
 <link rel="stylesheet" href="/styles/theme.css">
@@ -170,8 +170,8 @@ body {
 
 <!-- Header -->
 <div class="header">
-  <div class="title">Models SCADA Interface</div>
-  <div class="breadcrumb">OS / Models</div>
+  <div class="title">Equipment PLC Interface</div>
+  <div class="breadcrumb">OS / Equipment</div>
 </div>
 
 <!-- Main Content -->
@@ -214,17 +214,17 @@ body {
     <a href="./scada.html" class="nav-link">SCADA</a>
   </div>
   <div style="font-size: 0.9em; opacity: 0.7;">
-    ISA-95 Level: L3_MES | Status: <span id="status-indicator">LOADED</span>
+    ISA-95 Level: L1_Control | Status: <span id="status-indicator">OPERATIONAL</span>
   </div>
 </div>
 
 <script>
 // Configuration (replaced by template generator)
 const CONTROL_CONFIG = {
-  name: 'Models SCADA Interface',
-  section: 'Models',
-  tags: ["Models", "AI", "L3"],
-  isaLevel: 'L3_MES'
+  name: 'Equipment PLC Interface',
+  section: 'Equipment',
+  tags: ["Equipment", "Hardware", "L1"],
+  isaLevel: 'L1_Control'
 };
 
 // Wait for OS to initialize

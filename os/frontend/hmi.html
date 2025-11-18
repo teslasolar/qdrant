@@ -3,166 +3,403 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Frontend HMI - Chazon Control Panel</title>
+<title>Frontend HMI Interface - CHAZON Control Interface</title>
+
+<!-- Load theme and config -->
+<link rel="stylesheet" href="/styles/theme.css">
+<script src="/scripts/theme-loader.js"></script>
+<script src="/scripts/config-loader.js"></script>
+
+<!-- Load OS module system -->
+<script src="/scripts/os-loader.js"></script>
+
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Courier New', monospace;
-    background: #0a0a0a;
-    color: #00ff88;
-    height: 100vh;
-    overflow: hidden;
-  }
+:root {
+  --bg-primary: #2a1a3a;
+  --bg-secondary: #3d2a52;
+  --text-primary: #f5f2e8;
+  --accent-purple: #b794f4;
+  --accent-cyan: #00bfff;
+}
 
-  #hmi-container {
-    display: grid;
-    grid-template-rows: 60px 1fr 50px;
-    height: 100vh;
-  }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-  #hmi-header {
-    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
-    border-bottom: 3px solid #00ff88;
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    justify-content: space-between;
-  }
+body {
+  font-family: 'Courier New', monospace;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  height: 100vh;
+  overflow: hidden;
+}
 
-  #hmi-header h1 {
-    font-size: 1.5em;
-    color: #00ff88;
-  }
+.header {
+  height: 60px;
+  background: var(--bg-secondary);
+  border-bottom: 3px solid var(--accent-purple);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
 
-  #hmi-main {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-    padding: 20px;
-    overflow-y: auto;
-  }
+.title {
+  font-size: 1.5em;
+  color: var(--accent-purple);
+}
 
-  .control-btn {
-    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
-    border: 2px solid #00ff88;
-    border-radius: 12px;
-    padding: 20px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    min-height: 150px;
-  }
+.breadcrumb {
+  font-size: 0.9em;
+  color: var(--text-primary);
+  opacity: 0.7;
+}
 
-  .control-btn:hover {
-    border-color: #00ccff;
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
-    transform: translateY(-2px);
-  }
+.main {
+  height: calc(100vh - 120px);
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 20px;
+  padding: 20px;
+}
 
-  .control-icon {
-    font-size: 3em;
-    margin-bottom: 10px;
-  }
+.sidebar {
+  background: var(--bg-secondary);
+  border: 2px solid var(--accent-purple);
+  border-radius: 8px;
+  padding: 15px;
+  overflow-y: auto;
+}
 
-  .control-label {
-    color: #00ff88;
-    font-weight: bold;
-    font-size: 1.1em;
-    margin-bottom: 8px;
-  }
+.content {
+  background: var(--bg-secondary);
+  border: 2px solid var(--accent-purple);
+  border-radius: 8px;
+  padding: 20px;
+  overflow-y: auto;
+}
 
-  .control-status {
-    color: #888;
-    font-size: 0.9em;
-  }
+.module-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-  .indicator {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    background: #00ff88;
-    box-shadow: 0 0 10px #00ff88;
-  }
+.module-item {
+  padding: 10px;
+  background: rgba(183, 148, 244, 0.1);
+  border: 1px solid var(--accent-purple);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
 
-  #hmi-footer {
-    background: #1a1a2e;
-    border-top: 2px solid #00ff88;
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    justify-content: space-between;
-  }
+.module-item:hover {
+  background: rgba(183, 148, 244, 0.2);
+  box-shadow: 0 0 10px rgba(183, 148, 244, 0.3);
+}
 
-  .btn {
-    padding: 8px 16px;
-    background: #00ff88;
-    color: #000;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: inherit;
-    font-weight: bold;
-  }
+.module-item.loaded {
+  border-color: var(--accent-cyan);
+  background: rgba(0, 191, 255, 0.1);
+}
 
-  .btn:hover { background: #00cc66; }
-  .btn.secondary { background: #333; color: #00ff88; }
+.module-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.module-tags {
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+
+.status {
+  padding: 10px;
+  margin-bottom: 15px;
+  background: rgba(0, 191, 255, 0.1);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 4px;
+}
+
+.footer {
+  height: 60px;
+  background: var(--bg-secondary);
+  border-top: 3px solid var(--accent-purple);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  background: var(--accent-purple);
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  opacity: 0.8;
+  box-shadow: 0 0 15px rgba(183, 148, 244, 0.5);
+}
+
+.nav-links {
+  display: flex;
+  gap: 15px;
+}
+
+.nav-link {
+  padding: 8px 15px;
+  background: rgba(245, 242, 232, 0.1);
+  border: 1px solid var(--text-primary);
+  border-radius: 4px;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  background: rgba(245, 242, 232, 0.2);
+}
 </style>
 </head>
 <body>
 
-<div id="hmi-container">
-  <div id="hmi-header">
-    <h1>🎛️ Frontend - HMI Control Panel</h1>
-    <div style="color: #00ccff; font-size: 1.2em;" id="system-time">00:00:00</div>
-  </div>
+<!-- Header -->
+<div class="header">
+  <div class="title">Frontend HMI Interface</div>
+  <div class="breadcrumb">OS / Frontend</div>
+</div>
 
-  <div id="hmi-main">
-    <div class="control-btn" onclick="window.location.href='index.html'">
-      <div class="indicator"></div>
-      <div class="control-icon">📄</div>
-      <div class="control-label">Main View</div>
-      <div class="control-status">Index Page</div>
+<!-- Main Content -->
+<div class="main">
+  <!-- Sidebar: OS Modules -->
+  <div class="sidebar">
+    <h3 style="margin-bottom: 15px;">OS Modules</h3>
+    <div class="status" id="os-status">
+      Initializing OS...
     </div>
-
-    <div class="control-btn" onclick="window.location.href='scada.html'">
-      <div class="indicator"></div>
-      <div class="control-icon">📈</div>
-      <div class="control-label">SCADA View</div>
-      <div class="control-status">Real-time Data</div>
-    </div>
-
-    <div class="control-btn" onclick="window.location.href='plc.html'">
-      <div class="indicator"></div>
-      <div class="control-icon">⚙️</div>
-      <div class="control-label">PLC Logic</div>
-      <div class="control-status">Control Logic</div>
+    <div class="module-list" id="module-list">
+      <!-- Modules will be loaded here -->
     </div>
   </div>
 
-  <div id="hmi-footer">
-    <div>
-      <button class="btn secondary" onclick="window.location.href='../index.html'">🏠 OS Home</button>
-      <button class="btn secondary" onclick="window.history.back()">← Back</button>
+  <!-- Content Area -->
+  <div class="content" id="content">
+    <h2>Control Interface</h2>
+    <p style="margin: 20px 0; opacity: 0.8;">
+      This control uses tag-based OS module loading for GitHub Pages.
+    </p>
+
+    <div style="margin-top: 30px;">
+      <button class="btn" onclick="loadControlModules()">Load Control Modules</button>
+      <button class="btn" onclick="showAllModules()" style="margin-left: 10px;">Show All Modules</button>
     </div>
-    <div>
-      <button class="btn" onclick="location.reload()">🔄 Refresh</button>
+
+    <div id="module-info" style="margin-top: 30px;">
+      <!-- Module info will appear here -->
     </div>
   </div>
 </div>
 
+<!-- Footer -->
+<div class="footer">
+  <div class="nav-links">
+    <a href="/index.html" class="nav-link">🏠 Home</a>
+    <a href="./plc.html" class="nav-link">PLC</a>
+    <a href="./hmi.html" class="nav-link">HMI</a>
+    <a href="./scada.html" class="nav-link">SCADA</a>
+  </div>
+  <div style="font-size: 0.9em; opacity: 0.7;">
+    ISA-95 Level: L2_Supervisory | Status: <span id="status-indicator">OPERATIONAL</span>
+  </div>
+</div>
+
 <script>
-function updateTime() {
-  document.getElementById('system-time').textContent = new Date().toLocaleTimeString();
+// Configuration (replaced by template generator)
+const CONTROL_CONFIG = {
+  name: 'Frontend HMI Interface',
+  section: 'Frontend',
+  tags: ["Frontend", "UI", "L2"],
+  isaLevel: 'L2_Supervisory'
+};
+
+// Wait for OS to initialize
+async function initControl() {
+  try {
+    // Wait for OS loader to be ready
+    if (!window.chazonOS.registry) {
+      await window.chazonOS.init();
+    }
+
+    updateStatus('✓ OS Initialized', 'success');
+
+    // Show modules available for this control
+    displayAvailableModules();
+
+  } catch (error) {
+    console.error('Failed to initialize control:', error);
+    updateStatus('✗ Failed to initialize', 'error');
+  }
 }
-setInterval(updateTime, 1000);
-updateTime();
+
+// Display modules available based on control tags
+function displayAvailableModules() {
+  const moduleList = document.getElementById('module-list');
+
+  // Query modules by tags
+  const modules = window.chazonOS.queryByTag(CONTROL_CONFIG.tags);
+
+  if (modules.length === 0) {
+    moduleList.innerHTML = '<div style="opacity: 0.5;">No modules found for these tags</div>';
+    return;
+  }
+
+  moduleList.innerHTML = '';
+
+  modules.forEach(module => {
+    const item = document.createElement('div');
+    item.className = 'module-item';
+    item.innerHTML = `
+      <div class="module-name">${module.name}</div>
+      <div class="module-tags">${module.tags.join(', ')}</div>
+      <div style="font-size: 0.75em; margin-top: 5px; opacity: 0.6;">${module.size}</div>
+    `;
+
+    item.onclick = () => loadModule(module);
+    moduleList.appendChild(item);
+  });
+
+  updateStatus(`Found ${modules.length} modules`, 'info');
+}
+
+// Load a specific module
+async function loadModule(moduleInfo) {
+  const infoDiv = document.getElementById('module-info');
+  infoDiv.innerHTML = `<div style="opacity: 0.7;">Loading ${moduleInfo.name}...</div>`;
+
+  try {
+    const module = await window.chazonOS.loadModule(moduleInfo.uuid);
+
+    infoDiv.innerHTML = `
+      <h3>${moduleInfo.name}</h3>
+      <p style="margin: 10px 0;">${moduleInfo.description}</p>
+      <div style="margin-top: 15px;">
+        <div><strong>Path:</strong> ${moduleInfo.path}</div>
+        <div><strong>Exports:</strong> ${moduleInfo.exports.join(', ')}</div>
+        <div><strong>Size:</strong> ${moduleInfo.size}</div>
+        ${moduleInfo.dependencies.length > 0 ? `<div><strong>Dependencies:</strong> ${moduleInfo.dependencies.join(', ')}</div>` : ''}
+      </div>
+      <div style="margin-top: 15px; padding: 10px; background: rgba(0, 191, 255, 0.1); border: 1px solid var(--accent-cyan); border-radius: 4px;">
+        ✓ Module loaded and ready to use
+      </div>
+    `;
+
+    // Mark as loaded in sidebar
+    const items = document.querySelectorAll('.module-item');
+    items.forEach(item => {
+      if (item.textContent.includes(moduleInfo.name)) {
+        item.classList.add('loaded');
+      }
+    });
+
+    updateStatus(`✓ Loaded: ${moduleInfo.name}`, 'success');
+  } catch (error) {
+    infoDiv.innerHTML = `
+      <div style="padding: 10px; background: rgba(255, 68, 68, 0.1); border: 1px solid #ff4444; border-radius: 4px;">
+        ✗ Failed to load module: ${error.message}
+      </div>
+    `;
+    updateStatus(`✗ Failed to load module`, 'error');
+  }
+}
+
+// Load all modules for this control
+async function loadControlModules() {
+  updateStatus('Loading control modules...', 'info');
+
+  try {
+    const control = await window.chazonOS.createControl(CONTROL_CONFIG.section.toLowerCase());
+
+    const infoDiv = document.getElementById('module-info');
+    infoDiv.innerHTML = `
+      <h3>Control: ${control.control.name}</h3>
+      <p>${control.control.description}</p>
+      <div style="margin-top: 15px;">
+        <strong>Loaded ${control.modules.length} modules:</strong>
+        <ul style="margin-top: 10px;">
+          ${control.modules.map(m => `<li>${m.info.name}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+
+    // Mark all as loaded
+    document.querySelectorAll('.module-item').forEach(item => {
+      item.classList.add('loaded');
+    });
+
+    updateStatus(`✓ All control modules loaded`, 'success');
+  } catch (error) {
+    updateStatus(`✗ Error: ${error.message}`, 'error');
+  }
+}
+
+// Show all available modules
+function showAllModules() {
+  const modules = window.chazonOS.listModules();
+  const stats = window.chazonOS.getStats();
+
+  const infoDiv = document.getElementById('module-info');
+  infoDiv.innerHTML = `
+    <h3>OS Module Registry</h3>
+    <div style="margin: 15px 0;">
+      <strong>Total Modules:</strong> ${stats.totalModules}<br>
+      <strong>Total Controls:</strong> ${stats.totalControls}<br>
+      <strong>Loaded:</strong> ${stats.loadedModules}
+    </div>
+    <div style="margin-top: 20px;">
+      <h4>Categories:</h4>
+      <ul style="margin-top: 10px;">
+        ${Object.entries(stats.categories).map(([cat, count]) => `<li><strong>${cat}:</strong> ${count} modules</li>`).join('')}
+      </ul>
+    </div>
+    <div style="margin-top: 20px;">
+      <h4>All Modules:</h4>
+      <div style="max-height: 300px; overflow-y: auto; margin-top: 10px;">
+        ${modules.map(m => `
+          <div style="padding: 10px; margin: 5px 0; background: rgba(183, 148, 244, 0.1); border: 1px solid var(--accent-purple); border-radius: 4px;">
+            <strong>${m.name}</strong> (${m.category})<br>
+            <span style="font-size: 0.85em; opacity: 0.7;">${m.description}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// Update status display
+function updateStatus(message, type = 'info') {
+  const statusEl = document.getElementById('os-status');
+  const colors = {
+    success: 'var(--accent-cyan)',
+    error: '#ff4444',
+    info: 'var(--accent-purple)'
+  };
+
+  statusEl.textContent = message;
+  statusEl.style.borderColor = colors[type] || colors.info;
+  statusEl.style.background = `rgba(${type === 'success' ? '0, 191, 255' : type === 'error' ? '255, 68, 68' : '183, 148, 244'}, 0.1)`;
+}
+
+// Initialize on load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initControl);
+} else {
+  initControl();
+}
 </script>
 
 </body>
