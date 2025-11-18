@@ -6,7 +6,7 @@ AI-powered medical imaging analysis with industrial automation (ISA-95/88) archi
 
 ---
 
-## 🎉 NEW: Medical Image Similarity Search (95% Complete!)
+## 🎉 NEW: Medical Image Similarity Search (100% Complete!)
 
 **Production-ready medical imaging vector search system with BiomedCLIP**
 
@@ -26,6 +26,8 @@ open screens/frontend/medical-search.html     # Open search UI
 - ✅ **Beautiful search UI** - Drag & drop, 3 search modes
 - ✅ **11 REST endpoints** - Full API for integration
 - ✅ **GPU acceleration** - 4x faster with CUDA
+- ✅ **DICOM support** - Native .dcm medical imaging format
+- ✅ **Performance benchmarks** - Comprehensive testing suite
 
 📚 **Documentation:**
 - [**QUICKSTART.md**](QUICKSTART.md) - Full setup guide
