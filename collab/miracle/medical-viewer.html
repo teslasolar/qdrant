@@ -554,7 +554,7 @@
 const API_URL = (function() {
   try {
     const params = new URLSearchParams(window.location.search);
-    return window.__API_URL__ || params.get('api_url') || 'http://localhost:8000';
+    return window.__API_URL__ || params.get('api_url') || 'https://qdrant-ygtw.onrender.com';
   } catch (e) {
     return 'http://localhost:8000';
   }
