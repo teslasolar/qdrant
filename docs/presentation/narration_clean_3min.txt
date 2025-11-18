@@ -1,0 +1,41 @@
+# 3-Minute Clean Concept Presentation
+# Pure prototype demonstration for hackathon
+# No testing claims, no real-world deployment mentions
+
+[0-15s] Opening
+Welcome to Chazon, our hackathon submission for the Qdrant Challenge. We're presenting a prototype concept that explores how vector databases could transform medical image analysis.
+
+[15-30s] The Concept
+Our prototype demonstrates vector similarity search applied to medical imaging. We're exploring how AI embeddings might enable instant pattern matching across medical scans.
+
+[30-45s] Technical Foundation
+At the core of our concept is BiomedCLIP, an open-source model that transforms medical images into high-dimensional vectors. These mathematical representations capture visual patterns and features.
+
+[45-60s] Vector Database Technology
+We've integrated Qdrant as our vector database, showcasing its ability to store and search millions of embeddings efficiently. Qdrant's HNSW indexing enables lightning-fast similarity searches.
+
+[60-75s] How Our Prototype Works
+When a medical image is uploaded to our demo, it's processed through BiomedCLIP to generate a 512-dimensional embedding. This vector is then compared against our database using cosine similarity.
+
+[75-90s] Architecture Overview
+Our prototype uses a microservices architecture. FastAPI handles backend operations, React provides the interface, and Qdrant manages vector storage. Everything runs in Docker containers.
+
+[90-105s] Embedding Pipeline
+The prototype demonstrates a complete pipeline: image preprocessing, normalization, embedding generation, and vector indexing. Each step is optimized for performance and accuracy.
+
+[105-120s] Search Capabilities
+Our demo shows sub-second search times across thousands of medical images. The system ranks results by similarity score, displaying the most relevant matches instantly.
+
+[120-135s] User Interface Design
+We've created an intuitive interface for our prototype. Users can upload images, view similar cases, and explore the vector space through interactive visualizations.
+
+[135-150s] Technical Innovation
+This prototype showcases several innovations: efficient batch processing, real-time vector visualization, and seamless integration between AI models and vector databases.
+
+[150-165s] Open Source Approach
+Built entirely with open-source technologies, our prototype demonstrates the accessibility of advanced AI capabilities. The code is available on GitHub for exploration and extension.
+
+[165-180s] Closing
+Chazon represents our vision for the future of medical imaging - a prototype that demonstrates the potential of vector similarity search in healthcare. Thank you for exploring our hackathon submission.
+
+This is a proof-of-concept developed for the Qdrant hackathon, showcasing the possibilities of vector database technology.

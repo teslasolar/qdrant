@@ -1,0 +1,6 @@
+file 'D:\git\qdrant\docs\presentation\chunks_concept_30s\chunk_01.mp4'
+file 'D:\git\qdrant\docs\presentation\chunks_concept_30s\chunk_02.mp4'
+file 'D:\git\qdrant\docs\presentation\chunks_concept_30s\chunk_03.mp4'
+file 'D:\git\qdrant\docs\presentation\chunks_concept_30s\chunk_04.mp4'
+file 'D:\git\qdrant\docs\presentation\chunks_concept_30s\chunk_05.mp4'
+file 'D:\git\qdrant\docs\presentation\chunks_concept_30s\chunk_06.mp4'

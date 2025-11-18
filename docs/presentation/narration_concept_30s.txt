@@ -1,0 +1,14 @@
+# 30-Second Concept Overview
+# Pure prototype demonstration - no testing claims
+
+Introducing Chazon: A prototype medical imaging search system.
+
+We're demonstrating vector-based similarity search for medical images using Qdrant.
+
+Our concept uses BiomedCLIP embeddings to transform medical scans into searchable vectors.
+
+The prototype shows how AI could potentially match similar medical patterns instantly.
+
+This hackathon project explores the future possibilities of medical image analysis.
+
+Built with open-source technology for the Qdrant Challenge.

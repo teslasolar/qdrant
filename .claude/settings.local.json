@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(python install_video_tools.py:*)",
+      "Bash(python generate_narration.py:*)",
+      "Bash(python:*)",
+      "Bash(dir:*)",
+      "Bash(nul)",
+      "Bash(findstr:*)",
+      "Bash(ffmpeg:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

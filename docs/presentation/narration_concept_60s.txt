@@ -1,0 +1,26 @@
+# 60-Second Technical Concept
+# Focus on technical architecture - no real-world claims
+
+Welcome to our Chazon prototype demonstration for the Qdrant hackathon.
+
+We've built a proof-of-concept system that explores vector similarity search for medical imaging.
+
+The concept is simple: transform medical images into high-dimensional vectors using BiomedCLIP.
+
+These vectors capture semantic features of medical scans - patterns, structures, anomalies.
+
+Our prototype stores these vectors in Qdrant's high-performance database.
+
+When a new scan arrives, we compute its vector and search for similar patterns.
+
+The system uses cosine similarity to find matching cases in the vector space.
+
+This approach could theoretically enable instant pattern matching across thousands of images.
+
+Our architecture includes a FastAPI backend, React frontend, and Qdrant as the vector store.
+
+Everything runs in Docker containers for easy deployment and testing.
+
+This hackathon prototype demonstrates the potential of vector databases in healthcare applications.
+
+Join us in exploring the future of AI-powered medical imaging.

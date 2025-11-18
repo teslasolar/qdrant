@@ -1,0 +1,38 @@
+# 2-Minute Concept Prototype Demonstration
+# Pure technical concepts - no testing or deployment claims
+
+[0-10s] Introduction
+Welcome to Chazon, our prototype submission for the Qdrant hackathon challenge. We're demonstrating a concept for AI-powered medical image similarity search.
+
+[10-20s] The Vision
+Imagine a system that can instantly find similar medical patterns. Our prototype explores this possibility using vector embeddings and similarity search.
+
+[20-30s] Core Technology
+At the heart of our concept is BiomedCLIP, a specialized model that transforms medical images into mathematical vectors. Each scan becomes a point in high-dimensional space.
+
+[30-40s] Vector Database
+We leverage Qdrant's vector database to store and search these embeddings. Qdrant enables lightning-fast similarity searches across thousands of vectors.
+
+[40-50s] How It Works
+When a medical image is uploaded, our prototype converts it to a vector, then searches for the nearest neighbors in the vector space. Similar medical patterns cluster together.
+
+[50-60s] Technical Architecture
+Our proof-of-concept uses a microservices architecture. FastAPI handles the backend logic. React provides the user interface. Qdrant stores the vectors. Everything runs in Docker.
+
+[60-70s] Embedding Process
+The prototype demonstrates how BiomedCLIP analyzes visual features - tissue patterns, anatomical structures, potential anomalies - encoding them into dense vectors.
+
+[70-80s] Search Mechanism
+Using cosine similarity, our system can theoretically identify matching patterns in milliseconds. The prototype shows this concept with sample medical images.
+
+[80-90s] User Interface
+We've built a clean interface to demonstrate the concept. Upload an image, view similar matches, explore the vector space visualization.
+
+[90-100s] Potential Applications
+This prototype suggests possibilities: pattern recognition, case comparison, research acceleration. It's a glimpse of how vector databases could transform medical imaging.
+
+[100-110s] Open Source Foundation
+Built entirely with open-source tools, our prototype shows the democratization of AI technology. Anyone can explore and extend these concepts.
+
+[110-120s] Conclusion
+Chazon is our hackathon exploration of vector similarity in healthcare. A prototype demonstrating the potential of Qdrant for medical image analysis. Thank you for watching.

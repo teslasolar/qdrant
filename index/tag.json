@@ -64,9 +64,9 @@
   "has_plc": true,
   "has_hmi": true,
   "has_scada": true,
-  "plc_path": "/./plc.html",
-  "hmi_path": "/./hmi.html",
-  "scada_path": "/./scada.html",
+  "plc_path": "/screens/plc.html",
+  "hmi_path": "/screens/hmi.html",
+  "scada_path": "/screens/scada.html",
   "Features": [
     {
       "title": "Standards-as-Tags Framework",
@@ -112,7 +112,7 @@
     },
     {
       "label": "\ud83c\udfed Enterprise Portal",
-      "path": "enterprise-portal.html",
+      "path": "screens/enterprise-portal.html",
       "type": "primary"
     },
     {
@@ -138,61 +138,61 @@
   ],
   "Page_Links": [
     {
-      "path": "enterprise-portal.html",
+      "path": "screens/enterprise-portal.html",
       "name": "Enterprise Portal",
       "icon": "🏢",
       "size": 25000
     },
     {
-      "path": "production-planning.html",
+      "path": "screens/production-planning.html",
       "name": "Production Planning",
       "icon": "📋",
       "size": 23000
     },
     {
-      "path": "quality-management.html",
+      "path": "screens/quality-management.html",
       "name": "Quality Management",
       "icon": "✓",
       "size": 24000
     },
     {
-      "path": "analytics-reporting.html",
+      "path": "screens/analytics-reporting.html",
       "name": "Analytics & Reporting",
       "icon": "📊",
       "size": 22000
     },
     {
-      "path": "asset-management.html",
+      "path": "screens/asset-management.html",
       "name": "Asset Management",
       "icon": "🏭",
       "size": 21000
     },
     {
-      "path": "maintenance-planning.html",
+      "path": "screens/maintenance-planning.html",
       "name": "Maintenance Planning",
       "icon": "🔧",
       "size": 23000
     },
     {
-      "path": "configuration.html",
+      "path": "screens/configuration.html",
       "name": "Configuration",
       "icon": "⚙️",
       "size": 20000
     },
     {
-      "path": "hmi.html",
+      "path": "screens/hmi.html",
       "name": "HMI Control Panel",
       "icon": "🎛️",
       "size": 14126
     },
     {
-      "path": "scada.html",
+      "path": "screens/scada.html",
       "name": "SCADA Gateway",
       "icon": "📈",
       "size": 12596
     },
     {
-      "path": "plc.html",
+      "path": "screens/plc.html",
       "name": "PLC Logic",
       "icon": "⚙️",
       "size": 8419
@@ -220,52 +220,52 @@
       "type": "html"
     },
     {
-      "path": "enterprise-portal.html",
+      "path": "screens/enterprise-portal.html",
       "name": "Enterprise Portal",
       "type": "html"
     },
     {
-      "path": "production-planning.html",
+      "path": "screens/production-planning.html",
       "name": "Production Planning",
       "type": "html"
     },
     {
-      "path": "quality-management.html",
+      "path": "screens/quality-management.html",
       "name": "Quality Management",
       "type": "html"
     },
     {
-      "path": "analytics-reporting.html",
+      "path": "screens/analytics-reporting.html",
       "name": "Analytics & Reporting",
       "type": "html"
     },
     {
-      "path": "asset-management.html",
+      "path": "screens/asset-management.html",
       "name": "Asset Management",
       "type": "html"
     },
     {
-      "path": "maintenance-planning.html",
+      "path": "screens/maintenance-planning.html",
       "name": "Maintenance Planning",
       "type": "html"
     },
     {
-      "path": "configuration.html",
+      "path": "screens/configuration.html",
       "name": "Configuration",
       "type": "html"
     },
     {
-      "path": "plc.html",
+      "path": "screens/plc.html",
       "name": "PLC",
       "type": "html"
     },
     {
-      "path": "hmi.html",
+      "path": "screens/hmi.html",
       "name": "HMI",
       "type": "html"
     },
     {
-      "path": "scada.html",
+      "path": "screens/scada.html",
       "name": "SCADA",
       "type": "html"
     }

@@ -1,0 +1,218 @@
+[
+  {
+    "id": 1,
+    "start": 0,
+    "end": 5,
+    "prompt": "Futuristic hospital entrance with glowing blue holographic medical symbols"
+  },
+  {
+    "id": 2,
+    "start": 5,
+    "end": 10,
+    "prompt": "Doctor overwhelmed by floating paper medical records in dark room"
+  },
+  {
+    "id": 3,
+    "start": 10,
+    "end": 15,
+    "prompt": "Medical professional searching through endless filing cabinets, frustrated"
+  },
+  {
+    "id": 4,
+    "start": 15,
+    "end": 20,
+    "prompt": "Clock ticking fast over pile of medical scans, time pressure visualization"
+  },
+  {
+    "id": 5,
+    "start": 20,
+    "end": 25,
+    "prompt": "X-ray and MRI scans floating in 3D space with red warning highlights"
+  },
+  {
+    "id": 6,
+    "start": 25,
+    "end": 30,
+    "prompt": "Multiple doctors looking at same scan with different colored annotations"
+  },
+  {
+    "id": 7,
+    "start": 30,
+    "end": 35,
+    "prompt": "Patient data transforming into geometric patterns and vectors"
+  },
+  {
+    "id": 8,
+    "start": 35,
+    "end": 40,
+    "prompt": "Emergency room chaos with medical monitors showing critical alerts"
+  },
+  {
+    "id": 9,
+    "start": 40,
+    "end": 45,
+    "prompt": "Glowing AI brain analyzing medical scans with blue neural connections"
+  },
+  {
+    "id": 10,
+    "start": 45,
+    "end": 50,
+    "prompt": "Holographic interface showing Qdrant vector database with medical images"
+  },
+  {
+    "id": 11,
+    "start": 50,
+    "end": 55,
+    "prompt": "Medical scan transforming into colorful vector embeddings flowing into database"
+  },
+  {
+    "id": 12,
+    "start": 55,
+    "end": 60,
+    "prompt": "Doctor using futuristic AR glasses to view similar medical cases"
+  },
+  {
+    "id": 13,
+    "start": 60,
+    "end": 65,
+    "prompt": "Brain MRI scan being analyzed with glowing similarity matches appearing"
+  },
+  {
+    "id": 14,
+    "start": 65,
+    "end": 70,
+    "prompt": "Chest X-ray with AI highlighting similar patterns from database"
+  },
+  {
+    "id": 15,
+    "start": 70,
+    "end": 75,
+    "prompt": "3D medical visualization rotating with data points connecting"
+  },
+  {
+    "id": 16,
+    "start": 75,
+    "end": 80,
+    "prompt": "Dashboard interface showing real-time medical image analysis"
+  },
+  {
+    "id": 17,
+    "start": 80,
+    "end": 85,
+    "prompt": "Flowchart animation showing data pipeline from scanner to vectors"
+  },
+  {
+    "id": 18,
+    "start": 85,
+    "end": 90,
+    "prompt": "Server room with glowing connections to cloud infrastructure"
+  },
+  {
+    "id": 19,
+    "start": 90,
+    "end": 95,
+    "prompt": "Code visualization showing BiomedCLIP embedding generation"
+  },
+  {
+    "id": 20,
+    "start": 95,
+    "end": 100,
+    "prompt": "Network diagram showing DICOM compliance and security layers"
+  },
+  {
+    "id": 21,
+    "start": 100,
+    "end": 105,
+    "prompt": "Doctor smiling while AI instantly finds similar cases on screen"
+  },
+  {
+    "id": 22,
+    "start": 105,
+    "end": 110,
+    "prompt": "Time-lapse of diagnosis speed improving from hours to seconds"
+  },
+  {
+    "id": 23,
+    "start": 110,
+    "end": 115,
+    "prompt": "Multiple hospitals connected through glowing network sharing knowledge"
+  },
+  {
+    "id": 24,
+    "start": 115,
+    "end": 120,
+    "prompt": "Patient outcomes improving with green upward trending graphs"
+  },
+  {
+    "id": 25,
+    "start": 120,
+    "end": 125,
+    "prompt": "Radiologist using AI to detect subtle tumor patterns in brain scan"
+  },
+  {
+    "id": 26,
+    "start": 125,
+    "end": 130,
+    "prompt": "Emergency room using AI for rapid trauma assessment"
+  },
+  {
+    "id": 27,
+    "start": 130,
+    "end": 135,
+    "prompt": "Researcher discovering rare disease patterns through AI clustering"
+  },
+  {
+    "id": 28,
+    "start": 135,
+    "end": 140,
+    "prompt": "Training simulation with AI teaching medical students"
+  },
+  {
+    "id": 29,
+    "start": 140,
+    "end": 145,
+    "prompt": "Futuristic medical center with holographic AI assistants"
+  },
+  {
+    "id": 30,
+    "start": 145,
+    "end": 150,
+    "prompt": "Global medical network with real-time knowledge sharing"
+  },
+  {
+    "id": 31,
+    "start": 150,
+    "end": 155,
+    "prompt": "AI predicting health issues before symptoms appear"
+  },
+  {
+    "id": 32,
+    "start": 155,
+    "end": 160,
+    "prompt": "Personalized medicine with DNA and AI working together"
+  },
+  {
+    "id": 33,
+    "start": 160,
+    "end": 165,
+    "prompt": "Hackathon logo transforming into medical innovation symbol"
+  },
+  {
+    "id": 34,
+    "start": 165,
+    "end": 170,
+    "prompt": "GitHub repository with code flowing into medical applications"
+  },
+  {
+    "id": 35,
+    "start": 170,
+    "end": 175,
+    "prompt": "Join us message with diverse medical professionals using technology"
+  },
+  {
+    "id": 36,
+    "start": 175,
+    "end": 180,
+    "prompt": "Chazon logo with tagline about transforming medical imaging future"
+  }
+]

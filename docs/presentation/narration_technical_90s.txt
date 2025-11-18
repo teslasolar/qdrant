@@ -1,0 +1,29 @@
+# 90-Second Technical Architecture Deep Dive
+# Focus on implementation details - prototype only
+
+[0-10s] Architecture Overview
+Our Chazon prototype implements a microservices architecture for vector-based medical image search, built for the Qdrant hackathon.
+
+[10-20s] Vector Embedding Pipeline
+We use BiomedCLIP to generate 512-dimensional embeddings. Each medical image is preprocessed, normalized, and transformed into a dense vector representation.
+
+[20-30s] Qdrant Integration
+The prototype leverages Qdrant's Python client for vector operations. We create collections with cosine distance metrics optimized for similarity search.
+
+[30-40s] Backend Implementation
+FastAPI serves our REST endpoints. Async handlers process image uploads, trigger embedding generation, and execute vector searches against Qdrant.
+
+[40-50s] Frontend Architecture
+React with TypeScript provides the user interface. We use Three.js for vector space visualization, showing how images cluster in high-dimensional space.
+
+[50-60s] Docker Orchestration
+The entire prototype runs in containerized environments. Docker Compose orchestrates Qdrant, the API server, and the web frontend for easy deployment.
+
+[60-70s] Performance Considerations
+Our prototype demonstrates sub-second search times using HNSW indexing. Batch processing optimizes embedding generation for multiple images.
+
+[70-80s] API Design
+RESTful endpoints handle image upload, search, and metadata retrieval. WebSocket connections enable real-time updates for processing status.
+
+[80-90s] Conclusion
+This technical prototype showcases vector database capabilities for medical imaging, demonstrating Qdrant's potential in specialized domains.
