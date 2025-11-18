@@ -29,7 +29,7 @@ def download_image(url, filepath):
                 f.write(chunk)
         return True
     except Exception as e:
-        print(f"  ✗ Failed to download {url}: {e}")
+        print(f"  [ERROR] Failed to download {url}: {e}")
         return False
 
 def download_sample_images():
@@ -63,7 +63,7 @@ def download_sample_images():
     print("SAMPLE X-RAY IMAGE DOWNLOADER FOR QDRANT TESTING")
     print("="*60)
 
-    print("\n📋 AVAILABLE FREE DATASETS:")
+    print("\n[DATASETS] AVAILABLE FREE DATASETS:")
     print("\n1. KAGGLE - Paul Mooney's Chest X-ray Pneumonia Dataset")
     print("   URL: https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia")
     print("   Contents: 5,863 images (Normal & Pneumonia)")
@@ -90,7 +90,7 @@ def download_sample_images():
     print("   Access: Free with Mendeley account")
 
     print("\n" + "="*60)
-    print("📥 DOWNLOAD INSTRUCTIONS:")
+    print("[DOWNLOAD] INSTRUCTIONS:")
     print("="*60)
 
     print("\nFor quick testing, follow these steps:")
@@ -99,8 +99,8 @@ def download_sample_images():
     print("   b. Click 'Download' (requires free Kaggle account)")
     print("   c. Extract the zip file")
     print("   d. Copy sample images to test-xrays/ folders:")
-    print("      - Normal images → test-xrays/normal/")
-    print("      - Pneumonia images → test-xrays/pneumonia/")
+    print("      - Normal images -> test-xrays/normal/")
+    print("      - Pneumonia images -> test-xrays/pneumonia/")
 
     print("\n2. NIH DATASET (No registration required):")
     print("   a. Visit: https://nihcc.app.box.com/v/ChestXray-NIHCC")
@@ -112,7 +112,7 @@ def download_sample_images():
     print("   unzip chest-xray-pneumonia.zip")
 
     print("\n" + "="*60)
-    print("📊 SAMPLE IMAGE METADATA FORMAT")
+    print("[METADATA] SAMPLE IMAGE METADATA FORMAT")
     print("="*60)
 
     # Create sample metadata file
@@ -161,10 +161,10 @@ def download_sample_images():
     metadata_path = BASE_DIR / "sample_metadata.json"
     with open(metadata_path, 'w') as f:
         json.dump(sample_metadata, f, indent=2)
-    print(f"\n✓ Created sample metadata file: {metadata_path}")
+    print(f"\n[OK] Created sample metadata file: {metadata_path}")
 
     print("\n" + "="*60)
-    print("🔧 TESTING WITH QDRANT")
+    print("[TESTING] WITH QDRANT")
     print("="*60)
 
     print("\nOnce you have downloaded images, you can test with your Qdrant backend:")
@@ -181,7 +181,7 @@ def download_sample_images():
     print("   - Get AI analysis and similar cases")
 
     print("\n" + "="*60)
-    print("✅ Setup complete! Follow the instructions above to download X-ray images.")
+    print("[SUCCESS] Setup complete! Follow the instructions above to download X-ray images.")
     print("="*60)
 
 def create_test_script():
@@ -257,7 +257,7 @@ if __name__ == "__main__":
     test_script_path = BASE_DIR / "test_qdrant.py"
     with open(test_script_path, 'w') as f:
         f.write(test_script)
-    print(f"\n✓ Created test script: {test_script_path}")
+    print(f"\n[OK] Created test script: {test_script_path}")
 
     # Make it executable on Unix-like systems
     try:
