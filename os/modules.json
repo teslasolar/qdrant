@@ -150,11 +150,20 @@
         "path": "/os/medical/vector/qdrant-client.js",
         "type": "module",
         "category": "vector",
-        "description": "Qdrant vector database client for similarity search",
-        "tags": ["Qdrant", "Vector", "Search", "Similarity"],
-        "exports": ["QdrantClient", "searchSimilar", "upsertVectors"],
-        "size": "18KB",
-        "dependencies": []
+        "description": "Qdrant vector database client for medical image similarity search",
+        "tags": ["Qdrant", "Vector", "Search", "Similarity", "Medical"],
+        "exports": ["QdrantClient"],
+        "size": "22KB",
+        "dependencies": [],
+        "methods": [
+          "searchMedicalImages",
+          "analyzeMedicalImage",
+          "uploadMedicalImage",
+          "searchByBodyPart",
+          "searchByModality",
+          "findSimilarCases"
+        ],
+        "status": "implemented"
       }
     },
     "utils": {
