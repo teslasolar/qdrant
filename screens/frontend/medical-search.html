@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medical Image Search - Qdrant Similarity Search</title>
+
+<!-- Load config and theme -->
+<link rel="stylesheet" href="/styles/theme-vars.css">
+<script src="/scripts/config-loader.js"></script>
+<script src="/scripts/theme-loader.js"></script>
+
+<!-- Load Qdrant client -->
+<script src="/os/medical/vector/qdrant-client.js"></script>
+
+<style>
+:root {
+  --color-bg-primary: #2a1a3a;
+  --color-cream-primary: #f5f2e8;
+  --color-purple-accent: #b794f4;
+  --color-status-normal: #90ee90;
+  --color-status-warning: #ffd700;
+  --color-status-alarm: #ff6b6b;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--color-bg-primary);
+  color: var(--color-cream-primary);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 30px;
+  border-bottom: 3px solid var(--color-purple-accent);
+  padding-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 2em;
+  color: var(--color-purple-accent);
+  margin-bottom: 10px;
+}
+
+.header p {
+  color: var(--color-cream-primary);
+  opacity: 0.8;
+}
+
+.connection-status {
+  display: inline-block;
+  padding: 8px 15px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  margin-top: 10px;
+}
+
+.connection-status.connected {
+  background: rgba(144, 238, 144, 0.2);
+  border: 1px solid var(--color-status-normal);
+  color: var(--color-status-normal);
+}
+
+.connection-status.disconnected {
+  background: rgba(255, 68, 68, 0.2);
+  border: 1px solid var(--color-status-alarm);
+  color: var(--color-status-alarm);
+}
+
+.search-panel {
+  background: rgba(61, 42, 82, 0.5);
+  border: 2px solid var(--color-purple-accent);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 30px;
+}
+
+.search-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid rgba(183, 148, 244, 0.3);
+}
+
+.tab {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  color: var(--color-cream-primary);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s;
+}
+
+.tab:hover {
+  border-bottom-color: var(--color-purple-accent);
+}
+
+.tab.active {
+  color: var(--color-purple-accent);
+  border-bottom-color: var(--color-purple-accent);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.upload-area {
+  border: 2px dashed var(--color-purple-accent);
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.upload-area:hover {
+  background: rgba(183, 148, 244, 0.1);
+  border-color: var(--color-status-normal);
+}
+
+.upload-area.dragover {
+  background: rgba(183, 148, 244, 0.2);
+  border-color: var(--color-status-normal);
+}
+
+.search-input {
+  width: 100%;
+  padding: 15px;
+  background: rgba(26, 15, 38, 0.8);
+  border: 2px solid var(--color-purple-accent);
+  border-radius: 8px;
+  color: var(--color-cream-primary);
+  font-size: 1em;
+  margin-bottom: 15px;
+}
+
+.filter-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.filter-group select {
+  padding: 10px;
+  background: rgba(26, 15, 38, 0.8);
+  border: 2px solid var(--color-purple-accent);
+  border-radius: 6px;
+  color: var(--color-cream-primary);
+  font-size: 0.95em;
+}
+
+.btn {
+  padding: 12px 30px;
+  background: var(--color-purple-accent);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn:hover {
+  opacity: 0.8;
+  box-shadow: 0 0 20px rgba(183, 148, 244, 0.5);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.result-card {
+  background: rgba(61, 42, 82, 0.5);
+  border: 2px solid var(--color-purple-accent);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s;
+}
+
+.result-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(183, 148, 244, 0.3);
+}
+
+.similarity-score {
+  font-size: 2em;
+  font-weight: bold;
+  color: var(--color-purple-accent);
+  margin-bottom: 10px;
+}
+
+.result-metadata {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(183, 148, 244, 0.3);
+}
+
+.metadata-item {
+  margin: 8px 0;
+  font-size: 0.9em;
+}
+
+.metadata-item strong {
+  color: var(--color-purple-accent);
+}
+
+.stats-panel {
+  background: rgba(61, 42, 82, 0.3);
+  border: 2px solid var(--color-purple-accent);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 2em;
+  font-weight: bold;
+  color: var(--color-purple-accent);
+}
+
+.stat-label {
+  font-size: 0.9em;
+  opacity: 0.8;
+  margin-top: 5px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--color-purple-accent);
+}
+
+.spinner {
+  border: 4px solid rgba(183, 148, 244, 0.3);
+  border-top: 4px solid var(--color-purple-accent);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1>🔍 Medical Image Search</h1>
+    <p>Qdrant Vector Similarity Search for Medical Imaging</p>
+    <div id="connection-status" class="connection-status disconnected">
+      ⏳ Checking connection...
+    </div>
+  </div>
+
+  <!-- Stats Panel -->
+  <div class="stats-panel" id="stats-panel" style="display: none;">
+    <h3 style="margin-bottom: 15px;">📊 Database Statistics</h3>
+    <div class="stats-grid" id="stats-grid">
+      <!-- Stats will be loaded here -->
+    </div>
+  </div>
+
+  <!-- Search Panel -->
+  <div class="search-panel">
+    <div class="search-tabs">
+      <button class="tab active" onclick="switchTab('image')">🖼️ Image Search</button>
+      <button class="tab" onclick="switchTab('text')">📝 Text Search</button>
+      <button class="tab" onclick="switchTab('filter')">🔬 Filter Search</button>
+    </div>
+
+    <!-- Image Upload Search -->
+    <div id="tab-image" class="tab-content active">
+      <div class="upload-area" id="upload-area">
+        <div style="font-size: 3em; margin-bottom: 15px;">📁</div>
+        <div>Drop medical image here or click to browse</div>
+        <input type="file" id="file-input" accept="image/*" style="display: none;">
+      </div>
+      <div id="preview-area" style="margin-top: 20px; display: none;">
+        <img id="preview-image" style="max-width: 300px; border-radius: 8px;">
+      </div>
+      <button class="btn" id="search-image-btn" style="margin-top: 20px; display: none;" onclick="searchByImage()">
+        Search Similar Cases
+      </button>
+    </div>
+
+    <!-- Text Query Search -->
+    <div id="tab-text" class="tab-content">
+      <input type="text" class="search-input" id="text-query" placeholder="Describe what you're looking for (e.g., 'chest x-ray with pneumonia')">
+      <button class="btn" onclick="searchByText()">Search</button>
+    </div>
+
+    <!-- Filter Search -->
+    <div id="tab-filter" class="tab-content">
+      <div class="filter-group">
+        <select id="filter-bodypart">
+          <option value="">All Body Parts</option>
+          <option value="CHEST">Chest</option>
+          <option value="HEAD">Head</option>
+          <option value="ABDOMEN">Abdomen</option>
+          <option value="HAND">Hand</option>
+          <option value="KNEE">Knee</option>
+        </select>
+
+        <select id="filter-modality">
+          <option value="">All Modalities</option>
+          <option value="XRAY">X-Ray</option>
+          <option value="CT">CT Scan</option>
+          <option value="MRI">MRI</option>
+        </select>
+
+        <select id="filter-diagnosis">
+          <option value="">All Diagnoses</option>
+          <option value="Normal">Normal</option>
+          <option value="Pneumonia">Pneumonia</option>
+          <option value="Fracture">Fracture</option>
+          <option value="Tumor">Tumor</option>
+        </select>
+      </div>
+      <button class="btn" onclick="searchByFilter()">Apply Filters</button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="results-container">
+    <!-- Results will appear here -->
+  </div>
+</div>
+
+<script>
+let currentFile = null;
+let qdrant = window.qdrantClient;
+
+// Initialize
+async function init() {
+  // Test connection
+  const connected = await qdrant.testConnection();
+  updateConnectionStatus(connected);
+
+  if (connected) {
+    // Load stats
+    loadStats();
+  }
+
+  // Set up upload area
+  const uploadArea = document.getElementById('upload-area');
+  const fileInput = document.getElementById('file-input');
+
+  uploadArea.onclick = () => fileInput.click();
+
+  uploadArea.ondragover = (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+  };
+
+  uploadArea.ondragleave = () => {
+    uploadArea.classList.remove('dragover');
+  };
+
+  uploadArea.ondrop = (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      handleFileSelect(file);
+    }
+  };
+
+  fileInput.onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      handleFileSelect(file);
+    }
+  };
+}
+
+function updateConnectionStatus(connected) {
+  const statusEl = document.getElementById('connection-status');
+  if (connected) {
+    statusEl.className = 'connection-status connected';
+    statusEl.textContent = '✓ Connected to Qdrant';
+  } else {
+    statusEl.className = 'connection-status disconnected';
+    statusEl.textContent = '✗ Qdrant backend offline';
+  }
+}
+
+async function loadStats() {
+  try {
+    const stats = await qdrant.getMedicalStats();
+
+    const statsPanel = document.getElementById('stats-panel');
+    const statsGrid = document.getElementById('stats-grid');
+
+    statsGrid.innerHTML = `
+      <div class="stat-item">
+        <div class="stat-value">${stats.total_images || 0}</div>
+        <div class="stat-label">Total Images</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${stats.body_parts || 0}</div>
+        <div class="stat-label">Body Parts</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${stats.modalities || 0}</div>
+        <div class="stat-label">Modalities</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${stats.diagnoses || 0}</div>
+        <div class="stat-label">Diagnoses</div>
+      </div>
+    `;
+
+    statsPanel.style.display = 'block';
+  } catch (err) {
+    console.warn('Could not load stats:', err.message);
+  }
+}
+
+function switchTab(tab) {
+  // Update tab buttons
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+
+  // Update tab content
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+}
+
+function handleFileSelect(file) {
+  currentFile = file;
+
+  // Show preview
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const preview = document.getElementById('preview-image');
+    preview.src = e.target.result;
+    document.getElementById('preview-area').style.display = 'block';
+    document.getElementById('search-image-btn').style.display = 'inline-block';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function searchByImage() {
+  if (!currentFile) return;
+
+  showLoading();
+
+  try {
+    const results = await qdrant.findSimilarCases(currentFile, { limit: 6 });
+    displayResults(results, 'Similar Cases');
+  } catch (err) {
+    showError('Search failed: ' + err.message);
+  }
+}
+
+async function searchByText() {
+  const query = document.getElementById('text-query').value;
+  if (!query) return;
+
+  showLoading();
+
+  try {
+    const results = await qdrant.searchWithQuery(query, { limit: 6 });
+    displayResults(results, 'Text Search Results');
+  } catch (err) {
+    showError('Search failed: ' + err.message);
+  }
+}
+
+async function searchByFilter() {
+  const bodyPart = document.getElementById('filter-bodypart').value;
+  const modality = document.getElementById('filter-modality').value;
+  const diagnosis = document.getElementById('filter-diagnosis').value;
+
+  showLoading();
+
+  try {
+    const results = await qdrant.searchMedicalImages({
+      bodyPart: bodyPart || null,
+      modality: modality || null,
+      diagnosis: diagnosis || null,
+      limit: 9
+    });
+    displayResults(results, 'Filtered Results');
+  } catch (err) {
+    showError('Search failed: ' + err.message);
+  }
+}
+
+function displayResults(results, title) {
+  const container = document.getElementById('results-container');
+
+  if (!results || results.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 60px; color: var(--color-purple-accent);">
+        <div style="font-size: 3em; margin-bottom: 20px;">🔍</div>
+        <div style="font-size: 1.2em;">No results found</div>
+      </div>
+    `;
+    return;
+  }
+
+  let html = `<h2 style="margin-bottom: 20px; color: var(--color-purple-accent);">${title} (${results.length})</h2>`;
+  html += '<div class="results-grid">';
+
+  results.forEach(result => {
+    const score = result.score || 0;
+    const payload = result.payload || result;
+
+    html += `
+      <div class="result-card">
+        <div class="similarity-score">${(score * 100).toFixed(1)}%</div>
+        <div style="font-size: 1.1em; font-weight: bold; margin-bottom: 10px;">
+          ${payload.diagnosis || 'Unknown'}
+        </div>
+        <div class="result-metadata">
+          <div class="metadata-item">
+            <strong>Patient:</strong> ${payload.patient_id || 'N/A'}
+          </div>
+          <div class="metadata-item">
+            <strong>Body Part:</strong> ${payload.body_part || 'N/A'}
+          </div>
+          <div class="metadata-item">
+            <strong>Modality:</strong> ${payload.modality || 'N/A'}
+          </div>
+          <div class="metadata-item">
+            <strong>Age:</strong> ${payload.age || 'N/A'} | <strong>Sex:</strong> ${payload.sex || 'N/A'}
+          </div>
+          ${payload.notes ? `
+          <div class="metadata-item" style="margin-top: 10px; font-size: 0.85em; opacity: 0.8;">
+            ${payload.notes}
+          </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  });
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function showLoading() {
+  const container = document.getElementById('results-container');
+  container.innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      <div>Searching medical images...</div>
+    </div>
+  `;
+}
+
+function showError(message) {
+  const container = document.getElementById('results-container');
+  container.innerHTML = `
+    <div style="text-align: center; padding: 60px; color: var(--color-status-alarm);">
+      <div style="font-size: 3em; margin-bottom: 20px;">⚠️</div>
+      <div style="font-size: 1.2em;">${message}</div>
+      <div style="margin-top: 15px; font-size: 0.9em; opacity: 0.8;">
+        Make sure the Qdrant backend is running (python os/backend/api.py)
+      </div>
+    </div>
+  `;
+}
+
+// Initialize on load
+init();
+</script>
+
+</body>
+</html>
