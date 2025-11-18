@@ -1,38 +1,35 @@
 version: '3.8'
 
 services:
-  # Local Qdrant (commented out - using Qdrant Cloud instead)
-  # Uncomment to use local Qdrant instead of cloud
-  # qdrant:
-  #   image: qdrant/qdrant:latest
-  #   container_name: qdrant
-  #   restart: unless-stopped
-  #   ports:
-  #     - "6333:6333"
-  #     - "6334:6334"
-  #   volumes:
-  #     - qdrant_storage:/qdrant/storage
-  #     - qdrant_db:/qdrant/db
-  #   environment:
-  #     - QDRANT__SERVICE__GRPC_PORT=6334
-  #     - QDRANT__SERVICE__HTTP_PORT=6333
+  # Local Qdrant - Active for development
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__GRPC_PORT=6334
+      - QDRANT__SERVICE__HTTP_PORT=6333
 
   backend:
     build:
       context: ./os/backend
       dockerfile: Dockerfile
     container_name: chazon-backend
-    # Remove depends_on since we're using cloud Qdrant
+    depends_on:
+      - qdrant
     ports:
       - "8000:8000"
     env_file:
       - .env
     environment:
-      - QDRANT_URL=${QDRANT_URL}
-      - QDRANT_API_KEY=${QDRANT_API_KEY}
+      - QDRANT_URL=http://qdrant:6333
+      - QDRANT_API_KEY=
     restart: unless-stopped
 
-# Comment out volumes since we're using cloud storage
-# volumes:
-#   qdrant_storage:
-#   qdrant_db:
+volumes:
+  qdrant_storage:
