@@ -1,0 +1,54 @@
+name: Deploy Frontend to GitHub Pages
+
+on:
+  push:
+    branches: [ claude/automation-gpt-multimodal-search-013LkL58AK8txgYpiizQcrsA, feature/medical-vercel-docker ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy `collab/miracle` to GitHub Pages
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upload `collab/miracle` artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: collab/miracle
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v1
+name: Deploy Frontend to GitHub Pages
+
+on:
+  push:
+    branches: [ main, feature/medical-vercel-docker ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy `collab/miracle` to GitHub Pages
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upload `collab/miracle` artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: collab/miracle
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v1
