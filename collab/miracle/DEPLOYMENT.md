@@ -32,6 +32,12 @@ We modified the page to read `API_URL` at runtime. There are three ways to point
 
 - Recommended (hosted): configure the host to inject a global variable `window.__API_URL__ = 'https://your-app.railway.app'` into the served HTML (some platforms support environment injection or templates).
 - Quick test (URL-param): open the UI with `?api_url=https://your-app.railway.app`, e.g.: `https://<static-host>/medical-viewer.html?api_url=https://your-app.railway.app`
+- Quick test (URL-param): open the UI with `?api_url=https://your-app.railway.app`, e.g.: `https://<static-host>/medical-viewer.html?api_url=https://your-app.railway.app`
+- Vercel (static host): set the project root to `collab/miracle` when creating a Vercel project, then visit the deployed URL. Use `?api_url=` to point the UI to a backend, for example:
+
+  `https://your-vercel-site.vercel.app/?api_url=https://your-backend.example.com`
+
+  The repo includes a `vercel.json` and a root `index.html` that redirects to `medical-viewer.html` (preserving query parameters).
 - Local dev (unchanged): default remains `http://localhost:8000`.
 
 4) Run ingestion against the deployed Qdrant
@@ -59,8 +65,8 @@ Notes:
 - Commit and push your changes to GitHub:
 
   ```powershell
-  git add collab/miracle/medical-viewer.html collab/miracle/DEPLOYMENT.md
-  git commit -m "Allow runtime API_URL and add deployment instructions"
+  git add collab/miracle/medical-viewer.html collab/miracle/DEPLOYMENT.md collab/miracle/index.html collab/miracle/vercel.json docker-compose.yml
+  git commit -m "chore(medical): runtime API_URL, Vercel config, docker-compose and deployment docs"
   git push origin main
   ```
 
@@ -72,4 +78,7 @@ Helper tips
 If you want, I can:
 - Prepare a small snippet to inject `window.__API_URL__` in a static hosting scenario.
 - Create a Railway-friendly `railway-vars.env` example for storing `QDRANT_URL`/`API_KEY`.
+ - Prepare a small snippet to inject `window.__API_URL__` in a static hosting scenario.
+ - Prepare a `docker-compose.yml` (provided) to run Qdrant + backend as a single stack (useful for VPS/docker hosts).
+ - Help deploy the backend container to a VPS or cloud provider (Fly, DigitalOcean App Platform) using this `docker-compose.yml`.
 

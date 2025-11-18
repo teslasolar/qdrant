@@ -59,7 +59,13 @@ qdrant = QdrantClient(
 )
 
 if COHERE_AVAILABLE:
-    cohere_client = cohere.Client(os.getenv("COHERE_API_KEY"))
+    # Only initialize the Cohere client when an API key is provided.
+    # If the package is installed but no key is configured, disable Cohere usage.
+    _cohere_key = os.getenv("COHERE_API_KEY") or os.getenv("CO_API_KEY")
+    if _cohere_key:
+        cohere_client = cohere.Client(_cohere_key)
+    else:
+        COHERE_AVAILABLE = False
 
 if OPENAI_AVAILABLE:
     openai.api_key = os.getenv("OPENAI_API_KEY")

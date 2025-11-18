@@ -70,6 +70,27 @@ const QdrantClient = {
     return this._fetch(`${this.baseURL}/health`);
   },
 
+  // Medical imaging endpoints
+  async analyzeMedicalImage(imageBase64, metadata) {
+    return this._fetch(`${this.baseURL}/medical/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image_base64: imageBase64, metadata, collection: 'medical_images' })
+    });
+  },
+
+  async searchMedicalImages(query, bodyPart, modality, limit = 5) {
+    return this._fetch(`${this.baseURL}/medical/search`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, body_part: bodyPart, modality, limit, collection: 'medical_images' })
+    });
+  },
+
+  async getMedicalStats() {
+    return this._fetch(`${this.baseURL}/medical/stats`);
+  },
+
   configure(url) {
     this.baseURL = url;
     console.log(`🔌 Qdrant client: ${url}`);
