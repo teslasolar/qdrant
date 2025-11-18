@@ -39,6 +39,21 @@ try:
 except ImportError:
     PIL_AVAILABLE = False
 
+# Image embedding models
+try:
+    import torch
+    import torchvision.models as models
+    import torchvision.transforms as transforms
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
+
+try:
+    import open_clip
+    OPEN_CLIP_AVAILABLE = True
+except ImportError:
+    OPEN_CLIP_AVAILABLE = False
+
 load_dotenv()
 
 app = FastAPI(title="Chazon OS API", version="1.0.0")
@@ -69,6 +84,62 @@ if COHERE_AVAILABLE:
 
 if OPENAI_AVAILABLE:
     openai.api_key = os.getenv("OPENAI_API_KEY")
+
+
+# Initialize image embedding model
+IMAGE_MODEL = None
+IMAGE_TRANSFORM = None
+IMAGE_MODEL_TYPE = "none"
+
+def load_image_model():
+    """Load image embedding model on startup"""
+    global IMAGE_MODEL, IMAGE_TRANSFORM, IMAGE_MODEL_TYPE
+
+    # Try to load BiomedCLIP (best for medical images)
+    if OPEN_CLIP_AVAILABLE:
+        try:
+            print("🔄 Loading BiomedCLIP model (medical-specific)...")
+            IMAGE_MODEL, _, IMAGE_TRANSFORM = open_clip.create_model_and_transforms(
+                'hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224'
+            )
+            IMAGE_MODEL.eval()
+            if torch.cuda.is_available():
+                IMAGE_MODEL = IMAGE_MODEL.cuda()
+            IMAGE_MODEL_TYPE = "biomedclip"
+            print("✅ BiomedCLIP loaded successfully")
+            return
+        except Exception as e:
+            print(f"⚠️  BiomedCLIP not available: {e}")
+
+    # Fallback to ResNet50 (general purpose, always available)
+    if TORCH_AVAILABLE:
+        try:
+            print("🔄 Loading ResNet50 model...")
+            IMAGE_MODEL = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V2)
+            IMAGE_MODEL.eval()
+            if torch.cuda.is_available():
+                IMAGE_MODEL = IMAGE_MODEL.cuda()
+
+            # Remove final classification layer to get embeddings
+            IMAGE_MODEL = torch.nn.Sequential(*list(IMAGE_MODEL.children())[:-1])
+
+            IMAGE_TRANSFORM = transforms.Compose([
+                transforms.Resize(256),
+                transforms.CenterCrop(224),
+                transforms.ToTensor(),
+                transforms.Normalize(
+                    mean=[0.485, 0.456, 0.406],
+                    std=[0.229, 0.224, 0.225]
+                )
+            ])
+            IMAGE_MODEL_TYPE = "resnet50"
+            print("✅ ResNet50 loaded successfully")
+            return
+        except Exception as e:
+            print(f"⚠️  ResNet50 failed to load: {e}")
+
+    print("⚠️  No image model available - using statistical features")
+    IMAGE_MODEL_TYPE = "statistical"
 
 
 # Models
@@ -103,6 +174,38 @@ class MedicalSearchRequest(BaseModel):
 
 # Endpoints
 
+@app.on_event("startup")
+async def startup_event():
+    """Initialize services on startup"""
+    print("=" * 60)
+    print("🚀 Starting Chazon OS API")
+    print("=" * 60)
+
+    # Load image embedding model
+    load_image_model()
+
+    # Try to create medical_images collection if it doesn't exist
+    try:
+        collections = qdrant.get_collections().collections
+        if not any(col.name == "medical_images" for col in collections):
+            print("🔄 Creating medical_images collection...")
+            qdrant.create_collection(
+                collection_name="medical_images",
+                vectors_config=VectorParams(size=512, distance=Distance.COSINE)
+            )
+            print("✅ Collection created")
+        else:
+            collection_info = qdrant.get_collection("medical_images")
+            count = collection_info.points_count
+            print(f"✅ medical_images collection exists ({count} images)")
+    except Exception as e:
+        print(f"⚠️  Collection check failed: {e}")
+
+    print("=" * 60)
+    print(f"✅ API ready - Model: {IMAGE_MODEL_TYPE}")
+    print("=" * 60)
+
+
 @app.get("/")
 async def root():
     return {
@@ -110,7 +213,9 @@ async def root():
         "version": "1.0.0",
         "qdrant": "connected",
         "cohere": COHERE_AVAILABLE,
-        "openai": OPENAI_AVAILABLE
+        "openai": OPENAI_AVAILABLE,
+        "image_model": IMAGE_MODEL_TYPE,
+        "gpu_available": torch.cuda.is_available() if TORCH_AVAILABLE else False
     }
 
 @app.get("/health")
@@ -293,18 +398,71 @@ def process_medical_image(image_base64: str) -> np.ndarray:
     return image_array
 
 
-def generate_image_embedding(image_array: np.ndarray, model: str = "clip") -> List[float]:
-    """Generate embedding from image array
+def generate_image_embedding(image_array: np.ndarray, model: str = "auto") -> List[float]:
+    """Generate embedding from image array using loaded model
 
-    Note: This is a placeholder using text-based embeddings.
-    For production, integrate actual image embedding models:
-    - CLIP (OpenAI)
-    - BiomedCLIP (Microsoft)
-    - MedCLIP (Stanford)
+    Supports three methods (in order of preference):
+    1. BiomedCLIP - Medical-specific CLIP model (512-D)
+    2. ResNet50 - General purpose CNN (2048-D → 512-D via PCA)
+    3. Statistical - Fallback using color histograms (512-D)
     """
 
-    # For now, create a simple feature vector from image statistics
-    # In production, use actual image embeddings
+    # Convert numpy array to PIL Image
+    if isinstance(image_array, np.ndarray):
+        pil_image = Image.fromarray(image_array.astype('uint8'))
+    else:
+        pil_image = image_array
+
+    # Use BiomedCLIP (best for medical images)
+    if IMAGE_MODEL_TYPE == "biomedclip" and IMAGE_MODEL is not None:
+        try:
+            with torch.no_grad():
+                image_tensor = IMAGE_TRANSFORM(pil_image).unsqueeze(0)
+                if torch.cuda.is_available():
+                    image_tensor = image_tensor.cuda()
+
+                # Get image features
+                image_features = IMAGE_MODEL.encode_image(image_tensor)
+                image_features = image_features / image_features.norm(dim=-1, keepdim=True)
+
+                # Convert to list and ensure 512-D
+                embedding = image_features.cpu().numpy().flatten().tolist()
+
+                # BiomedCLIP outputs 512-D by default
+                return embedding[:512]
+        except Exception as e:
+            print(f"⚠️  BiomedCLIP inference failed: {e}, falling back to ResNet50")
+
+    # Use ResNet50 (general purpose)
+    if IMAGE_MODEL_TYPE == "resnet50" and IMAGE_MODEL is not None:
+        try:
+            with torch.no_grad():
+                image_tensor = IMAGE_TRANSFORM(pil_image).unsqueeze(0)
+                if torch.cuda.is_available():
+                    image_tensor = image_tensor.cuda()
+
+                # Get features (2048-D from ResNet50)
+                features = IMAGE_MODEL(image_tensor)
+                features = features.squeeze()
+
+                # Convert to numpy
+                embedding = features.cpu().numpy().flatten()
+
+                # Reduce from 2048-D to 512-D using simple averaging
+                # Group every 4 dimensions and average
+                reduced_embedding = []
+                for i in range(0, len(embedding), 4):
+                    reduced_embedding.append(float(np.mean(embedding[i:i+4])))
+
+                # Ensure exactly 512 dimensions
+                while len(reduced_embedding) < 512:
+                    reduced_embedding.append(0.0)
+
+                return reduced_embedding[:512]
+        except Exception as e:
+            print(f"⚠️  ResNet50 inference failed: {e}, falling back to statistical features")
+
+    # Fallback to statistical features
     features = []
 
     # Color channels mean
@@ -313,12 +471,29 @@ def generate_image_embedding(image_array: np.ndarray, model: str = "clip") -> Li
     # Color channels std
     features.extend(image_array.std(axis=(0, 1)).tolist())
 
-    # Histogram features (simplified)
+    # Histogram features (10 bins per channel)
     for channel in range(3):
         hist, _ = np.histogram(image_array[:, :, channel], bins=10, range=(0, 256))
         features.extend((hist / hist.sum()).tolist())
 
-    # Pad to 512 dimensions (standard for CLIP)
+    # Edge detection features
+    gray = np.mean(image_array, axis=2)
+    edges_x = np.abs(np.diff(gray, axis=1)).mean()
+    edges_y = np.abs(np.diff(gray, axis=0)).mean()
+    features.extend([edges_x, edges_y])
+
+    # Texture features (variance in patches)
+    patch_size = 16
+    for i in range(0, image_array.shape[0] - patch_size, patch_size):
+        for j in range(0, image_array.shape[1] - patch_size, patch_size):
+            patch = image_array[i:i+patch_size, j:j+patch_size]
+            features.append(float(patch.std()))
+            if len(features) >= 500:
+                break
+        if len(features) >= 500:
+            break
+
+    # Pad to 512 dimensions
     while len(features) < 512:
         features.append(0.0)
 
