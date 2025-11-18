@@ -1,0 +1,393 @@
+{
+  "standardId": "opc-ua-v1.0",
+  "type": "communication-protocol",
+  "metadata": {
+    "name": "OPC Unified Architecture",
+    "description": "Platform-independent industrial communication standard",
+    "version": "1.0.0",
+    "standard": "IEC 62541 / OPC UA Specification",
+    "created": "2025-11-17",
+    "tags": ["opc-ua", "opc", "communication", "protocol", "industrial"]
+  },
+  "specification": {
+    "description": "Unified architecture for industrial automation data exchange",
+    "purpose": "Enable secure, reliable, platform-independent industrial communication",
+    "application": "PLC to SCADA, MES integration, machine-to-machine, cloud connectivity"
+  },
+  "architecture": {
+    "model": "Client-Server with Publish-Subscribe",
+    "features": [
+      "Platform independent",
+      "Secure communication",
+      "Information modeling",
+      "Service-oriented architecture",
+      "Scalability",
+      "Backward compatibility"
+    ],
+    "components": {
+      "server": {
+        "role": "Data provider",
+        "responsibilities": ["Expose address space", "Handle client requests", "Manage subscriptions", "Security"],
+        "examples": ["PLC OPC UA server", "SCADA server", "Historian", "Ignition OPC UA"]
+      },
+      "client": {
+        "role": "Data consumer",
+        "responsibilities": ["Browse address space", "Read/write values", "Subscribe to data", "Manage sessions"],
+        "examples": ["SCADA client", "MES application", "Analytics platform"]
+      }
+    }
+  },
+  "addressSpace": {
+    "description": "Hierarchical object model representing system structure",
+    "baseNodes": {
+      "objects": {
+        "description": "Root for all system objects",
+        "path": "Objects/",
+        "usage": "Equipment, devices, systems"
+      },
+      "types": {
+        "description": "Type definitions",
+        "path": "Types/",
+        "usage": "Object types, variable types, data types"
+      },
+      "views": {
+        "description": "Alternative organizations of data",
+        "path": "Views/",
+        "usage": "Custom data views"
+      }
+    },
+    "nodeClasses": {
+      "Object": "Represents a system component or subsystem",
+      "Variable": "Holds a data value",
+      "Method": "Callable function",
+      "ObjectType": "Template for objects",
+      "VariableType": "Template for variables",
+      "DataType": "Data type definition",
+      "ReferenceType": "Type of relationship between nodes",
+      "View": "Organization of nodes"
+    },
+    "references": {
+      "Hierarchical": "Parent-child relationships",
+      "HasComponent": "Component of an object",
+      "HasProperty": "Property of an object",
+      "Organizes": "Organizational grouping",
+      "HasTypeDefinition": "Links instance to type"
+    }
+  },
+  "dataModel": {
+    "organization": {
+      "byEquipment": "Objects.{{Site}}.{{Area}}.{{Equipment}}",
+      "byFunction": "Objects.{{Function}}.{{Subsystem}}",
+      "isa88Mapping": "Objects.{{Enterprise}}.{{Site}}.{{Area}}.{{Cell}}.{{Unit}}.{{Module}}"
+    },
+    "variableStructure": {
+      "properties": {
+        "Value": "Current value",
+        "DataType": "OPC UA data type",
+        "Quality": "Good/Bad/Uncertain",
+        "Timestamp": "Server or source timestamp",
+        "AccessLevel": "Read/Write permissions",
+        "BrowseName": "Node name",
+        "DisplayName": "Human-readable name",
+        "Description": "Node description"
+      },
+      "engineering Units": {
+        "property": "EngineeringUnits",
+        "structure": {
+          "namespaceUri": "http://www.opcfoundation.org/UA/units/un/cefact",
+          "unitId": "Unit ID",
+          "displayName": "Unit display name",
+          "description": "Unit description"
+        }
+      },
+      "ranges": {
+        "euRange": "Engineering unit range (min, max)",
+        "instrumentRange": "Instrument capability range"
+      }
+    }
+  },
+  "dataTypes": {
+    "primitive": {
+      "Boolean": "True/False",
+      "SByte": "8-bit signed integer",
+      "Byte": "8-bit unsigned integer",
+      "Int16": "16-bit signed integer",
+      "UInt16": "16-bit unsigned integer",
+      "Int32": "32-bit signed integer",
+      "UInt32": "32-bit unsigned integer",
+      "Int64": "64-bit signed integer",
+      "UInt64": "64-bit unsigned integer",
+      "Float": "32-bit floating point",
+      "Double": "64-bit floating point",
+      "String": "UTF-8 string",
+      "DateTime": "UTC timestamp",
+      "Guid": "Globally unique identifier",
+      "ByteString": "Byte array"
+    },
+    "structured": {
+      "description": "Custom data structures",
+      "example": {
+        "AnalogValue": {
+          "value": "Double",
+          "quality": "StatusCode",
+          "timestamp": "DateTime",
+          "engineeringUnits": "EUInformation"
+        }
+      }
+    }
+  },
+  "services": {
+    "discovery": {
+      "description": "Find OPC UA servers on network",
+      "methods": ["FindServers", "GetEndpoints"]
+    },
+    "session": {
+      "description": "Manage client-server connection",
+      "methods": ["CreateSession", "ActivateSession", "CloseSession"]
+    },
+    "browse": {
+      "description": "Navigate address space",
+      "methods": ["Browse", "BrowseNext", "TranslateBrowsePathsToNodeIds"]
+    },
+    "read": {
+      "description": "Read node attributes and values",
+      "methods": ["Read"],
+      "attributes": ["Value", "Quality", "Timestamp", "All attributes"]
+    },
+    "write": {
+      "description": "Write node values",
+      "methods": ["Write"],
+      "validation": "Server validates based on access level and data type"
+    },
+    "subscription": {
+      "description": "Monitor data changes efficiently",
+      "methods": ["CreateSubscription", "CreateMonitoredItems", "Publish", "DeleteSubscription"],
+      "parameters": {
+        "publishingInterval": "How often to check for changes (ms)",
+        "samplingInterval": "How often to sample value (ms)",
+        "queueSize": "Buffer size for changes",
+        "deadband": "Change threshold to report"
+      },
+      "benefits": ["Efficient - only send on change", "Buffering during network issues", "Multiple items per subscription"]
+    },
+    "method": {
+      "description": "Call server-side functions",
+      "methods": ["Call"],
+      "use": "Start/stop equipment, trigger actions, complex operations"
+    },
+    "historicalAccess": {
+      "description": "Read historical data",
+      "methods": ["HistoryRead", "HistoryUpdate"],
+      "use": "Trends, reports, analysis"
+    }
+  },
+  "security": {
+    "transport": {
+      "description": "Secure the communication channel",
+      "options": {
+        "none": "No security (dev only)",
+        "sign": "Message signing",
+        "signAndEncrypt": "Sign and encrypt (recommended)"
+      },
+      "protocols": ["OPC UA TCP", "HTTPS"]
+    },
+    "application": {
+      "authentication": {
+        "anonymous": "No credentials (dev only)",
+        "username": "Username/password",
+        "certificate": "X.509 certificate (recommended)",
+        "issuedToken": "External token (e.g., Kerberos)"
+      },
+      "authorization": {
+        "description": "Control access to nodes and operations",
+        "levels": "Per-node read/write permissions",
+        "roles": "User roles with permissions"
+      }
+    },
+    "certificates": {
+      "application": "X.509 certificate per application",
+      "trust": "Certificate trust lists",
+      "validation": "Certificate validation",
+      "renewal": "Certificate lifecycle management"
+    }
+  },
+  "isa95Integration": {
+    "level2to3": {
+      "description": "SCADA to MES communication",
+      "pattern": "SCADA as OPC UA server, MES as client",
+      "data": ["Production counts", "Equipment status", "Alarms", "Quality data"]
+    },
+    "level1to2": {
+      "description": "PLC to SCADA communication",
+      "pattern": "PLC as OPC UA server, SCADA as client",
+      "data": ["Process values", "Equipment states", "Commands"]
+    }
+  },
+  "companionSpecifications": {
+    "packml": {
+      "name": "OPC UA for PackML",
+      "description": "Standardized PackML interface via OPC UA",
+      "nodeSet": "PackML ObjectType with standard methods and variables",
+      "benefits": "Any PackML-compliant client can control any server"
+    },
+    "machineTool": {
+      "name": "OPC UA for Machine Tools",
+      "description": "Standard interface for CNC machines"
+    },
+    "robotics": {
+      "name": "OPC UA for Robotics",
+      "description": "Standard interface for robots"
+    },
+    "plastics": {
+      "name": "OPC UA for Plastics and Rubber Machinery",
+      "description": "Industry-specific standard"
+    },
+    "weihenstephan": {
+      "name": "OPC UA for Machinery (VDMA 40001-1)",
+      "description": "Generic machinery interface"
+    }
+  },
+  "informationModeling": {
+    "description": "Define custom object types and structures",
+    "objectType": {
+      "definition": "Template for creating instances",
+      "example": "CTScannerType",
+      "components": {
+        "variables": ["State", "Mode", "PatientID", "StudyCount"],
+        "methods": ["Start", "Stop", "LoadProtocol"],
+        "events": ["ScanComplete", "Fault"]
+      }
+    },
+    "instance": {
+      "description": "Actual equipment instance",
+      "example": "CT_Scanner_1 (instance of CTScannerType)",
+      "benefits": "Standardized structure, type safety, self-describing"
+    }
+  },
+  "parameters": [
+    {
+      "name": "serverUrl",
+      "type": "string",
+      "required": true,
+      "description": "OPC UA server endpoint URL",
+      "example": "opc.tcp://localhost:4840"
+    },
+    {
+      "name": "namespaceIndex",
+      "type": "integer",
+      "required": false,
+      "default": 2,
+      "description": "Namespace index for custom nodes"
+    },
+    {
+      "name": "securityMode",
+      "type": "string",
+      "required": false,
+      "default": "SignAndEncrypt",
+      "enum": ["None", "Sign", "SignAndEncrypt"],
+      "description": "Security mode"
+    },
+    {
+      "name": "authenticationMode",
+      "type": "string",
+      "required": false,
+      "default": "Certificate",
+      "enum": ["Anonymous", "Username", "Certificate"],
+      "description": "Authentication method"
+    },
+    {
+      "name": "organizationByISA88",
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Organize address space by ISA-88 hierarchy"
+    }
+  ],
+  "tagGeneration": {
+    "addressSpaceMapping": {
+      "tagPath": "{{equipmentPath}}.{{attribute}}",
+      "nodeId": "ns={{ns}};s={{equipmentPath}}.{{attribute}}",
+      "browsePath": "Objects/{{enterprise}}/{{site}}/{{area}}/{{cell}}/{{unit}}/{{attribute}}"
+    },
+    "variableTemplate": {
+      "nodeId": "ns={{ns}};s={{fullPath}}",
+      "browseName": "{{attributeName}}",
+      "displayName": "{{friendlyName}}",
+      "dataType": "{{opcDataType}}",
+      "accessLevel": "CurrentRead | CurrentWrite",
+      "historizing": true
+    }
+  },
+  "instantiation": {
+    "template": "opc-ua-interface",
+    "generates": [
+      "Address space structure",
+      "Node definitions",
+      "Type definitions",
+      "Server configuration",
+      "Client configuration",
+      "Security policies"
+    ],
+    "integrations": [
+      "ISA-88 Equipment Hierarchy (address space organization)",
+      "PackML State Machine (OPC UA for PackML companion spec)",
+      "PLCs (server implementation)",
+      "SCADA systems (client implementation)",
+      "MES systems (client for data collection)"
+    ]
+  },
+  "examples": {
+    "ctScannerObject": {
+      "nodeId": "ns=2;s=Hospital.Radiology.CT_Scanner_1",
+      "browseName": "CT_Scanner_1",
+      "typeDefinition": "CTScannerType",
+      "variables": [
+        {
+          "nodeId": "ns=2;s=Hospital.Radiology.CT_Scanner_1.PackML.State",
+          "browseName": "State",
+          "dataType": "String",
+          "value": "Execute"
+        },
+        {
+          "nodeId": "ns=2;s=Hospital.Radiology.CT_Scanner_1.Process.KVP",
+          "browseName": "KVP",
+          "dataType": "Int32",
+          "value": 120,
+          "engineeringUnits": "kV"
+        }
+      ],
+      "methods": [
+        {
+          "nodeId": "ns=2;s=Hospital.Radiology.CT_Scanner_1.Start",
+          "browseName": "Start",
+          "inputArguments": [],
+          "outputArguments": [{"name": "Success", "dataType": "Boolean"}]
+        }
+      ]
+    }
+  },
+  "validation": {
+    "rules": [
+      {
+        "rule": "validNodeIds",
+        "description": "Node IDs must be unique and valid format",
+        "severity": "error"
+      },
+      {
+        "rule": "typeConsistency",
+        "description": "Instances must match their type definition",
+        "severity": "error"
+      },
+      {
+        "rule": "securityEnabled",
+        "description": "Security should be enabled for production",
+        "severity": "warning"
+      },
+      {
+        "rule": "namespaceManagement",
+        "description": "Use proper namespace organization",
+        "severity": "warning"
+      }
+    ]
+  }
+}

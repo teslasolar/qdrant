@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quality Control</title>
+<link rel="stylesheet" href="../styles/isa101-theme.css">
+<link rel="stylesheet" href="../styles/widgets.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>Image Quality Control</h1>
+
+  <div class="metric-grid">
+    <div class="widget">
+      <div class="widget-title">Overall Score</div>
+      <div class="widget-value status-normal">98.1%</div>
+    </div>
+    <div class="widget">
+      <div class="widget-title">Failed QC</div>
+      <div class="widget-value status-alarm">3</div>
+    </div>
+    <div class="widget">
+      <div class="widget-title">Reviewed Today</div>
+      <div class="widget-value">127</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="widget-title">Quality Checks</div>
+    <div>
+      <span class="status-indicator" style="background: var(--normal)"></span>
+      Resolution: Pass
+    </div>
+    <div>
+      <span class="status-indicator" style="background: var(--normal)"></span>
+      Contrast: Pass
+    </div>
+    <div>
+      <span class="status-indicator" style="background: var(--warning)"></span>
+      Noise Level: Warning
+    </div>
+    <div>
+      <span class="status-indicator" style="background: var(--normal)"></span>
+      Artifacts: Pass
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

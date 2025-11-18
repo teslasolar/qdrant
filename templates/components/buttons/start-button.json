@@ -1,0 +1,52 @@
+{
+  "uuid": "btn-start-001",
+  "type": "component",
+  "category": "button",
+  "metadata": {
+    "name": "Start Button",
+    "description": "Standard start button for equipment control",
+    "version": "1.0.0",
+    "tags": ["button", "control", "start"]
+  },
+  "template": {
+    "html": "<button class=\"control-btn start-btn\" data-action=\"start\">\n  <span class=\"icon\">▶️</span>\n  <span class=\"label\">{{label}}</span>\n</button>",
+    "css": ".start-btn {\n  background: linear-gradient(135deg, #00ff88, #00cc66);\n  color: #000;\n  border: 2px solid #00ff88;\n  border-radius: 8px;\n  padding: 12px 24px;\n  font-weight: bold;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.start-btn:hover {\n  box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);\n  transform: scale(1.05);\n}\n.start-btn:active {\n  transform: scale(0.95);\n}\n.start-btn:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}",
+    "js": "function initStartButton(element, config) {\n  element.addEventListener('click', () => {\n    if (config.confirmRequired) {\n      if (confirm(`Start ${config.equipmentName}?`)) {\n        writeTag(config.writeTag, config.writeValue);\n      }\n    } else {\n      writeTag(config.writeTag, config.writeValue);\n    }\n  });\n}"
+  },
+  "properties": [
+    {
+      "name": "label",
+      "type": "string",
+      "default": "Start"
+    },
+    {
+      "name": "writeTag",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "writeValue",
+      "type": "any",
+      "default": true
+    },
+    {
+      "name": "confirmRequired",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "name": "equipmentName",
+      "type": "string",
+      "default": "Equipment"
+    }
+  ],
+  "bindings": {
+    "tags": [
+      {
+        "name": "enableTag",
+        "property": "disabled",
+        "transform": "not"
+      }
+    ]
+  }
+}

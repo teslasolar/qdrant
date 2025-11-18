@@ -1,0 +1,384 @@
+# DICOM Anonymization Processing Pipeline
+# Removes or replaces PHI/PII from DICOM studies for compliance
+
+workflow:
+  id: anonymization-pipeline-001
+  name: DICOM Anonymization
+  version: "1.0.0"
+  isa_level: L3_MES
+  category: processing
+  priority: critical
+
+metadata:
+  description: HIPAA/GDPR compliant DICOM anonymization pipeline
+  author: Medical Imaging Team
+  created: 2025-11-17
+  updated: 2025-11-17
+  compliance:
+    - HIPAA
+    - GDPR
+    - DICOM_PS_3.15
+  tags:
+    - anonymization
+    - de-identification
+    - phi
+    - privacy
+    - compliance
+
+# Input Configuration
+input:
+  source: study
+  required_status: [RECEIVED, UPLOADED, VALIDATED]
+  required_metadata:
+    - StudyInstanceUID
+    - SeriesInstanceUID
+    - SOPInstanceUID
+
+# Anonymization Configuration
+anonymization:
+  profile: FULL_ANONYMIZATION  # FULL_ANONYMIZATION, PARTIAL_DEIDENTIFICATION, RESEARCH_SHARING
+
+  # Date Handling
+  date_strategy: shift  # shift, remove, generalize
+  date_shift_range: [-365, 365]  # days
+  preserve_age: true
+  preserve_date_relations: true
+
+  # Patient Identification
+  patient_id:
+    action: replace
+    replacement_pattern: "ANON{sequential:8}"
+    maintain_mapping: true
+    mapping_database: secure_vault
+
+  # UIDs Handling
+  uids:
+    generate_new: true
+    maintain_study_hierarchy: true
+    maintain_series_relationships: true
+    prefix: "1.2.826.0.1.3680043.10.1"  # Custom root
+    algorithm: uuid_v5
+
+# Workflow Steps
+steps:
+  - id: validate-input
+    name: Validate Study Ready
+    type: validation
+    action: validate_study_ready
+    config:
+      check_all_instances: true
+      verify_accessibility: true
+      check_locks: true
+    on_success: backup-original
+    on_failure: log-error
+
+  - id: backup-original
+    name: Backup Original Study
+    type: backup
+    action: create_backup
+    config:
+      backup_location: /data/medical/backups/pre-anonymization/
+      compression: gzip
+      checksum: sha256
+      retention_days: 365
+      encrypt: true
+    on_success: create-anonymization-map
+    on_failure: abort-processing
+
+  - id: create-anonymization-map
+    name: Create Anonymization Mapping
+    type: mapping
+    action: generate_anonymization_map
+    config:
+      patient_id_mapping: true
+      uid_mapping: true
+      date_offset_calculation: true
+      store_mapping: true
+      mapping_database: qdrant
+      mapping_collection: anonymization_maps
+      encryption: AES256
+    on_success: remove-phi-tags
+    on_failure: abort-processing
+
+  - id: remove-phi-tags
+    name: Remove PHI DICOM Tags
+    type: anonymization
+    action: remove_dicom_tags
+    config:
+      tags_to_remove:
+        # Patient Module
+        - PatientName
+        - PatientBirthDate
+        - PatientSex  # Keep in partial mode
+        - PatientAddress
+        - PatientTelephoneNumbers
+        - PatientMotherBirthName
+        - MedicalRecordLocator
+        - PatientInsurancePlanCodeSequence
+        - PatientReligiousPreference
+        - PatientComments
+
+        # Study Module
+        - ReferringPhysicianName
+        - ReferringPhysicianAddress
+        - ReferringPhysicianTelephoneNumbers
+        - PhysiciansOfRecord
+        - NameOfPhysiciansReadingStudy
+        - StudyComments
+
+        # Series Module
+        - PerformingPhysicianName
+        - OperatorsName
+        - RequestingPhysician
+        -
+        # General Equipment
+        - InstitutionName
+        - InstitutionAddress
+        - InstitutionalDepartmentName
+        - StationName
+        - DeviceSerialNumber
+
+        # Other
+        - ContentSequence  # May contain PHI in text
+        - ImageComments
+        - RequestAttributesSequence
+        - ScheduledProcedureStepDescription
+
+      remove_private_tags: true
+      remove_curves: true
+      remove_overlays: true
+    on_success: replace-identifiers
+    on_failure: abort-processing
+
+  - id: replace-identifiers
+    name: Replace Identifiers
+    type: anonymization
+    action: replace_identifiers
+    config:
+      replacements:
+        PatientID:
+          source: mapping
+          pattern: "ANON{sequential:8}"
+        PatientName:
+          value: "ANONYMOUS^PATIENT"
+        AccessionNumber:
+          source: mapping
+          pattern: "ACC{hash:8}"
+        StudyDescription:
+          action: generalize
+          keep_modality: true
+          remove_specifics: true
+    on_success: shift-dates
+    on_failure: abort-processing
+
+  - id: shift-dates
+    name: Shift Date/Time Fields
+    type: anonymization
+    action: shift_dates
+    config:
+      offset_source: mapping
+      date_tags:
+        - StudyDate
+        - SeriesDate
+        - ContentDate
+        - AcquisitionDate
+        - PatientBirthDate  # If not removed
+      time_tags:
+        - StudyTime
+        - SeriesTime
+        - ContentTime
+        - AcquisitionTime
+      datetime_tags:
+        - AcquisitionDateTime
+        - InstanceCreationDateTime
+      preserve_time_of_day: true
+      preserve_intervals: true
+    on_success: regenerate-uids
+    on_failure: abort-processing
+
+  - id: regenerate-uids
+    name: Regenerate UIDs
+    type: anonymization
+    action: regenerate_uids
+    config:
+      uid_tags:
+        - StudyInstanceUID
+        - SeriesInstanceUID
+        - SOPInstanceUID
+        - FrameOfReferenceUID
+      maintain_hierarchy: true
+      uid_root: "1.2.826.0.1.3680043.10.1"
+      store_mapping: true
+    on_success: clean-burned-in-text
+    on_failure: abort-processing
+
+  - id: clean-burned-in-text
+    name: Detect/Clean Burned-in PHI
+    type: image_processing
+    action: detect_burned_phi
+    config:
+      ocr_enabled: true
+      ocr_regions:
+        - top_banner
+        - bottom_banner
+        - corners
+      phi_patterns:
+        - patient_name_regex
+        - date_regex
+        - mrn_regex
+      action_on_detection: blur  # blur, crop, flag
+      blur_kernel_size: 15
+      flag_for_review: true
+    on_success: validate-anonymization
+    on_failure: flag-for-review
+
+  - id: validate-anonymization
+    name: Validate Anonymization
+    type: validation
+    action: validate_anonymization
+    config:
+      check_phi_tags_removed: true
+      check_uids_changed: true
+      check_dates_shifted: true
+      phi_detection_patterns:
+        - name_patterns
+        - ssn_patterns
+        - mrn_patterns
+      fail_on_phi_detected: true
+      generate_report: true
+    on_success: save-anonymized
+    on_failure: quarantine
+
+  - id: save-anonymized
+    name: Save Anonymized Study
+    type: storage
+    action: save_anonymized_study
+    config:
+      destination: /data/medical/anonymized/
+      organize_by: anonymized_study_uid
+      preserve_structure: true
+      calculate_checksum: true
+      update_database: true
+    on_success: audit-log
+    on_failure: abort-processing
+
+  - id: audit-log
+    name: Create Audit Trail
+    type: audit
+    action: log_anonymization
+    config:
+      log_database: qdrant
+      log_collection: anonymization_audit
+      include:
+        - original_study_uid
+        - anonymized_study_uid
+        - timestamp
+        - user
+        - profile_used
+        - tags_removed_count
+        - tags_modified_count
+        - phi_detected_count
+      compliance_reporting: true
+    on_success: route-to-next
+    on_failure: log-error
+
+  - id: route-to-next
+    name: Route to Next Workflow
+    type: routing
+    action: route_to_workflow
+    config:
+      next_workflow: normalization-pipeline
+      routing_rules: /workflows/routing/study-routing-rules.yaml
+      pass_anonymization_map: true
+    on_success: complete
+    on_failure: log-error
+
+# Quality Control
+quality_control:
+  - checkpoint: post-anonymization
+    validations:
+      - no_phi_tags_present
+      - uids_regenerated
+      - dates_shifted
+      - burned_in_phi_checked
+    failure_action: quarantine
+    notify_on_failure: true
+
+# Error Handling
+error_handling:
+  abort-processing:
+    action: rollback_and_restore
+    restore_from_backup: true
+    notify: true
+    log_level: CRITICAL
+
+  flag-for-review:
+    action: flag_study
+    status: NEEDS_REVIEW
+    notify: true
+    queue: manual_review
+
+  quarantine:
+    path: /data/medical/quarantine/anonymization/
+    retention_days: 90
+    notify: true
+
+# Compliance
+compliance:
+  hipaa:
+    safe_harbor_method: true
+    expert_determination: false
+    limited_dataset: false
+
+  gdpr:
+    pseudonymization: true
+    right_to_erasure: supported
+    data_portability: supported
+
+  audit_requirements:
+    log_all_access: true
+    log_all_modifications: true
+    retention_period: 2555  # 7 years in days
+
+# Monitoring
+monitoring:
+  tags:
+    - ANONYMIZATION_STUDIES_PROCESSED
+    - ANONYMIZATION_PHI_REMOVED
+    - ANONYMIZATION_FAILURES
+    - ANONYMIZATION_AVG_TIME
+    - ANONYMIZATION_VALIDATION_FAILURES
+
+  mqtt:
+    publish_events: true
+    topics:
+      - chazon/os/medical/anonymization/started
+      - chazon/os/medical/anonymization/completed
+      - chazon/os/medical/anonymization/phi-detected
+      - chazon/os/medical/anonymization/failed
+
+  modbus:
+    holding_registers:
+      - address: 40200
+        name: ANONYMIZATION_STUDIES_PROCESSED
+      - address: 40201
+        name: ANONYMIZATION_AVG_TIME
+      - address: 40202
+        name: ANONYMIZATION_PHI_DETECTED
+
+# Performance
+performance:
+  max_concurrent_studies: 5
+  thread_pool_size: 10
+  buffer_size: 104857600  # 100MB
+  batch_processing: true
+  batch_size: 10
+
+# Logging
+logging:
+  level: INFO
+  path: /var/log/medical/workflows/anonymization.log
+  rotation: daily
+  retention_days: 2555  # 7 years for compliance
+  include_phi: false  # Never log PHI
+  audit_log_path: /var/log/medical/audit/anonymization.log

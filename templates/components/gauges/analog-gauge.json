@@ -1,0 +1,72 @@
+{
+  "uuid": "gauge-analog-001",
+  "type": "component",
+  "category": "gauge",
+  "metadata": {
+    "name": "Analog Gauge",
+    "description": "Circular analog gauge with alarm zones",
+    "version": "1.0.0",
+    "tags": ["gauge", "analog", "meter"]
+  },
+  "template": {
+    "html": "<div class=\"analog-gauge\">\n  <svg width=\"200\" height=\"200\" viewBox=\"0 0 200 200\">\n    <circle cx=\"100\" cy=\"100\" r=\"90\" class=\"gauge-bg\" />\n    <path class=\"gauge-arc low-zone\" />\n    <path class=\"gauge-arc normal-zone\" />\n    <path class=\"gauge-arc high-zone\" />\n    <path class=\"gauge-needle\" />\n    <circle cx=\"100\" cy=\"100\" r=\"10\" class=\"gauge-center\" />\n    <text x=\"100\" y=\"140\" class=\"gauge-value\">{{value}}</text>\n    <text x=\"100\" y=\"160\" class=\"gauge-units\">{{units}}</text>\n    <text x=\"100\" y=\"30\" class=\"gauge-title\">{{title}}</text>\n  </svg>\n</div>",
+    "css": ".analog-gauge {\n  display: inline-block;\n}\n.gauge-bg {\n  fill: #1a1a2e;\n  stroke: #00ff88;\n  stroke-width: 2;\n}\n.gauge-arc {\n  fill: none;\n  stroke-width: 20;\n}\n.low-zone { stroke: #ffaa00; }\n.normal-zone { stroke: #00ff88; }\n.high-zone { stroke: #ff0044; }\n.gauge-needle {\n  fill: #00ccff;\n  transform-origin: 100px 100px;\n  transition: transform 0.3s ease;\n}\n.gauge-center {\n  fill: #00ff88;\n}\n.gauge-value {\n  fill: #00ccff;\n  font-size: 24px;\n  font-weight: bold;\n  text-anchor: middle;\n}\n.gauge-units {\n  fill: #888;\n  font-size: 14px;\n  text-anchor: middle;\n}\n.gauge-title {\n  fill: #00ff88;\n  font-size: 16px;\n  font-weight: bold;\n  text-anchor: middle;\n}",
+    "js": "function initAnalogGauge(element, config) {\n  const svg = element.querySelector('svg');\n  const needle = svg.querySelector('.gauge-needle');\n  const valueText = svg.querySelector('.gauge-value');\n  \n  function updateGauge(value) {\n    const percent = (value - config.min) / (config.max - config.min);\n    const angle = -135 + (percent * 270);\n    needle.style.transform = `rotate(${angle}deg)`;\n    valueText.textContent = value.toFixed(config.decimals || 1);\n    \n    // Update color based on alarm zones\n    if (value < config.alarmLow || value > config.alarmHigh) {\n      needle.style.fill = '#ff0044';\n    } else if (value < config.warnLow || value > config.warnHigh) {\n      needle.style.fill = '#ffaa00';\n    } else {\n      needle.style.fill = '#00ccff';\n    }\n  }\n  \n  return { updateGauge };\n}"
+  },
+  "properties": [
+    {
+      "name": "title",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "units",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "min",
+      "type": "number",
+      "default": 0
+    },
+    {
+      "name": "max",
+      "type": "number",
+      "default": 100
+    },
+    {
+      "name": "decimals",
+      "type": "number",
+      "default": 1
+    },
+    {
+      "name": "alarmLow",
+      "type": "number",
+      "default": null
+    },
+    {
+      "name": "alarmHigh",
+      "type": "number",
+      "default": null
+    },
+    {
+      "name": "warnLow",
+      "type": "number",
+      "default": null
+    },
+    {
+      "name": "warnHigh",
+      "type": "number",
+      "default": null
+    }
+  ],
+  "bindings": {
+    "tags": [
+      {
+        "name": "valueTag",
+        "property": "value",
+        "callback": "updateGauge"
+      }
+    ]
+  }
+}

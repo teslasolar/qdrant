@@ -1,5 +1,5 @@
 {
-  "UUID": "1e9e551c-391f-4fc9-afb4-6bb64346f764",
+  "UUID": "8c544ed1-b760-4231-886b-29b6eef154cb",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/logs/security/",
   "Directory_Name": "Security",
@@ -13,94 +13,10 @@
       "path": "/os/logs/security/controls/",
       "title": "Controls",
       "description": "controls subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 2
+      "icon": "\ud83c\udf9b\ufe0f"
     }
   ],
-  "Sibling_Directories": [
-    {
-      "path": "/os/logs/api/",
-      "title": "Api",
-      "description": "api area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/logs/audit/",
-      "title": "Audit",
-      "description": "audit area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/logs/boot/",
-      "title": "Boot",
-      "description": "boot area",
-      "icon": "\ud83d\ude80"
-    },
-    {
-      "path": "/os/logs/database/",
-      "title": "Database",
-      "description": "database area",
-      "icon": "\ud83d\udcca"
-    },
-    {
-      "path": "/os/logs/debug/",
-      "title": "Debug",
-      "description": "debug area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/logs/errors/",
-      "title": "Errors",
-      "description": "errors area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/logs/modules/",
-      "title": "Modules",
-      "description": "modules area",
-      "icon": "\ud83d\udce6"
-    },
-    {
-      "path": "/os/logs/plc/",
-      "title": "Plc",
-      "description": "plc area",
-      "icon": "\u2699\ufe0f"
-    },
-    {
-      "path": "/os/logs/scada/",
-      "title": "Scada",
-      "description": "scada area",
-      "icon": "\ud83d\udcca"
-    },
-    {
-      "path": "/os/logs/system/",
-      "title": "System",
-      "description": "system area",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/logs/",
-      "title": "Logs",
-      "icon": "\ud83d\udcdd"
-    },
-    {
-      "path": "/os/logs/security/",
-      "title": "Security",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": null,
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
@@ -159,22 +75,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4584
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3618
     }
   ]
 }

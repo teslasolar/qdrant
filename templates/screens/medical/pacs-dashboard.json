@@ -1,0 +1,168 @@
+{
+  "uuid": "med-screen-pacs-001",
+  "type": "screen",
+  "category": "medical",
+  "metadata": {
+    "name": "PACS Dashboard",
+    "description": "Picture Archiving and Communication System main dashboard",
+    "version": "1.0.0",
+    "author": "Medical Imaging SCADA",
+    "created": "2025-11-17T00:00:00Z",
+    "modified": "2025-11-17T00:00:00Z",
+    "tags": ["medical", "pacs", "dashboard", "overview"]
+  },
+  "layout": {
+    "grid": {
+      "columns": 4,
+      "rows": 4,
+      "gap": 15
+    },
+    "theme": "dark",
+    "colorScheme": "medical-green"
+  },
+  "components": [
+    {
+      "uuid": "pacs-study-queue",
+      "type": "study-queue-panel",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "width": 3,
+        "height": 2
+      },
+      "config": {
+        "title": "Active Study Queue",
+        "showFilters": true,
+        "sortBy": "priority",
+        "maxItems": 10
+      },
+      "bindings": {
+        "tags": [
+          "medical.studyQueue",
+          "medical.queueCount"
+        ]
+      }
+    },
+    {
+      "uuid": "pacs-modality-stats",
+      "type": "modality-statistics",
+      "position": {
+        "x": 3,
+        "y": 0,
+        "width": 1,
+        "height": 2
+      },
+      "config": {
+        "modalities": ["CT", "MRI", "XR", "US", "MG"],
+        "showTrends": true,
+        "timeRange": "24h"
+      },
+      "bindings": {
+        "tags": [
+          "medical.ct.count",
+          "medical.mri.count",
+          "medical.xray.count",
+          "medical.ultrasound.count",
+          "medical.mammo.count"
+        ]
+      }
+    },
+    {
+      "uuid": "pacs-dicom-workflow",
+      "type": "workflow-diagram",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "width": 2,
+        "height": 1
+      },
+      "config": {
+        "title": "DICOM Processing Pipeline",
+        "stages": ["Received", "Analyzing", "AI Processing", "Complete"],
+        "showCounts": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.workflow.received",
+          "medical.workflow.analyzing",
+          "medical.workflow.aiProcessing",
+          "medical.workflow.complete"
+        ]
+      }
+    },
+    {
+      "uuid": "pacs-system-health",
+      "type": "system-health-panel",
+      "position": {
+        "x": 2,
+        "y": 2,
+        "width": 2,
+        "height": 1
+      },
+      "config": {
+        "title": "System Health",
+        "metrics": ["dicom", "qdrant", "alfDetect", "storage"]
+      },
+      "bindings": {
+        "tags": [
+          "medical.dicomReady",
+          "medical.qdrantConnected",
+          "medical.alfDetectReady",
+          "medical.storageUsed"
+        ]
+      }
+    },
+    {
+      "uuid": "pacs-alf-results",
+      "type": "alf-detect-results",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "width": 2,
+        "height": 1
+      },
+      "config": {
+        "title": "AlF-DETECT Screening Results",
+        "maxResults": 3,
+        "showProbabilities": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.alfResults"
+        ]
+      }
+    },
+    {
+      "uuid": "pacs-qc-metrics",
+      "type": "quality-metrics",
+      "position": {
+        "x": 2,
+        "y": 3,
+        "width": 2,
+        "height": 1
+      },
+      "config": {
+        "title": "Quality Control Metrics",
+        "metrics": ["imageQuality", "processTime", "uptime", "alarms"]
+      },
+      "bindings": {
+        "tags": [
+          "medical.qc.imageQuality",
+          "medical.avgProcessTime",
+          "medical.uptime",
+          "medical.activeAlarms"
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "trigger": "onLoad",
+      "action": "loadDashboard",
+      "params": {
+        "refreshInterval": 5000,
+        "autoRefresh": true
+      }
+    }
+  ]
+}

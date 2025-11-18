@@ -1,0 +1,427 @@
+{
+  "standardId": "mqtt-sparkplug-v1.0",
+  "type": "communication-protocol",
+  "metadata": {
+    "name": "MQTT Sparkplug B Protocol",
+    "description": "MQTT for industrial IoT with Sparkplug B specification",
+    "version": "1.0.0",
+    "standard": "MQTT 3.1.1 / 5.0 + Sparkplug B v1.0",
+    "created": "2025-11-17",
+    "tags": ["mqtt", "sparkplug", "iiot", "communication", "protocol"]
+  },
+  "specification": {
+    "description": "MQTT with Sparkplug B for structured industrial data exchange",
+    "purpose": "Enable interoperable, scalable industrial IoT communication",
+    "application": "Edge devices, PLCs, SCADA systems, cloud connectivity, data historians"
+  },
+  "mqttCore": {
+    "version": ["3.1.1", "5.0"],
+    "architecture": "Publish-Subscribe messaging",
+    "components": {
+      "broker": {
+        "role": "Central message hub",
+        "responsibilities": ["Message routing", "Client management", "Topic management", "QoS handling"],
+        "implementations": ["Eclipse Mosquitto", "HiveMQ", "AWS IoT Core", "Azure IoT Hub", "Ignition MQTT"]
+      },
+      "publisher": {
+        "role": "Data source",
+        "responsibilities": ["Publish data to topics", "Maintain connection", "Handle reconnection"],
+        "examples": ["PLC", "Edge gateway", "Sensor device", "SCADA system"]
+      },
+      "subscriber": {
+        "role": "Data consumer",
+        "responsibilities": ["Subscribe to topics", "Process messages", "Handle data"],
+        "examples": ["SCADA", "Historian", "Analytics engine", "Cloud application"]
+      }
+    },
+    "qualityOfService": {
+      "qos0": {
+        "name": "At most once",
+        "description": "Fire and forget - no acknowledgement",
+        "reliability": "Lowest",
+        "use": "High-frequency data where loss is acceptable"
+      },
+      "qos1": {
+        "name": "At least once",
+        "description": "Acknowledged delivery - may duplicate",
+        "reliability": "Medium",
+        "use": "Important data, can handle duplicates"
+      },
+      "qos2": {
+        "name": "Exactly once",
+        "description": "Guaranteed single delivery",
+        "reliability": "Highest",
+        "use": "Critical commands, billing data"
+      }
+    },
+    "features": {
+      "retainedMessages": "Last message retained for new subscribers",
+      "lastWill": "Automatic message on unexpected disconnect",
+      "cleanSession": "Persist or discard session on disconnect",
+      "keepAlive": "Heartbeat mechanism"
+    }
+  },
+  "sparkplugB": {
+    "description": "Topic namespace and payload specification for industrial MQTT",
+    "benefits": [
+      "Standardized topic structure",
+      "Efficient binary payload (Google Protocol Buffers)",
+      "Built-in data types for industrial automation",
+      "Auto-discovery",
+      "State management (birth/death certificates)",
+      "Store and forward capability"
+    ],
+    "topicNamespace": {
+      "format": "spBv1.0/{group_id}/{message_type}/{edge_node_id}/{device_id}",
+      "components": {
+        "version": {
+          "value": "spBv1.0",
+          "description": "Sparkplug B version 1.0"
+        },
+        "groupId": {
+          "description": "Logical grouping (e.g., site, area)",
+          "example": "Hospital_Boston",
+          "pattern": "[A-Za-z0-9_-]+"
+        },
+        "messageType": {
+          "types": {
+            "NBIRTH": "Node Birth - Edge node comes online",
+            "NDEATH": "Node Death - Edge node goes offline",
+            "NDATA": "Node Data - Edge node data update",
+            "NCMD": "Node Command - Command to edge node",
+            "DBIRTH": "Device Birth - Device comes online",
+            "DDEATH": "Device Death - Device goes offline",
+            "DDATA": "Device Data - Device data update",
+            "DCMD": "Device Command - Command to device",
+            "STATE": "SCADA Host state"
+          }
+        },
+        "edgeNodeId": {
+          "description": "Edge gateway or node identifier",
+          "example": "Gateway_Radiology_01",
+          "pattern": "[A-Za-z0-9_-]+"
+        },
+        "deviceId": {
+          "description": "Device under edge node (optional)",
+          "example": "CT_Scanner_1",
+          "pattern": "[A-Za-z0-9_-]+"
+        }
+      },
+      "examples": {
+        "nodeBirth": "spBv1.0/Hospital_Boston/NBIRTH/Gateway_Radiology_01",
+        "deviceData": "spBv1.0/Hospital_Boston/DDATA/Gateway_Radiology_01/CT_Scanner_1",
+        "nodeCommand": "spBv1.0/Hospital_Boston/NCMD/Gateway_Radiology_01",
+        "state": "spBv1.0/STATE/primary_scada"
+      }
+    },
+    "payload": {
+      "format": "Google Protocol Buffers",
+      "structure": {
+        "timestamp": "Message timestamp (Unix ms)",
+        "metrics": [
+          {
+            "name": "Metric name",
+            "timestamp": "Value timestamp",
+            "dataType": "Data type code",
+            "value": "Actual value",
+            "properties": "Optional metadata"
+          }
+        ],
+        "seq": "Sequence number for detection of lost messages",
+        "uuid": "Unique message identifier",
+        "body": "Optional binary body"
+      },
+      "dataTypes": {
+        "Int8": 1,
+        "Int16": 2,
+        "Int32": 3,
+        "Int64": 4,
+        "UInt8": 5,
+        "UInt16": 6,
+        "UInt32": 7,
+        "UInt64": 8,
+        "Float": 9,
+        "Double": 10,
+        "Boolean": 11,
+        "String": 12,
+        "DateTime": 13,
+        "Text": 14,
+        "UUID": 15,
+        "DataSet": 16,
+        "Bytes": 17,
+        "File": 18,
+        "Template": 19
+      }
+    },
+    "birthDeathSequence": {
+      "edgeNode": {
+        "birth": {
+          "topic": "spBv1.0/{group}/NBIRTH/{node}",
+          "content": "All node metrics, rebirth if connection lost",
+          "qos": 0,
+          "retain": false
+        },
+        "death": {
+          "topic": "spBv1.0/{group}/NDEATH/{node}",
+          "content": "Timestamp of death",
+          "qos": 0,
+          "retain": false,
+          "trigger": "Last Will Testament - automatic on disconnect"
+        }
+      },
+      "device": {
+        "birth": {
+          "topic": "spBv1.0/{group}/DBIRTH/{node}/{device}",
+          "content": "All device metrics",
+          "timing": "After NBIRTH"
+        },
+        "death": {
+          "topic": "spBv1.0/{group}/DDEATH/{node}/{device}",
+          "content": "Device offline notification",
+          "timing": "Before NDEATH or when device disconnects"
+        }
+      },
+      "sequence": [
+        "1. Edge node connects to broker",
+        "2. Edge node publishes NBIRTH with all metrics",
+        "3. Edge node publishes DBIRTH for each device",
+        "4. Edge node publishes NDATA/DDATA as values change",
+        "5. On disconnect, broker publishes NDEATH (LWT)",
+        "6. On reconnect, rebirth starting at step 2"
+      ]
+    },
+    "stateManagement": {
+      "primaryApplication": {
+        "topic": "spBv1.0/STATE/{scada_host_id}",
+        "payload": {
+          "online": true,
+          "timestamp": "Unix ms"
+        },
+        "qos": 1,
+        "retain": true,
+        "purpose": "Notify edge nodes of SCADA system state"
+      },
+      "rebirth": {
+        "trigger": "Primary application comes online or requests refresh",
+        "mechanism": "SCADA publishes NCMD to node with 'Node Control/Rebirth' = true",
+        "response": "Edge node republishes NBIRTH and all DBIRTH messages"
+      }
+    }
+  },
+  "industrialUsePatterns": {
+    "isa95Mapping": {
+      "level0to1": "Devices publish sensor/actuator data",
+      "level1to2": "PLCs publish as edge nodes, SCADA subscribes",
+      "level2to3": "SCADA publishes aggregated data, MES subscribes",
+      "level3to4": "MES publishes production data, ERP subscribes"
+    },
+    "isa88Integration": {
+      "equipmentHierarchy": "Map to group_id / edge_node_id / device_id",
+      "example": "spBv1.0/Site_Boston/DDATA/Area_Radiology/Cell_CT/Unit_CT1"
+    },
+    "packmlIntegration": {
+      "statePublishing": "Publish PackML state as device metric",
+      "commandReceiving": "Subscribe to DCMD for PackML commands",
+      "metrics": [
+        "PackML/State/Current",
+        "PackML/State/Category",
+        "PackML/Commands/*"
+      ]
+    }
+  },
+  "topicDesign": {
+    "grouping": {
+      "bySite": "group_id = Site name",
+      "byArea": "group_id = Area name",
+      "byFunction": "group_id = Functional area",
+      "recommendation": "Use ISA-88 hierarchy for consistency"
+    },
+    "nodeDesign": {
+      "perGateway": "One node per edge gateway",
+      "perPLC": "One node per PLC",
+      "perUnit": "One node per ISA-88 Unit",
+      "recommendation": "Match to physical communication boundaries"
+    },
+    "deviceDesign": {
+      "perEquipment": "One device per equipment module",
+      "perSubsystem": "One device per subsystem",
+      "recommendation": "Match to ISA-88 Equipment Modules"
+    }
+  },
+  "metricNaming": {
+    "convention": "Hierarchical with / separator",
+    "examples": [
+      "Process/Temperature/PV",
+      "Process/Temperature/SP",
+      "Status/Running",
+      "PackML/State/Current",
+      "Alarms/High_Temp/Active",
+      "Production/Count/Good",
+      "Diagnostics/Uptime"
+    ],
+    "rules": [
+      "Use consistent capitalization",
+      "Group related metrics",
+      "Include units in properties, not name",
+      "Avoid special characters except / and _"
+    ]
+  },
+  "security": {
+    "authentication": {
+      "username": "MQTT username",
+      "password": "MQTT password",
+      "certificates": "X.509 client certificates"
+    },
+    "encryption": {
+      "tls": "TLS 1.2 or higher",
+      "ports": "8883 (MQTT over TLS)"
+    },
+    "authorization": {
+      "acl": "Access Control Lists on topics",
+      "patterns": [
+        "Publishers can only publish to own topics",
+        "Subscribers get read-only access",
+        "Commands require elevated permissions"
+      ]
+    }
+  },
+  "parameters": [
+    {
+      "name": "groupId",
+      "type": "string",
+      "required": true,
+      "description": "Sparkplug group identifier (site/area)",
+      "example": "Hospital_Boston"
+    },
+    {
+      "name": "edgeNodeId",
+      "type": "string",
+      "required": true,
+      "description": "Edge node identifier",
+      "example": "Gateway_Radiology_01"
+    },
+    {
+      "name": "deviceId",
+      "type": "string",
+      "required": false,
+      "description": "Device identifier (optional)",
+      "example": "CT_Scanner_1"
+    },
+    {
+      "name": "brokerUrl",
+      "type": "string",
+      "required": true,
+      "description": "MQTT broker URL",
+      "example": "mqtt://broker.example.com:1883"
+    },
+    {
+      "name": "qos",
+      "type": "integer",
+      "required": false,
+      "default": 0,
+      "enum": [0, 1, 2],
+      "description": "Quality of service level"
+    },
+    {
+      "name": "useTls",
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Use TLS encryption"
+    }
+  ],
+  "tagGeneration": {
+    "publishMapping": {
+      "tagPath": "{{equipmentPath}}.{{attribute}}",
+      "mqttTopic": "spBv1.0/{{groupId}}/DDATA/{{edgeNodeId}}/{{deviceId}}",
+      "metricName": "{{hierarchicalPath}}/{{attribute}}"
+    },
+    "subscribeMapping": {
+      "mqttTopic": "spBv1.0/{{groupId}}/DCMD/{{edgeNodeId}}/{{deviceId}}",
+      "tagPath": "{{equipmentPath}}.Commands.{{commandName}}"
+    },
+    "templates": {
+      "birth": "Generate NBIRTH/DBIRTH message with all tags",
+      "data": "Generate NDATA/DDATA message with changed tags",
+      "command": "Generate NCMD/DCMD message for writable tags"
+    }
+  },
+  "instantiation": {
+    "template": "mqtt-sparkplug-interface",
+    "generates": [
+      "Topic structure",
+      "Metric definitions",
+      "Birth/death messages",
+      "Publisher configuration",
+      "Subscriber configuration",
+      "Tag to metric mappings"
+    ],
+    "integrations": [
+      "ISA-88 Equipment Hierarchy (topic/metric naming)",
+      "PackML State Machine (state publishing)",
+      "SCADA/MES systems (subscribers)",
+      "Edge gateways (publishers)",
+      "Cloud platforms (AWS IoT, Azure IoT)"
+    ]
+  },
+  "examples": {
+    "ctScannerPublisher": {
+      "groupId": "Hospital_Boston",
+      "edgeNodeId": "Gateway_Radiology",
+      "deviceId": "CT_Scanner_1",
+      "metrics": [
+        {
+          "name": "PackML/State/Current",
+          "dataType": "String",
+          "value": "Execute"
+        },
+        {
+          "name": "Process/KVP/Actual",
+          "dataType": "Int32",
+          "value": 120,
+          "properties": {"engUnit": "kV"}
+        },
+        {
+          "name": "Process/mA/Actual",
+          "dataType": "Int32",
+          "value": 200,
+          "properties": {"engUnit": "mA"}
+        },
+        {
+          "name": "Status/GantryRotating",
+          "dataType": "Boolean",
+          "value": true
+        }
+      ],
+      "topics": {
+        "birth": "spBv1.0/Hospital_Boston/DBIRTH/Gateway_Radiology/CT_Scanner_1",
+        "data": "spBv1.0/Hospital_Boston/DDATA/Gateway_Radiology/CT_Scanner_1",
+        "command": "spBv1.0/Hospital_Boston/DCMD/Gateway_Radiology/CT_Scanner_1"
+      }
+    }
+  },
+  "validation": {
+    "rules": [
+      {
+        "rule": "validTopicFormat",
+        "description": "Topics must follow Sparkplug B namespace",
+        "severity": "error"
+      },
+      {
+        "rule": "birthBeforeData",
+        "description": "Must publish BIRTH before DATA messages",
+        "severity": "error"
+      },
+      {
+        "rule": "sequenceNumbers",
+        "description": "Sequence numbers must increment",
+        "severity": "warning"
+      },
+      {
+        "rule": "validDataTypes",
+        "description": "Metrics must use valid Sparkplug data types",
+        "severity": "error"
+      }
+    ]
+  }
+}

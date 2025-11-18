@@ -1,0 +1,556 @@
+{
+  "uuid": "alf-detect-tags-001",
+  "type": "tag-definition",
+  "category": "medical",
+  "metadata": {
+    "name": "AlF-DETECT Tag Definitions",
+    "description": "Comprehensive tag bindings for AlF-DETECT screening metrics",
+    "version": "1.0.0",
+    "created": "2025-01-17T00:00:00Z"
+  },
+  "provider": "MedicalTagProvider",
+  "tags": [
+    {
+      "name": "alfDetectReady",
+      "path": "medical.alfDetectReady",
+      "dataType": "Boolean",
+      "accessMode": "Read",
+      "description": "System ready status for AlF-DETECT screening",
+      "defaultValue": true,
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfSystemStatus",
+      "path": "medical.alfSystemStatus",
+      "dataType": "String",
+      "accessMode": "Read",
+      "description": "Current system status (READY, PROCESSING, ERROR)",
+      "defaultValue": "READY",
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfPositiveScreenings",
+      "path": "medical.alfPositiveScreenings",
+      "dataType": "Int32",
+      "accessMode": "ReadWrite",
+      "description": "Total count of positive screenings detected",
+      "defaultValue": 0,
+      "engUnits": "count",
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      },
+      "mqtt": {
+        "topic": "chazon/os/medical/alf-detect/metrics/positive",
+        "publishOnChange": true
+      }
+    },
+    {
+      "name": "alfScreeningQueue",
+      "path": "medical.alfScreeningQueue",
+      "dataType": "Int32",
+      "accessMode": "ReadWrite",
+      "description": "Number of screenings waiting in queue",
+      "defaultValue": 0,
+      "engUnits": "count",
+      "alarms": {
+        "enabled": true,
+        "high": {
+          "enabled": true,
+          "setpoint": 50,
+          "priority": "Medium",
+          "message": "AlF-DETECT queue exceeds 50 items"
+        },
+        "highHigh": {
+          "enabled": true,
+          "setpoint": 100,
+          "priority": "High",
+          "message": "AlF-DETECT queue critically high"
+        }
+      },
+      "historization": {
+        "enabled": true,
+        "sampleMode": "Periodic",
+        "sampleRate": 5000
+      },
+      "modbus": {
+        "register": 40030,
+        "type": "holding"
+      }
+    },
+    {
+      "name": "alfAverageConfidence",
+      "path": "medical.alfAverageConfidence",
+      "dataType": "Float",
+      "accessMode": "ReadWrite",
+      "description": "Average confidence score across all detections",
+      "defaultValue": 0.0,
+      "engUnits": "%",
+      "scaling": {
+        "enabled": true,
+        "rawLow": 0,
+        "rawHigh": 100,
+        "scaledLow": 0.0,
+        "scaledHigh": 100.0
+      },
+      "alarms": {
+        "enabled": true,
+        "low": {
+          "enabled": true,
+          "setpoint": 60,
+          "priority": "Medium",
+          "message": "Average confidence below acceptable threshold"
+        }
+      },
+      "historization": {
+        "enabled": true,
+        "sampleMode": "Periodic",
+        "sampleRate": 10000
+      }
+    },
+    {
+      "name": "alfProcessingTime",
+      "path": "medical.alfProcessingTime",
+      "dataType": "Int32",
+      "accessMode": "ReadWrite",
+      "description": "Average processing time per screening",
+      "defaultValue": 0,
+      "engUnits": "ms",
+      "alarms": {
+        "enabled": true,
+        "high": {
+          "enabled": true,
+          "setpoint": 5000,
+          "priority": "Medium",
+          "message": "Processing time exceeding 5 seconds"
+        },
+        "highHigh": {
+          "enabled": true,
+          "setpoint": 10000,
+          "priority": "High",
+          "message": "Processing time critically high"
+        }
+      },
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange",
+        "deadband": 100
+      },
+      "modbus": {
+        "register": 40031,
+        "type": "holding"
+      }
+    },
+    {
+      "name": "alfAlzheimersProbability",
+      "path": "medical.alfAlzheimersProbability",
+      "dataType": "Float",
+      "accessMode": "ReadWrite",
+      "description": "Alzheimer's disease probability from last screening",
+      "defaultValue": 0.0,
+      "engUnits": "%",
+      "scaling": {
+        "enabled": true,
+        "rawLow": 0,
+        "rawHigh": 100
+      },
+      "alarms": {
+        "enabled": true,
+        "high": {
+          "enabled": true,
+          "setpoint": 70,
+          "priority": "High",
+          "message": "High Alzheimer's probability detected"
+        },
+        "highHigh": {
+          "enabled": true,
+          "setpoint": 85,
+          "priority": "Critical",
+          "message": "Very high Alzheimer's probability - immediate review required"
+        }
+      },
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      },
+      "mqtt": {
+        "topic": "chazon/os/medical/alf-detect/alzheimers/probability",
+        "publishOnChange": true
+      }
+    },
+    {
+      "name": "alfAlzheimersConfidence",
+      "path": "medical.alfAlzheimersConfidence",
+      "dataType": "Float",
+      "accessMode": "ReadWrite",
+      "description": "Confidence score for Alzheimer's detection",
+      "defaultValue": 0.0,
+      "engUnits": "%",
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfAutismProbability",
+      "path": "medical.alfAutismProbability",
+      "dataType": "Float",
+      "accessMode": "ReadWrite",
+      "description": "Autism spectrum probability from last screening",
+      "defaultValue": 0.0,
+      "engUnits": "%",
+      "alarms": {
+        "enabled": true,
+        "high": {
+          "enabled": true,
+          "setpoint": 70,
+          "priority": "High",
+          "message": "High autism probability detected"
+        },
+        "highHigh": {
+          "enabled": true,
+          "setpoint": 85,
+          "priority": "Critical",
+          "message": "Very high autism probability - immediate review required"
+        }
+      },
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      },
+      "mqtt": {
+        "topic": "chazon/os/medical/alf-detect/autism/probability",
+        "publishOnChange": true
+      }
+    },
+    {
+      "name": "alfAutismConfidence",
+      "path": "medical.alfAutismConfidence",
+      "dataType": "Float",
+      "accessMode": "ReadWrite",
+      "description": "Confidence score for autism detection",
+      "defaultValue": 0.0,
+      "engUnits": "%",
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfNormalProbability",
+      "path": "medical.alfNormalProbability",
+      "dataType": "Float",
+      "accessMode": "ReadWrite",
+      "description": "Normal/healthy probability from last screening",
+      "defaultValue": 0.0,
+      "engUnits": "%",
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfNormalConfidence",
+      "path": "medical.alfNormalConfidence",
+      "dataType": "Float",
+      "accessMode": "ReadWrite",
+      "description": "Confidence score for normal classification",
+      "defaultValue": 0.0,
+      "engUnits": "%",
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfHippocampusConc",
+      "path": "medical.alfHippocampusConc",
+      "dataType": "Float",
+      "accessMode": "ReadWrite",
+      "description": "AlF concentration in hippocampus region",
+      "defaultValue": 0.0,
+      "engUnits": "mg/kg",
+      "alarms": {
+        "enabled": true,
+        "high": {
+          "enabled": true,
+          "setpoint": 70,
+          "priority": "High",
+          "message": "Elevated AlF in hippocampus - Alzheimer's risk"
+        }
+      },
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfFrontalCortexConc",
+      "path": "medical.alfFrontalCortexConc",
+      "dataType": "Float",
+      "accessMode": "ReadWrite",
+      "description": "AlF concentration in frontal cortex region",
+      "defaultValue": 0.0,
+      "engUnits": "mg/kg",
+      "alarms": {
+        "enabled": true,
+        "high": {
+          "enabled": true,
+          "setpoint": 70,
+          "priority": "High",
+          "message": "Elevated AlF in frontal cortex - autism risk"
+        }
+      },
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfTemporalLobeConc",
+      "path": "medical.alfTemporalLobeConc",
+      "dataType": "Float",
+      "accessMode": "ReadWrite",
+      "description": "AlF concentration in temporal lobe region",
+      "defaultValue": 0.0,
+      "engUnits": "mg/kg",
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfParietalLobeConc",
+      "path": "medical.alfParietalLobeConc",
+      "dataType": "Float",
+      "accessMode": "ReadWrite",
+      "description": "AlF concentration in parietal lobe region",
+      "defaultValue": 0.0,
+      "engUnits": "mg/kg",
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfOccipitalLobeConc",
+      "path": "medical.alfOccipitalLobeConc",
+      "dataType": "Float",
+      "accessMode": "ReadWrite",
+      "description": "AlF concentration in occipital lobe region",
+      "defaultValue": 0.0,
+      "engUnits": "mg/kg",
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfCerebellumConc",
+      "path": "medical.alfCerebellumConc",
+      "dataType": "Float",
+      "accessMode": "ReadWrite",
+      "description": "AlF concentration in cerebellum region",
+      "defaultValue": 0.0,
+      "engUnits": "mg/kg",
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfAmygdalaConc",
+      "path": "medical.alfAmygdalaConc",
+      "dataType": "Float",
+      "accessMode": "ReadWrite",
+      "description": "AlF concentration in amygdala region",
+      "defaultValue": 0.0,
+      "engUnits": "mg/kg",
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfBasalGangliaConc",
+      "path": "medical.alfBasalGangliaConc",
+      "dataType": "Float",
+      "accessMode": "ReadWrite",
+      "description": "AlF concentration in basal ganglia region",
+      "defaultValue": 0.0,
+      "engUnits": "mg/kg",
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfTruePositives",
+      "path": "medical.alfTruePositives",
+      "dataType": "Int32",
+      "accessMode": "ReadWrite",
+      "description": "Count of true positive detections",
+      "defaultValue": 0,
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfFalsePositives",
+      "path": "medical.alfFalsePositives",
+      "dataType": "Int32",
+      "accessMode": "ReadWrite",
+      "description": "Count of false positive detections",
+      "defaultValue": 0,
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfFalseNegatives",
+      "path": "medical.alfFalseNegatives",
+      "dataType": "Int32",
+      "accessMode": "ReadWrite",
+      "description": "Count of false negative detections",
+      "defaultValue": 0,
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfTrueNegatives",
+      "path": "medical.alfTrueNegatives",
+      "dataType": "Int32",
+      "accessMode": "ReadWrite",
+      "description": "Count of true negative detections",
+      "defaultValue": 0,
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfPrecision",
+      "path": "medical.alfPrecision",
+      "dataType": "Float",
+      "accessMode": "Read",
+      "description": "Precision score (TP / (TP + FP))",
+      "defaultValue": 0.0,
+      "engUnits": "%",
+      "expression": "100 * {medical.alfTruePositives} / ({medical.alfTruePositives} + {medical.alfFalsePositives})",
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfRecall",
+      "path": "medical.alfRecall",
+      "dataType": "Float",
+      "accessMode": "Read",
+      "description": "Recall score (TP / (TP + FN))",
+      "defaultValue": 0.0,
+      "engUnits": "%",
+      "expression": "100 * {medical.alfTruePositives} / ({medical.alfTruePositives} + {medical.alfFalseNegatives})",
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfF1Score",
+      "path": "medical.alfF1Score",
+      "dataType": "Float",
+      "accessMode": "Read",
+      "description": "F1 score (harmonic mean of precision and recall)",
+      "defaultValue": 0.0,
+      "engUnits": "%",
+      "expression": "2 * {medical.alfPrecision} * {medical.alfRecall} / ({medical.alfPrecision} + {medical.alfRecall})",
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfAlzheimersAUC",
+      "path": "medical.alfAlzheimersAUC",
+      "dataType": "Float",
+      "accessMode": "ReadWrite",
+      "description": "Area Under ROC Curve for Alzheimer's detection",
+      "defaultValue": 0.0,
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfAutismAUC",
+      "path": "medical.alfAutismAUC",
+      "dataType": "Float",
+      "accessMode": "ReadWrite",
+      "description": "Area Under ROC Curve for autism detection",
+      "defaultValue": 0.0,
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfBatchProcessingActive",
+      "path": "medical.alfBatchProcessingActive",
+      "dataType": "Boolean",
+      "accessMode": "ReadWrite",
+      "description": "Batch processing mode active status",
+      "defaultValue": false,
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfBatchTotalItems",
+      "path": "medical.alfBatchTotalItems",
+      "dataType": "Int32",
+      "accessMode": "ReadWrite",
+      "description": "Total items in current batch",
+      "defaultValue": 0,
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfBatchCompletedItems",
+      "path": "medical.alfBatchCompletedItems",
+      "dataType": "Int32",
+      "accessMode": "ReadWrite",
+      "description": "Completed items in current batch",
+      "defaultValue": 0,
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    },
+    {
+      "name": "alfMultiModalEnabled",
+      "path": "medical.alfMultiModalEnabled",
+      "dataType": "Boolean",
+      "accessMode": "ReadWrite",
+      "description": "Multi-modal analysis (MRI + PET + Clinical) enabled",
+      "defaultValue": false,
+      "historization": {
+        "enabled": true,
+        "sampleMode": "OnChange"
+      }
+    }
+  ]
+}

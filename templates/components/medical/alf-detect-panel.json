@@ -1,0 +1,414 @@
+{
+  "uuid": "comp-alf-panel-001",
+  "type": "component",
+  "category": "medical",
+  "metadata": {
+    "name": "AlF-DETECT Screening Panel",
+    "description": "Embeddable AlF-DETECT screening panel for HMI screens",
+    "version": "1.0.0",
+    "created": "2025-01-17T00:00:00Z",
+    "tags": ["medical", "alf-detect", "screening", "panel"]
+  },
+  "component": {
+    "type": "composite-panel",
+    "layout": "vertical",
+    "responsive": true,
+    "minWidth": 300,
+    "minHeight": 400,
+    "defaultWidth": 400,
+    "defaultHeight": 600
+  },
+  "properties": {
+    "title": {
+      "type": "string",
+      "default": "AlF-DETECT Screening",
+      "editable": true
+    },
+    "showHeader": {
+      "type": "boolean",
+      "default": true,
+      "editable": true
+    },
+    "compactMode": {
+      "type": "boolean",
+      "default": false,
+      "editable": true
+    },
+    "colorScheme": {
+      "type": "enum",
+      "values": ["medical-purple", "dark", "light"],
+      "default": "medical-purple",
+      "editable": true
+    },
+    "refreshRate": {
+      "type": "integer",
+      "default": 2000,
+      "min": 1000,
+      "max": 60000,
+      "unit": "ms",
+      "editable": true
+    }
+  },
+  "subComponents": [
+    {
+      "id": "header",
+      "type": "header-bar",
+      "position": "top",
+      "height": 60,
+      "config": {
+        "title": "{{title}}",
+        "icon": "🧠",
+        "showStatus": true,
+        "statusTag": "medical.alfDetectReady"
+      },
+      "visible": "{{showHeader}}"
+    },
+    {
+      "id": "status-indicator",
+      "type": "status-light",
+      "position": "top-right",
+      "size": 24,
+      "config": {
+        "states": [
+          {
+            "condition": "medical.alfSystemStatus === 'READY'",
+            "color": "#00ff88",
+            "label": "Ready",
+            "blink": false
+          },
+          {
+            "condition": "medical.alfSystemStatus === 'PROCESSING'",
+            "color": "#ffaa00",
+            "label": "Processing",
+            "blink": true
+          },
+          {
+            "condition": "medical.alfSystemStatus === 'ERROR'",
+            "color": "#ff0044",
+            "label": "Error",
+            "blink": true
+          }
+        ]
+      },
+      "bindings": {
+        "tags": ["medical.alfSystemStatus"]
+      }
+    },
+    {
+      "id": "quick-stats",
+      "type": "stats-grid",
+      "layout": "2x2",
+      "gap": 10,
+      "config": {
+        "stats": [
+          {
+            "label": "Queue",
+            "tag": "medical.alfScreeningQueue",
+            "icon": "⏳",
+            "color": "#00ccff",
+            "format": "number"
+          },
+          {
+            "label": "Positives",
+            "tag": "medical.alfPositiveScreenings",
+            "icon": "📊",
+            "color": "#ff88ff",
+            "format": "number"
+          },
+          {
+            "label": "Avg Time",
+            "tag": "medical.alfProcessingTime",
+            "icon": "⚡",
+            "color": "#ffaa00",
+            "format": "milliseconds"
+          },
+          {
+            "label": "Confidence",
+            "tag": "medical.alfAverageConfidence",
+            "icon": "🎯",
+            "color": "#00ff88",
+            "format": "percentage"
+          }
+        ]
+      },
+      "bindings": {
+        "tags": [
+          "medical.alfScreeningQueue",
+          "medical.alfPositiveScreenings",
+          "medical.alfProcessingTime",
+          "medical.alfAverageConfidence"
+        ]
+      }
+    },
+    {
+      "id": "probability-gauges",
+      "type": "gauge-group",
+      "layout": "vertical",
+      "config": {
+        "gauges": [
+          {
+            "label": "Alzheimer's",
+            "tag": "medical.alfAlzheimersProbability",
+            "type": "radial",
+            "size": 120,
+            "color": "#ff0044",
+            "ranges": [
+              {
+                "min": 0,
+                "max": 30,
+                "color": "#00ff88",
+                "label": "Low"
+              },
+              {
+                "min": 30,
+                "max": 70,
+                "color": "#ffaa00",
+                "label": "Medium"
+              },
+              {
+                "min": 70,
+                "max": 100,
+                "color": "#ff0044",
+                "label": "High"
+              }
+            ],
+            "showValue": true,
+            "showLabel": true,
+            "unit": "%"
+          },
+          {
+            "label": "Autism",
+            "tag": "medical.alfAutismProbability",
+            "type": "radial",
+            "size": 120,
+            "color": "#00ccff",
+            "ranges": [
+              {
+                "min": 0,
+                "max": 30,
+                "color": "#00ff88",
+                "label": "Low"
+              },
+              {
+                "min": 30,
+                "max": 70,
+                "color": "#ffaa00",
+                "label": "Medium"
+              },
+              {
+                "min": 70,
+                "max": 100,
+                "color": "#00ccff",
+                "label": "High"
+              }
+            ],
+            "showValue": true,
+            "showLabel": true,
+            "unit": "%"
+          },
+          {
+            "label": "Normal",
+            "tag": "medical.alfNormalProbability",
+            "type": "radial",
+            "size": 120,
+            "color": "#00ff88",
+            "showValue": true,
+            "showLabel": true,
+            "unit": "%"
+          }
+        ]
+      },
+      "bindings": {
+        "tags": [
+          "medical.alfAlzheimersProbability",
+          "medical.alfAutismProbability",
+          "medical.alfNormalProbability"
+        ]
+      }
+    },
+    {
+      "id": "brain-region-list",
+      "type": "data-list",
+      "maxHeight": 200,
+      "scrollable": true,
+      "config": {
+        "items": [
+          {
+            "label": "Hippocampus",
+            "tag": "medical.alfHippocampusConc",
+            "unit": "mg/kg",
+            "colorThresholds": [
+              {
+                "max": 40,
+                "color": "#00ff88"
+              },
+              {
+                "min": 40,
+                "max": 70,
+                "color": "#ffaa00"
+              },
+              {
+                "min": 70,
+                "color": "#ff0044"
+              }
+            ]
+          },
+          {
+            "label": "Frontal Cortex",
+            "tag": "medical.alfFrontalCortexConc",
+            "unit": "mg/kg",
+            "colorThresholds": [
+              {
+                "max": 40,
+                "color": "#00ff88"
+              },
+              {
+                "min": 40,
+                "max": 70,
+                "color": "#ffaa00"
+              },
+              {
+                "min": 70,
+                "color": "#ff0044"
+              }
+            ]
+          },
+          {
+            "label": "Temporal Lobe",
+            "tag": "medical.alfTemporalLobeConc",
+            "unit": "mg/kg",
+            "colorThresholds": [
+              {
+                "max": 40,
+                "color": "#00ff88"
+              },
+              {
+                "min": 40,
+                "max": 70,
+                "color": "#ffaa00"
+              },
+              {
+                "min": 70,
+                "color": "#ff0044"
+              }
+            ]
+          }
+        ],
+        "showBars": true,
+        "barMax": 100
+      },
+      "bindings": {
+        "tags": [
+          "medical.alfHippocampusConc",
+          "medical.alfFrontalCortexConc",
+          "medical.alfTemporalLobeConc"
+        ]
+      }
+    },
+    {
+      "id": "action-buttons",
+      "type": "button-group",
+      "layout": "horizontal",
+      "gap": 10,
+      "config": {
+        "buttons": [
+          {
+            "label": "View Dashboard",
+            "icon": "📊",
+            "action": "navigate",
+            "target": "/os/medical/alf-detect-dashboard.json",
+            "style": "primary"
+          },
+          {
+            "label": "Generate Report",
+            "icon": "📄",
+            "action": "execute",
+            "command": "generateAlfReport",
+            "style": "secondary",
+            "confirmRequired": false
+          },
+          {
+            "label": "Start Screening",
+            "icon": "▶️",
+            "action": "execute",
+            "command": "startAlfScreening",
+            "style": "success",
+            "confirmRequired": true,
+            "confirmMessage": "Start new AlF-DETECT screening?"
+          }
+        ]
+      }
+    }
+  ],
+  "styling": {
+    "medical-purple": {
+      "background": "#1a1a2e",
+      "border": "#ff88ff",
+      "text": "#00ff88",
+      "accent": "#ff88ff",
+      "headerBg": "linear-gradient(135deg, #6a1b9a, #1a1a2e)"
+    },
+    "dark": {
+      "background": "#0a0a0a",
+      "border": "#333",
+      "text": "#fff",
+      "accent": "#00ccff",
+      "headerBg": "#1a1a1a"
+    },
+    "light": {
+      "background": "#ffffff",
+      "border": "#ddd",
+      "text": "#333",
+      "accent": "#6a1b9a",
+      "headerBg": "#f5f5f5"
+    }
+  },
+  "events": {
+    "onLoad": {
+      "action": "subscribeToTags",
+      "updateRate": "{{refreshRate}}"
+    },
+    "onHighProbability": {
+      "condition": "medical.alfAlzheimersProbability >= 70 || medical.alfAutismProbability >= 70",
+      "action": "highlightPanel",
+      "color": "#ff0044",
+      "soundAlert": true
+    },
+    "onQueueOverflow": {
+      "condition": "medical.alfScreeningQueue >= 50",
+      "action": "showWarning",
+      "message": "Screening queue is high"
+    }
+  },
+  "mqtt": {
+    "subscribe": [
+      "chazon/os/medical/alf-detect/result",
+      "chazon/os/medical/alf-detect/alert",
+      "chazon/os/medical/alf-detect/status"
+    ],
+    "onMessage": {
+      "result": "updateResults",
+      "alert": "showAlert",
+      "status": "updateStatus"
+    }
+  },
+  "usage": {
+    "example": "Add AlF-DETECT panel to any HMI screen",
+    "code": {
+      "json": {
+        "component": "alf-detect-panel",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "width": 400,
+          "height": 600
+        },
+        "config": {
+          "title": "Medical Screening",
+          "compactMode": false,
+          "colorScheme": "medical-purple"
+        }
+      }
+    }
+  }
+}

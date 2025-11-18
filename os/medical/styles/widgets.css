@@ -1,0 +1,67 @@
+/* Reusable Widget Styles */
+
+.widget {
+  background: rgba(245, 242, 232, 0.05);
+  border: 1px solid var(--purple-light);
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.widget-title {
+  font-weight: 600;
+  color: var(--cream-dark);
+  margin-bottom: 10px;
+  font-size: 0.95em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.widget-value {
+  font-size: 2em;
+  font-weight: 700;
+  color: var(--cream);
+  font-family: 'Courier New', monospace;
+}
+
+.widget-unit {
+  font-size: 0.6em;
+  color: var(--purple-light);
+  margin-left: 5px;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(245, 242, 232, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--purple-accent);
+  transition: width 0.5s;
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

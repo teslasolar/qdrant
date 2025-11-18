@@ -1,0 +1,452 @@
+# Batch Processing Queue System
+# Manages queuing, scheduling, and execution of DICOM workflow jobs
+
+queue_system:
+  id: batch-processing-queue-001
+  name: DICOM Workflow Queue System
+  version: "1.0.0"
+  isa_level: L3_MES
+  description: Distributed job queue for DICOM processing workflows
+
+metadata:
+  author: Medical Imaging Team
+  created: 2025-11-17
+  updated: 2025-11-17
+  tags:
+    - queue
+    - batch-processing
+    - job-scheduling
+    - workflow-orchestration
+
+# Queue Configuration
+queues:
+  # High Priority Queue
+  high_priority:
+    name: High Priority Queue
+    description: Urgent studies requiring immediate processing
+    priority: 1
+    max_size: 1000
+    concurrency: 10
+    timeout: 3600  # 1 hour
+    retry_policy:
+      max_retries: 3
+      backoff: exponential
+      base_delay: 60
+
+  # Standard Queue
+  standard:
+    name: Standard Queue
+    description: Regular study processing
+    priority: 5
+    max_size: 5000
+    concurrency: 20
+    timeout: 7200  # 2 hours
+    retry_policy:
+      max_retries: 3
+      backoff: exponential
+      base_delay: 120
+
+  # Low Priority Queue
+  low_priority:
+    name: Low Priority Queue
+    description: Batch reprocessing and bulk operations
+    priority: 10
+    max_size: 10000
+    concurrency: 5
+    timeout: 14400  # 4 hours
+    retry_policy:
+      max_retries: 2
+      backoff: linear
+      base_delay: 300
+
+  # AI Analysis Queue
+  ai_analysis:
+    name: AI Analysis Queue
+    description: GPU-intensive AI processing
+    priority: 3
+    max_size: 500
+    concurrency: 2  # Limited by GPU availability
+    timeout: 1800  # 30 minutes
+    retry_policy:
+      max_retries: 2
+      backoff: exponential
+      base_delay: 180
+    resource_requirements:
+      gpu: 1
+      gpu_memory: 8GB
+      cpu: 4
+      memory: 16GB
+
+  # Embedding Generation Queue
+  embedding_generation:
+    name: Embedding Generation Queue
+    description: BiomedCLIP embedding generation
+    priority: 4
+    max_size: 1000
+    concurrency: 3
+    timeout: 900  # 15 minutes
+    retry_policy:
+      max_retries: 2
+      backoff: exponential
+      base_delay: 120
+    resource_requirements:
+      gpu: 1
+      gpu_memory: 6GB
+      cpu: 2
+      memory: 8GB
+
+  # Storage Queue
+  storage:
+    name: Storage Queue
+    description: Archival and storage operations
+    priority: 8
+    max_size: 10000
+    concurrency: 10
+    timeout: 3600
+    retry_policy:
+      max_retries: 5
+      backoff: exponential
+      base_delay: 60
+
+# Job Types
+job_types:
+  ingestion:
+    queue: standard
+    estimated_duration: 300  # seconds
+    workflow: ingestion/*
+
+  anonymization:
+    queue: high_priority
+    estimated_duration: 600
+    workflow: processing/anonymization-pipeline.yaml
+
+  normalization:
+    queue: standard
+    estimated_duration: 300
+    workflow: processing/normalization-pipeline.yaml
+
+  enhancement:
+    queue: standard
+    estimated_duration: 600
+    workflow: processing/enhancement-pipeline.yaml
+
+  ai_analysis:
+    queue: ai_analysis
+    estimated_duration: 900
+    workflow: analysis/alf-detect-analysis.yaml
+
+  embedding:
+    queue: embedding_generation
+    estimated_duration: 300
+    workflow: analysis/embedding-generation.yaml
+
+  storage:
+    queue: storage
+    estimated_duration: 600
+    workflow: storage/storage-archival.yaml
+
+# Scheduling
+scheduling:
+  # Load Balancing
+  load_balancing:
+    algorithm: weighted_round_robin
+    consider_queue_length: true
+    consider_worker_load: true
+    consider_resource_availability: true
+
+  # Worker Pool
+  workers:
+    min_workers: 5
+    max_workers: 50
+    scaling_policy: auto
+    scale_up_threshold: 0.8  # Queue utilization
+    scale_down_threshold: 0.2
+    scale_up_increment: 5
+    scale_down_increment: 2
+    cooldown_period: 300  # seconds
+
+  # Resource Allocation
+  resources:
+    cpu_allocation: dynamic
+    memory_allocation: dynamic
+    gpu_allocation: exclusive
+    storage_allocation: dynamic
+
+  # Time-Based Scheduling
+  time_slots:
+    - name: peak_hours
+      schedule: "08:00-18:00"
+      days: [MON, TUE, WED, THU, FRI]
+      priority_boost: 0
+      max_concurrency: 30
+
+    - name: off_hours
+      schedule: "18:00-08:00"
+      days: [MON, TUE, WED, THU, FRI]
+      priority_boost: 0
+      max_concurrency: 50
+
+    - name: weekend
+      schedule: "00:00-24:00"
+      days: [SAT, SUN]
+      priority_boost: -2
+      max_concurrency: 40
+
+# Job Lifecycle Management
+lifecycle:
+  # Job States
+  states:
+    - pending      # Waiting in queue
+    - scheduled    # Ready to execute
+    - running      # Currently executing
+    - paused       # Temporarily paused
+    - completed    # Successfully finished
+    - failed       # Execution failed
+    - cancelled    # Manually cancelled
+    - timeout      # Exceeded time limit
+    - retry        # Retrying after failure
+
+  # State Transitions
+  transitions:
+    pending_to_scheduled:
+      condition: worker_available
+      action: assign_worker
+
+    scheduled_to_running:
+      condition: resources_allocated
+      action: start_execution
+
+    running_to_paused:
+      condition: resource_preemption
+      action: save_state
+
+    running_to_completed:
+      condition: execution_success
+      action: cleanup_resources
+
+    running_to_failed:
+      condition: execution_error
+      action: handle_failure
+
+    failed_to_retry:
+      condition: retries_remaining
+      action: requeue_job
+
+  # Cleanup
+  cleanup:
+    completed_jobs_retention: 7  # days
+    failed_jobs_retention: 30  # days
+    cancelled_jobs_retention: 7  # days
+    cleanup_schedule: "0 2 * * *"  # Daily at 2 AM
+
+# Priority Rules
+priority_rules:
+  # Study-based priorities
+  - name: urgent_studies
+    condition:
+      - urgency: STAT
+      - urgency: URGENT
+    priority_boost: 5
+    queue_override: high_priority
+
+  - name: ai_high_risk
+    condition:
+      - ai_flags: high_risk
+      - ai_alzheimers_risk: ">= 0.7"
+      - ai_autism_risk: ">= 0.7"
+    priority_boost: 3
+    queue_override: high_priority
+
+  - name: reprocessing
+    condition:
+      - job_type: reprocess
+    priority_penalty: 2
+    queue_override: low_priority
+
+  # Time-based priorities
+  - name: peak_hours_penalty
+    condition:
+      - time: "08:00-18:00"
+      - job_type: bulk_operation
+    priority_penalty: 3
+    defer_to_off_hours: true
+
+  - name: sla_expiring
+    condition:
+      - time_in_queue: "> 3600"
+    priority_boost: 2
+
+# Batch Operations
+batch_operations:
+  # Bulk Reprocessing
+  bulk_reprocess:
+    enabled: true
+    max_batch_size: 1000
+    queue: low_priority
+    schedule: off_hours
+    parallel_jobs: 10
+    checkpoint_frequency: 100
+
+  # Batch Anonymization
+  batch_anonymization:
+    enabled: true
+    max_batch_size: 500
+    queue: standard
+    parallel_jobs: 5
+
+  # Batch Embedding Generation
+  batch_embedding:
+    enabled: true
+    max_batch_size: 1000
+    queue: embedding_generation
+    parallel_jobs: 3
+    gpu_batch_optimization: true
+
+# Monitoring and Metrics
+monitoring:
+  # Queue Metrics
+  queue_metrics:
+    - queue_length
+    - queue_wait_time
+    - queue_throughput
+    - queue_utilization
+
+  # Job Metrics
+  job_metrics:
+    - jobs_pending
+    - jobs_running
+    - jobs_completed
+    - jobs_failed
+    - jobs_cancelled
+    - average_execution_time
+    - average_wait_time
+
+  # Resource Metrics
+  resource_metrics:
+    - cpu_utilization
+    - memory_utilization
+    - gpu_utilization
+    - storage_io
+    - network_io
+
+  # Performance Metrics
+  performance_metrics:
+    - studies_per_hour
+    - average_latency
+    - p95_latency
+    - p99_latency
+    - sla_compliance
+
+  # MQTT Topics
+  mqtt:
+    publish_events: true
+    topics:
+      - chazon/os/medical/queue/job-submitted
+      - chazon/os/medical/queue/job-started
+      - chazon/os/medical/queue/job-completed
+      - chazon/os/medical/queue/job-failed
+      - chazon/os/medical/queue/metrics
+
+  # Modbus Registers
+  modbus:
+    holding_registers:
+      - address: 40500
+        name: QUEUE_JOBS_PENDING
+      - address: 40501
+        name: QUEUE_JOBS_RUNNING
+      - address: 40502
+        name: QUEUE_JOBS_COMPLETED_TODAY
+      - address: 40503
+        name: QUEUE_AVG_WAIT_TIME
+      - address: 40504
+        name: QUEUE_THROUGHPUT_PER_HOUR
+
+# Error Handling
+error_handling:
+  # Failure Classification
+  failure_types:
+    - transient  # Temporary failure, retry
+    - permanent  # Permanent failure, don't retry
+    - resource   # Resource unavailable, requeue
+    - timeout    # Execution timeout, retry
+
+  # Dead Letter Queue
+  dead_letter_queue:
+    enabled: true
+    path: /data/medical/queue/dlq/
+    max_retries_before_dlq: 3
+    dlq_retention_days: 90
+    notify_on_dlq: true
+
+  # Circuit Breaker
+  circuit_breaker:
+    enabled: true
+    failure_threshold: 10  # failures
+    timeout: 300  # seconds
+    half_open_requests: 5
+
+# High Availability
+high_availability:
+  # Queue Persistence
+  persistence:
+    enabled: true
+    backend: redis
+    snapshot_interval: 60  # seconds
+    aof_enabled: true
+
+  # Failover
+  failover:
+    enabled: true
+    heartbeat_interval: 10  # seconds
+    failover_timeout: 30  # seconds
+    automatic_recovery: true
+
+  # Replication
+  replication:
+    enabled: false
+    replicas: 2
+    sync_mode: async
+
+# API Endpoints
+api:
+  # Job Submission
+  submit_job:
+    endpoint: /api/queue/submit
+    method: POST
+    authentication: required
+
+  # Job Management
+  get_job_status:
+    endpoint: /api/queue/job/{job_id}
+    method: GET
+
+  pause_job:
+    endpoint: /api/queue/job/{job_id}/pause
+    method: PUT
+
+  resume_job:
+    endpoint: /api/queue/job/{job_id}/resume
+    method: PUT
+
+  cancel_job:
+    endpoint: /api/queue/job/{job_id}/cancel
+    method: DELETE
+
+  # Queue Management
+  get_queue_stats:
+    endpoint: /api/queue/stats
+    method: GET
+
+  purge_queue:
+    endpoint: /api/queue/{queue_name}/purge
+    method: DELETE
+    authentication: admin
+
+# Logging
+logging:
+  level: INFO
+  path: /var/log/medical/queue/batch-processing.log
+  rotation: daily
+  retention_days: 90
+  log_all_jobs: true
+  log_performance_metrics: true

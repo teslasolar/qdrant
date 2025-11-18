@@ -1,0 +1,355 @@
+# DICOM Normalization Processing Pipeline
+# Standardizes DICOM data for consistent processing and analysis
+
+workflow:
+  id: normalization-pipeline-001
+  name: DICOM Normalization
+  version: "1.0.0"
+  isa_level: L3_MES
+  category: processing
+  priority: high
+
+metadata:
+  description: Normalize DICOM studies for consistent format and quality
+  author: Medical Imaging Team
+  created: 2025-11-17
+  updated: 2025-11-17
+  tags:
+    - normalization
+    - standardization
+    - preprocessing
+    - dicom
+
+# Input Configuration
+input:
+  source: study
+  required_status: [ANONYMIZED, VALIDATED, READY_FOR_PROCESSING]
+  supported_modalities: [CT, MR, CR, DX, MG, US, PT, NM]
+
+# Normalization Configuration
+normalization:
+  # Image standardization
+  pixel_data:
+    normalize_intensity: true
+    intensity_range: [0, 1]  # Normalize to 0-1 range
+    handle_negative_values: true
+
+  bit_depth:
+    target_bits_stored: 16
+    target_bits_allocated: 16
+    preserve_original: true
+
+  orientation:
+    standardize: true
+    target_orientation: "LPS"  # Left-Posterior-Superior
+    reorient_if_needed: true
+
+  spacing:
+    standardize: false  # Keep original unless resampling
+    target_spacing: null
+    interpolation: linear
+
+# Workflow Steps
+steps:
+  - id: validate-input
+    name: Validate Study
+    type: validation
+    action: validate_study_ready
+    config:
+      check_all_instances: true
+      verify_pixel_data: true
+      check_required_tags: true
+    on_success: analyze-study-structure
+    on_failure: log-error
+
+  - id: analyze-study-structure
+    name: Analyze Study Structure
+    type: analysis
+    action: analyze_dicom_structure
+    config:
+      extract_study_metadata: true
+      analyze_series_organization: true
+      detect_modality_specifics: true
+      identify_multi_frame: true
+      detect_compressed: true
+    on_success: decompress-if-needed
+    on_failure: log-error
+
+  - id: decompress-if-needed
+    name: Decompress Compressed Transfers
+    type: preprocessing
+    action: decompress_pixel_data
+    config:
+      supported_compressions:
+        - JPEG2000
+        - JPEGBaseline
+        - JPEGLossless
+        - RLE
+      target_transfer_syntax: ExplicitVRLittleEndian
+      preserve_original: true
+      verify_decompression: true
+    on_success: standardize-metadata
+    on_failure: log-error
+
+  - id: standardize-metadata
+    name: Standardize DICOM Tags
+    type: normalization
+    action: standardize_dicom_tags
+    config:
+      fixes:
+        - missing_required_type2: add_empty
+        - invalid_vr: correct
+        - invalid_length: truncate
+        - missing_uid_suffix: add
+        - invalid_date_format: parse_and_fix
+      validate_after: true
+    on_success: convert-photometric
+    on_failure: log-error
+
+  - id: convert-photometric
+    name: Standardize Photometric Interpretation
+    type: normalization
+    action: standardize_photometric
+    config:
+      target_photometric:
+        CT: MONOCHROME2
+        MR: MONOCHROME2
+        CR: MONOCHROME2
+        DX: MONOCHROME2
+        US: MONOCHROME2
+      convert_if_needed: true
+      handle_color: preserve
+    on_success: normalize-pixel-values
+    on_failure: log-error
+
+  - id: normalize-pixel-values
+    name: Normalize Pixel Intensities
+    type: normalization
+    action: normalize_pixel_intensities
+    config:
+      method: modality_specific
+      ct:
+        apply_rescale: true
+        window_center: null  # Keep original
+        window_width: null
+      mr:
+        normalize_range: [0, 4095]
+        percentile_clip: [0.1, 99.9]
+      cr:
+        apply_voi_lut: true
+        normalize_range: [0, 4095]
+      preserve_original_values: true
+    on_success: standardize-orientation
+    on_failure: log-error
+
+  - id: standardize-orientation
+    name: Standardize Image Orientation
+    type: normalization
+    action: standardize_orientation
+    config:
+      target_orientation: LPS
+      apply_to_modalities: [CT, MR, PT]
+      update_iop: true  # Image Orientation Patient
+      update_ipp: true  # Image Position Patient
+      reorient_pixels: true
+    on_success: validate-geometry
+    on_failure: log-error
+
+  - id: validate-geometry
+    name: Validate Image Geometry
+    type: validation
+    action: validate_image_geometry
+    config:
+      check_pixel_spacing: true
+      check_slice_thickness: true
+      check_image_orientation: true
+      check_image_position: true
+      detect_gantry_tilt: true
+      flag_inconsistencies: true
+    on_success: standardize-series-organization
+    on_failure: flag-geometry-issues
+
+  - id: standardize-series-organization
+    name: Standardize Series Organization
+    type: organization
+    action: organize_series
+    config:
+      sort_instances: true
+      sort_by:
+        - InstanceNumber
+        - ImagePositionPatient
+        - AcquisitionTime
+      detect_missing_slices: true
+      flag_duplicates: true
+      create_series_metadata: true
+    on_success: generate-derived-metadata
+    on_failure: log-error
+
+  - id: generate-derived-metadata
+    name: Generate Derived Metadata
+    type: metadata_generation
+    action: generate_metadata
+    config:
+      calculate:
+        - volume_dimensions
+        - voxel_dimensions
+        - study_body_part
+        - study_protocol_category
+        - series_plane_orientation
+        - image_quality_metrics
+      store_in_tags: true
+      private_creator: "CHAZON_MES"
+    on_success: apply-modality-specific
+    on_failure: log-error
+
+  - id: apply-modality-specific
+    name: Apply Modality-Specific Processing
+    type: routing
+    action: route_to_modality_profile
+    config:
+      profiles_path: /workflows/profiles/
+      modality_map:
+        CT: ct-normalization-profile.yaml
+        MR: mr-normalization-profile.yaml
+        CR: xray-normalization-profile.yaml
+        DX: xray-normalization-profile.yaml
+      pass_through_if_missing: true
+    on_success: validate-normalization
+    on_failure: log-error
+
+  - id: validate-normalization
+    name: Validate Normalized Study
+    type: validation
+    action: validate_normalization
+    config:
+      checks:
+        - pixel_data_valid
+        - metadata_complete
+        - orientation_consistent
+        - spacing_valid
+        - photometric_standard
+        - no_compression
+      generate_report: true
+      fail_on_errors: true
+    on_success: save-normalized
+    on_failure: quarantine
+
+  - id: save-normalized
+    name: Save Normalized Study
+    type: storage
+    action: save_normalized_study
+    config:
+      destination: /data/medical/normalized/
+      organize_by: study_uid
+      preserve_original: true
+      calculate_checksum: true
+      update_database: true
+      compression: none
+    on_success: update-tracking
+    on_failure: log-error
+
+  - id: update-tracking
+    name: Update Study Tracking
+    type: tracking
+    action: update_study_status
+    config:
+      database: qdrant
+      collection: medical_studies
+      status: NORMALIZED
+      add_processing_metadata: true
+      timestamp: true
+    on_success: route-to-enhancement
+    on_failure: log-error
+
+  - id: route-to-enhancement
+    name: Route to Enhancement
+    type: routing
+    action: route_to_workflow
+    config:
+      next_workflow: enhancement-pipeline
+      routing_rules: /workflows/routing/study-routing-rules.yaml
+      pass_metadata: true
+    on_success: complete
+    on_failure: log-error
+
+# Quality Control
+quality_control:
+  - checkpoint: post-normalization
+    validations:
+      - pixel_data_normalized
+      - metadata_standardized
+      - orientation_correct
+      - no_compression
+      - geometry_valid
+    failure_action: quarantine
+    notify_on_failure: true
+
+# Error Handling
+error_handling:
+  flag-geometry-issues:
+    action: flag_and_continue
+    status: GEOMETRY_ISSUES
+    notify: true
+    allow_processing: true
+
+  quarantine:
+    path: /data/medical/quarantine/normalization/
+    retention_days: 30
+    notify: true
+
+# Modality-Specific Configurations
+modality_configs:
+  CT:
+    hu_normalization: true
+    bone_windowing: false
+    remove_table: false
+
+  MR:
+    bias_field_correction: true
+    intensity_normalization: true
+    register_sequences: false
+
+  CR:
+    apply_lut: true
+    invert_if_needed: true
+
+  DX:
+    apply_lut: true
+    invert_if_needed: true
+
+# Performance
+performance:
+  max_concurrent_studies: 10
+  thread_pool_size: 20
+  memory_limit: 8GB
+  cache_size: 2GB
+  batch_processing: true
+
+# Monitoring
+monitoring:
+  tags:
+    - NORMALIZATION_STUDIES_PROCESSED
+    - NORMALIZATION_AVG_TIME
+    - NORMALIZATION_FAILURES
+    - NORMALIZATION_GEOMETRY_ISSUES
+
+  mqtt:
+    publish_events: true
+    topics:
+      - chazon/os/medical/normalization/started
+      - chazon/os/medical/normalization/completed
+      - chazon/os/medical/normalization/failed
+
+  modbus:
+    holding_registers:
+      - address: 40210
+        name: NORMALIZATION_STUDIES_PROCESSED
+      - address: 40211
+        name: NORMALIZATION_AVG_TIME
+
+# Logging
+logging:
+  level: INFO
+  path: /var/log/medical/workflows/normalization.log
+  rotation: daily
+  retention_days: 90

@@ -1,5 +1,5 @@
 {
-  "UUID": "15e03c15-d2d9-4597-aa2e-c8071be6df80",
+  "UUID": "14645c99-74a3-437c-8a88-add35e0866a4",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/",
   "Directory_Name": "Os",
@@ -13,163 +13,115 @@
       "path": "/os/backend/",
       "title": "Backend",
       "description": "backend subsystem",
-      "icon": "\u2699\ufe0f",
-      "page_count": 8
+      "icon": "\u2699\ufe0f"
     },
     {
       "path": "/os/boot/",
       "title": "Boot",
       "description": "boot subsystem",
-      "icon": "\ud83d\ude80",
-      "page_count": 15
+      "icon": "\ud83d\ude80"
     },
     {
       "path": "/os/config/",
       "title": "Config",
       "description": "config subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 7
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/os/controls/",
       "title": "Controls",
       "description": "controls subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 8
+      "icon": "\ud83c\udf9b\ufe0f"
     },
     {
       "path": "/os/data/",
       "title": "Data",
       "description": "data subsystem",
-      "icon": "\ud83d\udcca",
-      "page_count": 8
+      "icon": "\ud83d\udcca"
     },
     {
       "path": "/os/debug/",
       "title": "Debug",
       "description": "debug subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 8
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/os/equipment/",
       "title": "Equipment",
       "description": "equipment subsystem",
-      "icon": "\ud83c\udfed",
-      "page_count": 4
+      "icon": "\ud83c\udfed"
     },
     {
       "path": "/os/frontend/",
       "title": "Frontend",
       "description": "frontend subsystem",
-      "icon": "\ud83d\udda5\ufe0f",
-      "page_count": 8
+      "icon": "\ud83d\udda5\ufe0f"
     },
     {
       "path": "/os/language/",
       "title": "Language",
       "description": "language subsystem",
-      "icon": "\ud83c\udf10",
-      "page_count": 8
+      "icon": "\ud83c\udf10"
     },
     {
       "path": "/os/logs/",
       "title": "Logs",
       "description": "logs subsystem",
-      "icon": "\ud83d\udcdd",
-      "page_count": 8
+      "icon": "\ud83d\udcdd"
     },
     {
       "path": "/os/medical/",
       "title": "Medical",
       "description": "medical subsystem",
-      "icon": "\ud83c\udfe5",
-      "page_count": 8
+      "icon": "\ud83c\udfe5"
     },
     {
       "path": "/os/models/",
       "title": "Models",
       "description": "models subsystem",
-      "icon": "\ud83e\udd16",
-      "page_count": 8
+      "icon": "\ud83e\udd16"
     },
     {
       "path": "/os/modules/",
       "title": "Modules",
       "description": "modules subsystem",
-      "icon": "\ud83d\udce6",
-      "page_count": 100
+      "icon": "\ud83d\udce6"
     },
     {
       "path": "/os/sandbox/",
       "title": "Sandbox",
       "description": "sandbox subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 8
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/os/scripts/",
       "title": "Scripts",
       "description": "scripts subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 7
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/os/templates/",
       "title": "Templates",
       "description": "templates subsystem",
-      "icon": "\ud83d\udcc4",
-      "page_count": 11
+      "icon": "\ud83d\udcc4"
     },
     {
       "path": "/os/test-modules/",
       "title": "Test Modules",
       "description": "test-modules subsystem",
-      "icon": "\ud83d\udce6",
-      "page_count": 8
+      "icon": "\ud83d\udce6"
     }
   ],
-  "Sibling_Directories": [
-    {
-      "path": "/cli/",
-      "title": "Cli",
-      "description": "cli area",
-      "icon": "\u2328\ufe0f"
-    },
-    {
-      "path": "/collab/",
-      "title": "Collab",
-      "description": "collab area",
-      "icon": "\ud83d\udc65"
-    },
-    {
-      "path": "/docs/",
-      "title": "Docs",
-      "description": "docs area",
-      "icon": "\ud83d\udcda"
-    }
-  ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
   "has_plc": true,
   "has_hmi": true,
   "has_scada": true,
-  "plc_path": "plc.html",
-  "hmi_path": "hmi.html",
-  "scada_path": "scada.html",
+  "plc_path": "/os/plc.html",
+  "hmi_path": "/os/hmi.html",
+  "scada_path": "/os/scada.html",
   "Features": [
     {
       "title": "Core Functionality",
@@ -226,11 +178,6 @@
       "type": "html"
     },
     {
-      "path": "index-custom.html",
-      "name": "Custom Index",
-      "type": "html"
-    },
-    {
       "path": "plc.html",
       "name": "PLC",
       "type": "html"
@@ -244,57 +191,6 @@
       "path": "scada.html",
       "name": "SCADA",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "hmi.html",
-      "name": "Hmi",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3910
-    },
-    {
-      "path": "plc.html",
-      "name": "Plc",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3649
-    },
-    {
-      "path": "scada.html",
-      "name": "Scada",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 6027
-    },
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 428
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4448
-    },
-    {
-      "path": "module-router.md",
-      "name": "Module Router",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 5500
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3577
     }
   ]
 }

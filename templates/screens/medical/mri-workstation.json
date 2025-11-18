@@ -1,0 +1,149 @@
+{
+  "uuid": "med-screen-mri-001",
+  "type": "screen",
+  "category": "medical",
+  "metadata": {
+    "name": "MRI Workstation",
+    "description": "Magnetic Resonance Imaging workstation with multi-sequence viewing",
+    "version": "1.0.0",
+    "author": "Medical Imaging SCADA",
+    "created": "2025-11-17T00:00:00Z",
+    "modified": "2025-11-17T00:00:00Z",
+    "tags": ["medical", "mri", "imaging", "radiology"]
+  },
+  "layout": {
+    "grid": {
+      "columns": 4,
+      "rows": 4,
+      "gap": 10
+    },
+    "theme": "dark",
+    "colorScheme": "medical-purple"
+  },
+  "components": [
+    {
+      "uuid": "mri-viewer-t1",
+      "type": "dicom-viewport",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "width": 2,
+        "height": 2
+      },
+      "config": {
+        "title": "T1-Weighted",
+        "modality": "MR",
+        "sequence": "T1",
+        "syncPan": true,
+        "syncZoom": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.mri.t1Series"
+        ]
+      }
+    },
+    {
+      "uuid": "mri-viewer-t2",
+      "type": "dicom-viewport",
+      "position": {
+        "x": 2,
+        "y": 0,
+        "width": 2,
+        "height": 2
+      },
+      "config": {
+        "title": "T2-Weighted",
+        "modality": "MR",
+        "sequence": "T2",
+        "syncPan": true,
+        "syncZoom": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.mri.t2Series"
+        ]
+      }
+    },
+    {
+      "uuid": "mri-viewer-flair",
+      "type": "dicom-viewport",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "width": 2,
+        "height": 2
+      },
+      "config": {
+        "title": "FLAIR",
+        "modality": "MR",
+        "sequence": "FLAIR",
+        "syncPan": true,
+        "syncZoom": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.mri.flairSeries"
+        ]
+      }
+    },
+    {
+      "uuid": "mri-sequence-controls",
+      "type": "sequence-selector",
+      "position": {
+        "x": 2,
+        "y": 2,
+        "width": 2,
+        "height": 1
+      },
+      "config": {
+        "sequences": ["T1", "T2", "FLAIR", "DWI", "SWI", "T2*"],
+        "allowMultiSelect": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.mri.availableSequences",
+          "medical.mri.activeSequences"
+        ]
+      }
+    },
+    {
+      "uuid": "mri-patient-info",
+      "type": "patient-info-card",
+      "position": {
+        "x": 2,
+        "y": 3,
+        "width": 2,
+        "height": 1
+      },
+      "config": {
+        "showDemographics": true,
+        "showStudyInfo": true,
+        "showSequenceParameters": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.mri.patientName",
+          "medical.mri.patientID",
+          "medical.mri.studyDate",
+          "medical.mri.fieldStrength"
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "trigger": "onLoad",
+      "action": "loadMRIStudy",
+      "params": {
+        "autoDetectSequences": true,
+        "linkViewports": true
+      }
+    }
+  ],
+  "sequences": {
+    "brain": ["T1", "T2", "FLAIR", "DWI", "SWI"],
+    "spine": ["T1", "T2", "STIR"],
+    "joint": ["T1", "T2", "PD"]
+  }
+}

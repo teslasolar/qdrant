@@ -1,82 +1,58 @@
 {
-  "UUID": "7504b22d-e9bd-4867-873c-511adaa25946",
+  "UUID": "24b46c12-c6b2-4809-9bb2-3a68473a9f68",
   "ISA_Level": "L4_Business",
   "Directory_Path": "/docs/",
   "Directory_Name": "Docs",
-  "Title": "Docs",
-  "Description": "ISA-95 L4_Business - docs subsystem",
+  "Title": "Documentation Hub",
+  "Description": "Complete documentation - API, security, user guides, developer guides, compliance (HIPAA, FDA 21 CFR Part 11)",
   "Icon": "\ud83d\udcda",
   "Color_Scheme": "green",
   "Parent_Path": null,
   "Child_Directories": [
     {
+      "path": "/docs/api/",
+      "title": "API Documentation",
+      "description": "Complete API endpoint reference with examples",
+      "icon": "\ud83d\udd0c"
+    },
+    {
+      "path": "/docs/security/",
+      "title": "Security & Compliance",
+      "description": "HIPAA, FDA 21 CFR Part 11, EU Annex 11, ISO 13485",
+      "icon": "\ud83d\udd12"
+    },
+    {
       "path": "/docs/guides/",
       "title": "Guides",
-      "description": "guides subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 8
+      "description": "User and developer guides",
+      "icon": "\ud83d\udcda"
     },
     {
       "path": "/docs/planning/",
       "title": "Planning",
       "description": "planning subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 7
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/docs/presentation/",
       "title": "Presentation",
       "description": "presentation subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 7
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/docs/standards/",
       "title": "Standards",
       "description": "standards subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 4
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/docs/udts/",
       "title": "Udts",
       "description": "udts subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 2
+      "icon": "\ud83d\udcc1"
     }
   ],
-  "Sibling_Directories": [
-    {
-      "path": "/cli/",
-      "title": "Cli",
-      "description": "cli area",
-      "icon": "\u2328\ufe0f"
-    },
-    {
-      "path": "/collab/",
-      "title": "Collab",
-      "description": "collab area",
-      "icon": "\ud83d\udc65"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "description": "os area",
-      "icon": "\ud83d\udcbb"
-    }
-  ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/docs/",
-      "title": "Docs",
-      "icon": "\ud83d\udcda"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
@@ -88,35 +64,35 @@
   "scada_path": null,
   "Features": [
     {
-      "title": "Core Functionality",
-      "description": "Primary system features",
-      "icon": "\u2699\ufe0f"
+      "title": "API Documentation",
+      "description": "Complete endpoint reference with authentication and examples",
+      "icon": "\ud83d\udd0c"
     },
     {
-      "title": "Data Management",
-      "description": "Structured data handling",
-      "icon": "\ud83d\udcca"
+      "title": "Security & Compliance",
+      "description": "HIPAA, FDA 21 CFR Part 11, EU Annex 11, ISO 13485 compliance guides",
+      "icon": "\ud83d\udd12"
     },
     {
-      "title": "Monitoring",
-      "description": "Real-time monitoring",
-      "icon": "\ud83d\udc41\ufe0f"
+      "title": "Navigation Hub",
+      "description": "Centralized INDEX.md with links to all documentation sections",
+      "icon": "\ud83e\udded"
     }
   ],
   "Quick_Actions": [
     {
-      "label": "View Status",
-      "path": "status.md",
+      "label": "Documentation Index",
+      "path": "INDEX.md",
       "type": "primary"
     },
     {
-      "label": "Controls",
-      "path": "controls.md",
-      "type": "secondary"
+      "label": "API Reference",
+      "path": "api/README.md",
+      "type": "primary"
     },
     {
-      "label": "Documentation",
-      "path": "README.md",
+      "label": "Security & Compliance",
+      "path": "security/README.md",
       "type": "secondary"
     }
   ],
@@ -140,62 +116,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    },
-    {
-      "path": "index-custom.html",
-      "name": "Custom Index",
-      "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "INDEX-SYSTEM.md",
-      "name": "Index System",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 13871
-    },
-    {
-      "path": "ISA-95-COMPLETE-HIERARCHY.md",
-      "name": "Isa 95 Complete Hierarchy",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 23570
-    },
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 2028
-    },
-    {
-      "path": "SITEMAP.md",
-      "name": "Sitemap",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3573
-    },
-    {
-      "path": "STRUCTURE.md",
-      "name": "Structure",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 8402
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4457
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3591
     }
   ]
 }

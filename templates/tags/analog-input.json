@@ -1,0 +1,92 @@
+{
+  "uuid": "tag-ai-001",
+  "type": "tag",
+  "category": "analog",
+  "metadata": {
+    "name": "Analog Input Template",
+    "description": "Standard analog input tag template (e.g., temperature, pressure, flow)",
+    "version": "1.0.0",
+    "tags": ["analog", "input", "sensor"]
+  },
+  "config": {
+    "dataType": "Float",
+    "accessMode": "Read",
+    "scanRate": 1000,
+    "engUnits": "{{units}}",
+    "scaling": {
+      "enabled": true,
+      "rawLow": 0,
+      "rawHigh": 32767,
+      "scaledLow": "{{min}}",
+      "scaledHigh": "{{max}}"
+    },
+    "alarms": {
+      "enabled": true,
+      "lowLow": {
+        "enabled": false,
+        "setpoint": "{{alarmLowLow}}",
+        "deadband": 1.0,
+        "priority": "High"
+      },
+      "low": {
+        "enabled": true,
+        "setpoint": "{{alarmLow}}",
+        "deadband": 1.0,
+        "priority": "Medium"
+      },
+      "high": {
+        "enabled": true,
+        "setpoint": "{{alarmHigh}}",
+        "deadband": 1.0,
+        "priority": "Medium"
+      },
+      "highHigh": {
+        "enabled": false,
+        "setpoint": "{{alarmHighHigh}}",
+        "deadband": 1.0,
+        "priority": "High"
+      }
+    },
+    "historization": {
+      "enabled": true,
+      "provider": "default",
+      "sampleMode": "OnChange",
+      "sampleRate": 1000,
+      "deadband": 0.1,
+      "deadbandMode": "Absolute"
+    },
+    "quality": {
+      "enabled": true,
+      "timeoutMs": 5000
+    }
+  },
+  "examples": [
+    {
+      "name": "Temperature Sensor",
+      "path": "process/temperature",
+      "units": "°C",
+      "min": -50,
+      "max": 150,
+      "alarmLow": 10,
+      "alarmHigh": 120
+    },
+    {
+      "name": "Pressure Sensor",
+      "path": "process/pressure",
+      "units": "PSI",
+      "min": 0,
+      "max": 100,
+      "alarmLow": 20,
+      "alarmHigh": 90
+    },
+    {
+      "name": "Flow Meter",
+      "path": "process/flow",
+      "units": "GPM",
+      "min": 0,
+      "max": 500,
+      "alarmLow": 10,
+      "alarmHigh": 450
+    }
+  ]
+}

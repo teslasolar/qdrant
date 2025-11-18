@@ -1,0 +1,179 @@
+<!-- Center Dock - Main Content Area -->
+<div style="padding: 20px; height: 100%;">
+
+  <div style="text-align: center; margin-bottom: 30px;">
+    <h1 style="color: var(--color-cream); font-size: 2.5em; margin-bottom: 10px; text-shadow: 0 0 20px var(--color-purple-glow);">
+      Medical Imaging Control Center
+    </h1>
+    <p style="color: var(--color-cream-dark); font-size: 1.2em;">
+      ISA-101 High Performance HMI - Cream & Purple Theme
+    </p>
+  </div>
+
+  <!-- Main Process Overview -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px;">
+
+    <!-- Imaging Workstations -->
+    <div class="widget" style="padding: 20px;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+        <div style="font-size: 2em;">🏥</div>
+        <div>
+          <div class="widget-title">Imaging Workstations</div>
+          <div style="font-size: 0.85em; color: var(--color-purple-light);">Active Modalities</div>
+        </div>
+      </div>
+      <div class="widget-value">11<span class="widget-unit">online</span></div>
+      <div style="margin-top: 12px; display: flex; gap: 8px;">
+        <span style="padding: 4px 8px; background: rgba(144, 238, 144, 0.2); border-radius: 4px; font-size: 0.85em;">4 CT</span>
+        <span style="padding: 4px 8px; background: rgba(144, 238, 144, 0.2); border-radius: 4px; font-size: 0.85em;">3 MRI</span>
+        <span style="padding: 4px 8px; background: rgba(144, 238, 144, 0.2); border-radius: 4px; font-size: 0.85em;">4 X-Ray</span>
+      </div>
+    </div>
+
+    <!-- DICOM Pipeline -->
+    <div class="widget" style="padding: 20px;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+        <div style="font-size: 2em;">🔄</div>
+        <div>
+          <div class="widget-title">DICOM Pipeline</div>
+          <div style="font-size: 0.85em; color: var(--color-purple-light);">Processing Status</div>
+        </div>
+      </div>
+      <div class="widget-value">23<span class="widget-unit">processing</span></div>
+      <div style="margin-top: 12px; font-size: 0.85em; color: var(--color-cream-dark);">
+        Avg time: 2.4 min
+      </div>
+    </div>
+
+    <!-- AlF-DETECT -->
+    <div class="widget" style="padding: 20px;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+        <div style="font-size: 2em;">🧠</div>
+        <div>
+          <div class="widget-title">AlF-DETECT</div>
+          <div style="font-size: 0.85em; color: var(--color-purple-light);">AI Screening</div>
+        </div>
+      </div>
+      <div class="widget-value">156<span class="widget-unit">scans today</span></div>
+      <div style="margin-top: 12px; font-size: 0.85em; color: var(--color-normal);">
+        ✓ All systems operational
+      </div>
+    </div>
+
+    <!-- Vector Search -->
+    <div class="widget" style="padding: 20px;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+        <div style="font-size: 2em;">🔍</div>
+        <div>
+          <div class="widget-title">Qdrant Search</div>
+          <div style="font-size: 0.85em; color: var(--color-purple-light);">Vector Database</div>
+        </div>
+      </div>
+      <div class="widget-value">2.4M<span class="widget-unit">vectors</span></div>
+      <div style="margin-top: 12px; font-size: 0.85em; color: var(--color-cream-dark);">
+        Query latency: &lt;50ms
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DICOM Workflow Pipeline Visualization -->
+  <div class="widget" style="padding: 25px; margin-bottom: 20px;">
+    <div class="dock-section-title" style="margin-bottom: 20px;">DICOM Workflow Pipeline</div>
+
+    <div style="display: flex; align-items: center; gap: 15px; overflow-x: auto; padding: 10px;">
+
+      <!-- Stage 1: Ingestion -->
+      <div style="flex: 1; min-width: 150px; text-align: center;">
+        <div style="background: linear-gradient(135deg, var(--color-purple-accent), var(--color-purple-glow)); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);">
+          <div style="font-size: 2em; margin-bottom: 8px;">📥</div>
+          <div style="font-weight: 700; margin-bottom: 4px;">Ingestion</div>
+          <div style="font-size: 0.85em; opacity: 0.9;">PACS/C-STORE</div>
+        </div>
+        <div style="margin-top: 10px; color: var(--color-normal); font-weight: 600;">Active</div>
+      </div>
+
+      <div style="color: var(--color-purple-light); font-size: 1.5em;">→</div>
+
+      <!-- Stage 2: Anonymization -->
+      <div style="flex: 1; min-width: 150px; text-align: center;">
+        <div style="background: linear-gradient(135deg, var(--color-purple-accent), var(--color-purple-glow)); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);">
+          <div style="font-size: 2em; margin-bottom: 8px;">🔒</div>
+          <div style="font-weight: 700; margin-bottom: 4px;">Anonymize</div>
+          <div style="font-size: 0.85em; opacity: 0.9;">HIPAA/GDPR</div>
+        </div>
+        <div style="margin-top: 10px; color: var(--color-normal); font-weight: 600;">Active</div>
+      </div>
+
+      <div style="color: var(--color-purple-light); font-size: 1.5em;">→</div>
+
+      <!-- Stage 3: Enhancement -->
+      <div style="flex: 1; min-width: 150px; text-align: center;">
+        <div style="background: linear-gradient(135deg, var(--color-purple-accent), var(--color-purple-glow)); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);">
+          <div style="font-size: 2em; margin-bottom: 8px;">✨</div>
+          <div style="font-weight: 700; margin-bottom: 4px;">Enhance</div>
+          <div style="font-size: 0.85em; opacity: 0.9;">Quality++</div>
+        </div>
+        <div style="margin-top: 10px; color: var(--color-warning); font-weight: 600;">Processing</div>
+      </div>
+
+      <div style="color: var(--color-purple-light); font-size: 1.5em;">→</div>
+
+      <!-- Stage 4: AI Analysis -->
+      <div style="flex: 1; min-width: 150px; text-align: center;">
+        <div style="background: linear-gradient(135deg, var(--color-purple-accent), var(--color-purple-glow)); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);">
+          <div style="font-size: 2em; margin-bottom: 8px;">🧠</div>
+          <div style="font-weight: 700; margin-bottom: 4px;">AI Analysis</div>
+          <div style="font-size: 0.85em; opacity: 0.9;">AlF-DETECT</div>
+        </div>
+        <div style="margin-top: 10px; color: var(--color-normal); font-weight: 600;">Active</div>
+      </div>
+
+      <div style="color: var(--color-purple-light); font-size: 1.5em;">→</div>
+
+      <!-- Stage 5: Storage -->
+      <div style="flex: 1; min-width: 150px; text-align: center;">
+        <div style="background: linear-gradient(135deg, var(--color-purple-accent), var(--color-purple-glow)); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);">
+          <div style="font-size: 2em; margin-bottom: 8px;">💾</div>
+          <div style="font-weight: 700; margin-bottom: 4px;">Storage</div>
+          <div style="font-size: 0.85em; opacity: 0.9;">Qdrant</div>
+        </div>
+        <div style="margin-top: 10px; color: var(--color-normal); font-weight: 600;">Active</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Quick Links -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+    <a href="/os/medical/dashboard.html" style="background: rgba(245, 242, 232, 0.05); border: 2px solid var(--color-purple-light); border-radius: 8px; padding: 20px; text-decoration: none; color: var(--color-cream); text-align: center; transition: all 0.3s;">
+      <div style="font-size: 2em; margin-bottom: 8px;">📊</div>
+      <div style="font-weight: 700;">Medical Dashboard</div>
+    </a>
+
+    <a href="/enterprise-portal.html" style="background: rgba(245, 242, 232, 0.05); border: 2px solid var(--color-purple-light); border-radius: 8px; padding: 20px; text-decoration: none; color: var(--color-cream); text-align: center; transition: all 0.3s;">
+      <div style="font-size: 2em; margin-bottom: 8px;">🏭</div>
+      <div style="font-weight: 700;">Enterprise Portal</div>
+    </a>
+
+    <a href="/production-planning.html" style="background: rgba(245, 242, 232, 0.05); border: 2px solid var(--color-purple-light); border-radius: 8px; padding: 20px; text-decoration: none; color: var(--color-cream); text-align: center; transition: all 0.3s;">
+      <div style="font-size: 2em; margin-bottom: 8px;">📋</div>
+      <div style="font-weight: 700;">Production Planning</div>
+    </a>
+
+    <a href="/standards/" style="background: rgba(245, 242, 232, 0.05); border: 2px solid var(--color-purple-light); border-radius: 8px; padding: 20px; text-decoration: none; color: var(--color-cream); text-align: center; transition: all 0.3s;">
+      <div style="font-size: 2em; margin-bottom: 8px;">📐</div>
+      <div style="font-weight: 700;">Standards Framework</div>
+    </a>
+  </div>
+
+</div>
+
+<style>
+a:hover {
+  border-color: var(--color-purple-accent) !important;
+  background: rgba(245, 242, 232, 0.1) !important;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+  transform: translateY(-2px);
+}
+</style>

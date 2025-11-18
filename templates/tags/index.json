@@ -1,0 +1,33 @@
+{
+  "version": "1.0.0",
+  "description": "Tag Templates Index",
+  "tags": [
+    {
+      "uuid": "tag-ai-001",
+      "name": "Analog Input Template",
+      "description": "Standard analog input tag template (e.g., temperature, pressure, flow)",
+      "category": "analog",
+      "dataType": "Float",
+      "path": "tags/analog-input.json",
+      "tags": ["analog", "input", "sensor"]
+    },
+    {
+      "uuid": "tag-di-001",
+      "name": "Digital Input Template",
+      "description": "Standard digital input tag template (e.g., limit switches, status)",
+      "category": "digital",
+      "dataType": "Boolean",
+      "path": "tags/digital-input.json",
+      "tags": ["digital", "input", "boolean"]
+    },
+    {
+      "uuid": "tag-ao-001",
+      "name": "Analog Output Template",
+      "description": "Standard analog output tag template (e.g., valve position, speed)",
+      "category": "analog",
+      "dataType": "Float",
+      "path": "tags/analog-output.json",
+      "tags": ["analog", "output", "control"]
+    }
+  ]
+}

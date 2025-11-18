@@ -1,72 +1,15 @@
 {
-  "UUID": "8adbdd64-a5a4-419a-9eaf-d2b94836ce7b",
+  "UUID": "6b63158e-9df6-413f-8c6f-231e8ef03590",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/equipment/process-cells/controls/hmi/",
   "Directory_Name": "Hmi",
   "Title": "Hmi",
   "Description": "ISA-95 L3_MES - hmi subsystem",
-  "Icon": "\ud83c\udf9b\ufe0f",
+  "Icon": "\ud83d\udcc1",
   "Color_Scheme": "blue",
   "Parent_Path": "/os/equipment/process-cells/controls/",
   "Child_Directories": [],
-  "Sibling_Directories": [
-    {
-      "path": "/os/equipment/process-cells/controls/controls/",
-      "title": "Controls",
-      "description": "controls area",
-      "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/equipment/process-cells/controls/plc/",
-      "title": "Plc",
-      "description": "plc area",
-      "icon": "\u2699\ufe0f"
-    },
-    {
-      "path": "/os/equipment/process-cells/controls/scada/",
-      "title": "Scada",
-      "description": "scada area",
-      "icon": "\ud83d\udcca"
-    },
-    {
-      "path": "/os/equipment/process-cells/controls/tags/",
-      "title": "Tags",
-      "description": "tags area",
-      "icon": "\ud83c\udff7\ufe0f"
-    }
-  ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/equipment/",
-      "title": "Equipment",
-      "icon": "\ud83c\udfed"
-    },
-    {
-      "path": "/os/equipment/process-cells/",
-      "title": "Process Cells",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/equipment/process-cells/controls/",
-      "title": "Controls",
-      "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/equipment/process-cells/controls/hmi/",
-      "title": "Hmi",
-      "icon": "\ud83c\udf9b\ufe0f"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": null,
   "Status_Path": null,
@@ -120,15 +63,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 736
     }
   ]
 }

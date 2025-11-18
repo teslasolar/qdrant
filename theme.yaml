@@ -1,0 +1,201 @@
+# Medical Imaging Virtual Factory - Theme Configuration
+# ISA-101 High Performance HMI - Cream & Purple Theme
+
+theme:
+  name: "Cream & Purple ISA-101"
+  version: "1.0.0"
+  author: "Medical Imaging Virtual Factory"
+  description: "ISA-101 compliant high-performance HMI color scheme"
+
+colors:
+  # Primary Backgrounds
+  background:
+    primary: "#2a1a3a"      # Deep Purple
+    secondary: "#3d2a52"    # Medium Purple
+    tertiary: "#1a0f26"     # Darkest Purple
+
+  # Cream Tones
+  cream:
+    primary: "#f5f2e8"      # Primary Cream (text, highlights)
+    dark: "#e8e0c8"         # Darker Cream (secondary text)
+    light: "#faf8f0"        # Lighter Cream (accents)
+
+  # Purple Accents
+  purple:
+    light: "#9b7eb8"        # Light Purple (borders, secondary)
+    accent: "#b794f4"       # Bright Purple (buttons, highlights)
+    glow: "#8b5cf6"         # Glowing Purple (focus, active)
+    dark: "#5a3d7a"         # Dark Purple (shadows)
+
+  # ISA-101 Semantic Status Colors
+  status:
+    normal: "#90ee90"       # Green - Normal Operation
+    warning: "#ffd700"      # Yellow - Warning State
+    alarm: "#ff6b6b"        # Red - Alarm Condition
+    inactive: "#808080"     # Gray - Inactive/Disabled
+    active: "#00bfff"       # Cyan - Active Process
+
+  # Additional Functional Colors
+  functional:
+    success: "#4ade80"      # Success Actions
+    error: "#ef4444"        # Error States
+    info: "#3b82f6"         # Information
+    pending: "#f59e0b"      # Pending/Processing
+
+typography:
+  fonts:
+    primary: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+    monospace: "'Courier New', 'Consolas', monospace"
+    heading: "'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif"
+
+  sizes:
+    xs: "0.75rem"          # 12px
+    sm: "0.875rem"         # 14px
+    base: "1rem"           # 16px
+    lg: "1.125rem"         # 18px
+    xl: "1.25rem"          # 20px
+    "2xl": "1.5rem"        # 24px
+    "3xl": "1.875rem"      # 30px
+    "4xl": "2.25rem"       # 36px
+
+  weights:
+    normal: 400
+    medium: 500
+    semibold: 600
+    bold: 700
+
+spacing:
+  # Dock dimensions
+  dock:
+    north_height: "80px"
+    south_height: "40px"
+    east_width: "280px"
+    west_width: "280px"
+    gap: "4px"
+
+  # General spacing
+  padding:
+    xs: "4px"
+    sm: "8px"
+    md: "12px"
+    lg: "20px"
+    xl: "30px"
+
+  margin:
+    xs: "4px"
+    sm: "8px"
+    md: "15px"
+    lg: "20px"
+    xl: "40px"
+
+  border:
+    radius:
+      sm: "4px"
+      md: "6px"
+      lg: "8px"
+      xl: "12px"
+    width:
+      thin: "1px"
+      normal: "2px"
+      thick: "3px"
+
+effects:
+  shadows:
+    sm: "0 2px 6px rgba(139, 92, 246, 0.2)"
+    md: "0 4px 12px rgba(139, 92, 246, 0.3)"
+    lg: "0 6px 20px rgba(139, 92, 246, 0.5)"
+    glow: "0 0 15px rgba(139, 92, 246, 0.6)"
+
+  transitions:
+    fast: "0.15s ease"
+    normal: "0.3s ease"
+    slow: "0.5s ease"
+
+  animations:
+    pulse: "pulse 2s infinite"
+    spin: "spin 1s linear infinite"
+    fade: "fade 0.3s ease"
+
+gradients:
+  primary: "linear-gradient(135deg, #3d2a52, #2a1a3a)"
+  secondary: "linear-gradient(135deg, #2a1a3a, #1a0f26)"
+  accent: "linear-gradient(135deg, #b794f4, #8b5cf6)"
+  glow: "linear-gradient(135deg, #8b5cf6, #9b7eb8)"
+
+isa101:
+  compliance:
+    standard: "ISA-101 (ANSI/ISA-101.01-2015)"
+    principles:
+      - "High Performance HMI Design"
+      - "Situational Awareness"
+      - "Alarm Management"
+      - "Reduced Cognitive Load"
+      - "Consistent Navigation"
+
+  display_levels:
+    level_1: "Overview - Plant-wide view"
+    level_2: "Unit Overview - Process unit view"
+    level_3: "Detailed Display - Equipment/loop detail"
+    level_4: "Diagnostic Display - Troubleshooting"
+
+  color_usage:
+    background: "Dark (purple) for reduced eye strain"
+    foreground: "Light (cream) for high contrast"
+    status: "Semantic colors (green/yellow/red)"
+    emphasis: "Purple accents for important elements"
+
+responsive:
+  breakpoints:
+    mobile: "768px"
+    tablet: "1024px"
+    desktop: "1200px"
+    wide: "1600px"
+
+components:
+  card:
+    background: "gradient-primary"
+    border: "2px solid purple-light"
+    border_radius: "8px"
+    padding: "20px"
+    shadow: "md"
+
+  button:
+    primary:
+      background: "purple-accent"
+      color: "cream-primary"
+      border: "none"
+      hover: "purple-glow with glow shadow"
+    secondary:
+      background: "transparent"
+      color: "cream-primary"
+      border: "1px solid purple-light"
+      hover: "purple-light background"
+
+  widget:
+    background: "rgba(245, 242, 232, 0.05)"
+    border: "1px solid purple-light"
+    padding: "15px"
+
+  dock:
+    north:
+      background: "gradient-primary"
+      border_bottom: "3px solid purple-glow"
+    south:
+      background: "gradient-secondary"
+      border_top: "3px solid purple-glow"
+    east:
+      border_left: "3px solid purple-glow"
+    west:
+      border_right: "3px solid purple-glow"
+    center:
+      background: "background-tertiary"
+      border: "2px solid purple-accent"
+
+usage:
+  css_variables: true
+  js_loader: "theme-loader.js"
+  apply_to:
+    - "index.html"
+    - "docking-hmi.html"
+    - "All medical imaging screens"
+    - "All template components"

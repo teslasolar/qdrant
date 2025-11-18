@@ -1,0 +1,32 @@
+{
+  "uuid": "med-comp-alf-prob-001",
+  "type": "component",
+  "category": "medical",
+  "metadata": {
+    "name": "AlF Probability Display",
+    "description": "Displays Alzheimer's/Autism screening probabilities from AlF-DETECT",
+    "version": "1.0.0",
+    "tags": ["medical", "alf-detect", "alzheimers", "autism", "ai"]
+  },
+  "template": {
+    "html": "<div class=\"alf-probability-display\">\n  <div class=\"prob-header\">\n    <div class=\"prob-title\">{{title}}</div>\n  </div>\n  <div class=\"prob-cards\">\n    <div class=\"prob-card alzheimers\">\n      <div class=\"prob-card-header\">\n        <div class=\"prob-icon\">🧠</div>\n        <div class=\"prob-label\">Alzheimer's Disease</div>\n      </div>\n      <div class=\"prob-value\" id=\"{{id}}-alz-value\">0%</div>\n      <div class=\"prob-bar\">\n        <div class=\"prob-bar-fill alzheimers\" id=\"{{id}}-alz-bar\" style=\"width: 0%\"></div>\n      </div>\n      <div class=\"prob-note\">Based on hippocampus AlF</div>\n    </div>\n    \n    <div class=\"prob-card autism\">\n      <div class=\"prob-card-header\">\n        <div class=\"prob-icon\">🌈</div>\n        <div class=\"prob-label\">Autism Spectrum</div>\n      </div>\n      <div class=\"prob-value\" id=\"{{id}}-aut-value\">0%</div>\n      <div class=\"prob-bar\">\n        <div class=\"prob-bar-fill autism\" id=\"{{id}}-aut-bar\" style=\"width: 0%\"></div>\n      </div>\n      <div class=\"prob-note\">Based on frontal cortex AlF</div>\n    </div>\n    \n    <div class=\"prob-card normal\">\n      <div class=\"prob-card-header\">\n        <div class=\"prob-icon\">✓</div>\n        <div class=\"prob-label\">Normal/Healthy</div>\n      </div>\n      <div class=\"prob-value\" id=\"{{id}}-norm-value\">0%</div>\n      <div class=\"prob-bar\">\n        <div class=\"prob-bar-fill normal\" id=\"{{id}}-norm-bar\" style=\"width: 0%\"></div>\n      </div>\n      <div class=\"prob-note\">Low AlF accumulation</div>\n    </div>\n  </div>\n</div>",
+    "css": ".alf-probability-display {\n  background: #1a1a2e;\n  border: 2px solid #ff88ff;\n  border-radius: 12px;\n  padding: 20px;\n}\n.prob-header {\n  margin-bottom: 20px;\n  padding-bottom: 15px;\n  border-bottom: 2px solid #ff88ff;\n}\n.prob-title {\n  color: #ff88ff;\n  font-size: 1.3em;\n  font-weight: bold;\n}\n.prob-cards {\n  display: flex;\n  flex-direction: column;\n  gap: 15px;\n}\n.prob-card {\n  background: #0a0a0a;\n  border-radius: 8px;\n  padding: 15px;\n  border: 2px solid #333;\n}\n.prob-card.alzheimers {\n  border-color: #ff0044;\n}\n.prob-card.autism {\n  border-color: #00ccff;\n}\n.prob-card.normal {\n  border-color: #00ff88;\n}\n.prob-card-header {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  margin-bottom: 10px;\n}\n.prob-icon {\n  font-size: 1.5em;\n}\n.prob-label {\n  font-weight: bold;\n  color: #fff;\n  font-size: 1.1em;\n}\n.prob-value {\n  font-size: 2.5em;\n  font-weight: bold;\n  margin: 10px 0;\n  text-align: center;\n}\n.prob-card.alzheimers .prob-value {\n  color: #ff0044;\n}\n.prob-card.autism .prob-value {\n  color: #00ccff;\n}\n.prob-card.normal .prob-value {\n  color: #00ff88;\n}\n.prob-bar {\n  height: 30px;\n  background: #222;\n  border-radius: 15px;\n  overflow: hidden;\n  margin: 10px 0;\n}\n.prob-bar-fill {\n  height: 100%;\n  transition: width 0.5s ease;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-weight: bold;\n  color: #000;\n}\n.prob-bar-fill.alzheimers {\n  background: linear-gradient(90deg, #ff0044, #ff4488);\n}\n.prob-bar-fill.autism {\n  background: linear-gradient(90deg, #00ccff, #44eeff);\n}\n.prob-bar-fill.normal {\n  background: linear-gradient(90deg, #00ff88, #44ffaa);\n}\n.prob-note {\n  font-size: 0.75em;\n  color: #888;\n  text-align: center;\n  margin-top: 8px;\n}",
+    "js": "function initAlfProbabilityDisplay(element, config) {\n  function updateProbabilities(data) {\n    // Update Alzheimer's\n    if (data.alzheimers !== undefined) {\n      const alzValue = Math.round(data.alzheimers);\n      element.querySelector('#' + config.id + '-alz-value').textContent = alzValue + '%';\n      element.querySelector('#' + config.id + '-alz-bar').style.width = alzValue + '%';\n    }\n    \n    // Update Autism\n    if (data.autism !== undefined) {\n      const autValue = Math.round(data.autism);\n      element.querySelector('#' + config.id + '-aut-value').textContent = autValue + '%';\n      element.querySelector('#' + config.id + '-aut-bar').style.width = autValue + '%';\n    }\n    \n    // Update Normal\n    if (data.normal !== undefined) {\n      const normValue = Math.round(data.normal);\n      element.querySelector('#' + config.id + '-norm-value').textContent = normValue + '%';\n      element.querySelector('#' + config.id + '-norm-bar').style.width = normValue + '%';\n    }\n  }\n  \n  return { updateProbabilities };\n}"
+  },
+  "properties": [
+    {
+      "name": "title",
+      "type": "string",
+      "default": "Diagnosis Probabilities"
+    }
+  ],
+  "bindings": {
+    "tags": [
+      {
+        "name": "probabilityTag",
+        "property": "probabilities",
+        "callback": "updateProbabilities"
+      }
+    ]
+  }
+}

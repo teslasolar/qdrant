@@ -1,0 +1,133 @@
+{
+  "uuid": "770e8400-e29b-41d4-a716-446655440002",
+  "type": "screen",
+  "category": "alarm",
+  "metadata": {
+    "name": "Alarm Management",
+    "description": "Alarm viewing, acknowledgment, and management screen",
+    "version": "1.0.0",
+    "author": "Chazon SCADA",
+    "created": "2025-01-17T00:00:00Z",
+    "modified": "2025-01-17T00:00:00Z",
+    "tags": ["alarm", "management", "notification"]
+  },
+  "layout": {
+    "grid": {
+      "columns": 1,
+      "rows": 4,
+      "gap": 10
+    },
+    "theme": "dark",
+    "colorScheme": "red"
+  },
+  "components": [
+    {
+      "uuid": "comp-a001",
+      "type": "alarm-banner",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      },
+      "config": {
+        "showPriority": true,
+        "showTimestamp": true,
+        "audioEnabled": true
+      },
+      "bindings": {
+        "tags": [
+          "alarms.highest.priority",
+          "alarms.unacknowledged.count"
+        ]
+      }
+    },
+    {
+      "uuid": "comp-a002",
+      "type": "alarm-table",
+      "position": {
+        "x": 0,
+        "y": 1,
+        "width": 1,
+        "height": 2
+      },
+      "config": {
+        "columns": [
+          "timestamp",
+          "priority",
+          "source",
+          "message",
+          "state",
+          "acknowledged"
+        ],
+        "filters": {
+          "showActive": true,
+          "showAcknowledged": false,
+          "showCleared": false
+        },
+        "sorting": {
+          "field": "priority",
+          "order": "desc"
+        },
+        "pagination": {
+          "pageSize": 20
+        }
+      },
+      "bindings": {
+        "tags": ["alarms.list"]
+      }
+    },
+    {
+      "uuid": "comp-a003",
+      "type": "alarm-controls",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "width": 1,
+        "height": 1
+      },
+      "config": {
+        "buttons": [
+          {
+            "label": "Acknowledge All",
+            "action": "acknowledgeAll",
+            "confirmRequired": true
+          },
+          {
+            "label": "Mute Audio",
+            "action": "muteAudio",
+            "toggle": true
+          },
+          {
+            "label": "Filter",
+            "action": "showFilterDialog"
+          },
+          {
+            "label": "Export",
+            "action": "exportAlarms",
+            "format": "csv"
+          }
+        ]
+      },
+      "bindings": {
+        "tags": ["alarms.audio.enabled"]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "trigger": "onLoad",
+      "action": "subscribeToTags",
+      "params": {
+        "updateRate": 250
+      }
+    },
+    {
+      "trigger": "onAlarm",
+      "action": "playAudio",
+      "params": {
+        "sound": "alarm-tone.wav"
+      }
+    }
+  ]
+}

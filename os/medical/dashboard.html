@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medical Imaging Control Dashboard - SCADA PACS</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Roboto', 'Courier New', monospace;
+    background: #0a0a0a;
+    color: #00ff88;
+    overflow: hidden;
+  }
+
+  /* Main Layout */
+  .dashboard {
+    display: grid;
+    grid-template-columns: 280px 1fr 350px;
+    grid-template-rows: 70px 1fr 60px;
+    height: 100vh;
+    gap: 2px;
+    background: #000;
+  }
+
+  /* Header */
+  .header {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border-bottom: 3px solid #00ff88;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    box-shadow: 0 4px 20px rgba(0, 255, 136, 0.3);
+  }
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .header-title h1 {
+    font-size: 1.8em;
+    color: #00ff88;
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+  }
+
+  .header-subtitle {
+    color: #00ccff;
+    font-size: 0.9em;
+    margin-left: 15px;
+  }
+
+  .system-status {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #333;
+    border-radius: 6px;
+  }
+
+  .status-led {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #00ff88;
+    box-shadow: 0 0 10px #00ff88;
+    animation: pulse 2s infinite;
+  }
+
+  .status-led.warning { background: #ffaa00; box-shadow: 0 0 10px #ffaa00; }
+  .status-led.error { background: #ff0044; box-shadow: 0 0 10px #ff0044; }
+  .status-led.offline { background: #444; box-shadow: none; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .status-label {
+    font-size: 0.85em;
+    color: #888;
+  }
+
+  .status-value {
+    font-weight: bold;
+    color: #00ff88;
+  }
+
+  /* Sidebar - Modality Selection */
+  .sidebar {
+    grid-row: 2 / 3;
+    background: #1a1a2e;
+    border-right: 2px solid #00ff88;
+    overflow-y: auto;
+    padding: 15px;
+  }
+
+  .sidebar-section {
+    margin-bottom: 25px;
+  }
+
+  .section-title {
+    color: #00ccff;
+    font-size: 0.85em;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #333;
+    letter-spacing: 1px;
+  }
+
+  .modality-card {
+    background: #0a0a0a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .modality-card:hover {
+    border-color: #00ff88;
+    background: rgba(0, 255, 136, 0.05);
+    transform: translateX(5px);
+  }
+
+  .modality-card.active {
+    border-color: #00ff88;
+    background: rgba(0, 255, 136, 0.1);
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+  }
+
+  .modality-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .modality-icon {
+    font-size: 1.8em;
+  }
+
+  .modality-name {
+    font-weight: bold;
+    color: #00ff88;
+    font-size: 1.1em;
+  }
+
+  .modality-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .stat {
+    font-size: 0.75em;
+    color: #666;
+  }
+
+  .stat-value {
+    color: #00ccff;
+    font-weight: bold;
+  }
+
+  .nav-link {
+    display: block;
+    padding: 12px;
+    margin-bottom: 8px;
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #00ff88;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-size: 0.9em;
+  }
+
+  .nav-link:hover {
+    border-color: #00ff88;
+    background: rgba(0, 255, 136, 0.05);
+    transform: translateX(5px);
+  }
+
+  /* Main Content Area */
+  .main-content {
+    grid-row: 2 / 3;
+    background: #0f0f1e;
+    overflow-y: auto;
+    padding: 20px;
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .panel {
+    background: #1a1a2e;
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #00ff88;
+  }
+
+  .panel-title {
+    color: #00ff88;
+    font-size: 1.2em;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .panel-action {
+    font-size: 0.8em;
+    color: #00ccff;
+    cursor: pointer;
+    padding: 6px 12px;
+    background: rgba(0, 204, 255, 0.1);
+    border: 1px solid #00ccff;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+
+  .panel-action:hover {
+    background: rgba(0, 204, 255, 0.2);
+    box-shadow: 0 0 10px rgba(0, 204, 255, 0.3);
+  }
+
+  /* Study Queue */
+  .study-queue {
+    grid-column: 1 / -1;
+  }
+
+  .study-item {
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-left: 4px solid #00ccff;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: 60px 1fr 150px 120px 100px;
+    gap: 15px;
+    align-items: center;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .study-item:hover {
+    border-left-color: #00ff88;
+    background: rgba(0, 255, 136, 0.05);
+    transform: translateX(5px);
+  }
+
+  .study-item.priority-high {
+    border-left-color: #ff0044;
+  }
+
+  .study-item.priority-medium {
+    border-left-color: #ffaa00;
+  }
+
+  .study-icon {
+    font-size: 2.5em;
+    text-align: center;
+  }
+
+  .study-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .study-patient {
+    color: #00ff88;
+    font-weight: bold;
+    font-size: 1.05em;
+  }
+
+  .study-description {
+    color: #888;
+    font-size: 0.85em;
+  }
+
+  .study-modality {
+    display: inline-block;
+    padding: 4px 10px;
+    background: rgba(0, 204, 255, 0.2);
+    border: 1px solid #00ccff;
+    border-radius: 4px;
+    color: #00ccff;
+    font-size: 0.75em;
+    font-weight: bold;
+  }
+
+  .study-time {
+    color: #888;
+    font-size: 0.85em;
+  }
+
+  .study-status {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .study-status.pending {
+    background: rgba(255, 170, 0, 0.2);
+    border: 1px solid #ffaa00;
+    color: #ffaa00;
+  }
+
+  .study-status.processing {
+    background: rgba(0, 204, 255, 0.2);
+    border: 1px solid #00ccff;
+    color: #00ccff;
+  }
+
+  .study-status.completed {
+    background: rgba(0, 255, 136, 0.2);
+    border: 1px solid #00ff88;
+    color: #00ff88;
+  }
+
+  /* Metrics Grid */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+
+  .metric-card {
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+  }
+
+  .metric-value {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #00ff88;
+    margin-bottom: 5px;
+  }
+
+  .metric-label {
+    font-size: 0.85em;
+    color: #888;
+    text-transform: uppercase;
+  }
+
+  .metric-trend {
+    font-size: 0.8em;
+    margin-top: 8px;
+  }
+
+  .metric-trend.up {
+    color: #00ff88;
+  }
+
+  .metric-trend.down {
+    color: #ff0044;
+  }
+
+  /* AlF-DETECT Results */
+  .alf-result {
+    background: #0a0a0a;
+    border: 2px solid #ff88ff;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 12px;
+  }
+
+  .alf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .alf-patient {
+    font-weight: bold;
+    color: #ff88ff;
+  }
+
+  .alf-score {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #ff0044;
+  }
+
+  .alf-probabilities {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .alf-prob {
+    text-align: center;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 6px;
+  }
+
+  .alf-prob-label {
+    font-size: 0.75em;
+    color: #888;
+    margin-bottom: 5px;
+  }
+
+  .alf-prob-value {
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+
+  .alf-prob-value.alzheimers {
+    color: #ff0044;
+  }
+
+  .alf-prob-value.autism {
+    color: #00ccff;
+  }
+
+  .alf-prob-value.normal {
+    color: #00ff88;
+  }
+
+  /* Right Sidebar - Tools */
+  .tools-panel {
+    grid-row: 2 / 3;
+    background: #1a1a2e;
+    border-left: 2px solid #00ff88;
+    overflow-y: auto;
+    padding: 15px;
+  }
+
+  .tool-section {
+    margin-bottom: 20px;
+  }
+
+  .search-box {
+    width: 100%;
+    padding: 12px;
+    background: #0a0a0a;
+    border: 2px solid #333;
+    border-radius: 6px;
+    color: #00ff88;
+    font-family: inherit;
+    font-size: 0.9em;
+    margin-bottom: 15px;
+    transition: all 0.2s;
+  }
+
+  .search-box:focus {
+    outline: none;
+    border-color: #00ff88;
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+  }
+
+  .search-box::placeholder {
+    color: #555;
+  }
+
+  .quick-action {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #00ff88, #00ccff);
+    border: none;
+    border-radius: 6px;
+    color: #000;
+    font-weight: bold;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9em;
+  }
+
+  .quick-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.4);
+  }
+
+  .quick-action.secondary {
+    background: rgba(0, 204, 255, 0.2);
+    border: 2px solid #00ccff;
+    color: #00ccff;
+  }
+
+  .quick-action.secondary:hover {
+    background: rgba(0, 204, 255, 0.3);
+  }
+
+  /* Workflow Diagram */
+  .workflow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: #0a0a0a;
+    border-radius: 8px;
+  }
+
+  .workflow-step {
+    text-align: center;
+    flex: 1;
+    position: relative;
+  }
+
+  .workflow-step::after {
+    content: '→';
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #00ff88;
+    font-size: 1.5em;
+  }
+
+  .workflow-step:last-child::after {
+    content: '';
+  }
+
+  .workflow-icon {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+  }
+
+  .workflow-label {
+    font-size: 0.85em;
+    color: #888;
+  }
+
+  .workflow-count {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #00ff88;
+    margin-top: 5px;
+  }
+
+  /* Footer */
+  .footer {
+    grid-column: 1 / -1;
+    background: #1a1a2e;
+    border-top: 2px solid #00ff88;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+  }
+
+  .footer-info {
+    display: flex;
+    gap: 30px;
+    font-size: 0.85em;
+    color: #888;
+  }
+
+  .footer-item {
+    display: flex;
+    gap: 8px;
+  }
+
+  .footer-label {
+    color: #666;
+  }
+
+  .footer-value {
+    color: #00ff88;
+    font-weight: bold;
+  }
+
+  /* Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0a0a0a;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #00ff88;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #00ccff;
+  }
+
+  /* Chart Container */
+  .chart-container {
+    background: #0a0a0a;
+    border-radius: 8px;
+    padding: 15px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+  }
+</style>
+</head>
+<body>
+
+<div class="dashboard">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-title">
+      <h1>Medical Imaging Control Dashboard</h1>
+      <span class="header-subtitle">SCADA PACS - PLC-004 Medical Imaging</span>
+    </div>
+    <div class="system-status">
+      <div class="status-item">
+        <div class="status-led" id="dicom-led"></div>
+        <div>
+          <div class="status-label">DICOM</div>
+          <div class="status-value" id="dicom-status">READY</div>
+        </div>
+      </div>
+      <div class="status-item">
+        <div class="status-led" id="qdrant-led"></div>
+        <div>
+          <div class="status-label">Qdrant</div>
+          <div class="status-value" id="qdrant-status">CONNECTED</div>
+        </div>
+      </div>
+      <div class="status-item">
+        <div class="status-led" id="alf-led"></div>
+        <div>
+          <div class="status-label">AlF-DETECT</div>
+          <div class="status-value" id="alf-status">READY</div>
+        </div>
+      </div>
+      <div class="status-item">
+        <div>
+          <div class="status-label">Time</div>
+          <div class="status-value" id="current-time">--:--:--</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Left Sidebar - Modality Selection -->
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="section-title">Imaging Modalities</div>
+
+      <div class="modality-card active" data-modality="all">
+        <div class="modality-header">
+          <div class="modality-icon">🏥</div>
+          <div class="modality-name">All Studies</div>
+        </div>
+        <div class="modality-stats">
+          <div class="stat">Active: <span class="stat-value" id="all-active">24</span></div>
+          <div class="stat">Queue: <span class="stat-value" id="all-queue">7</span></div>
+        </div>
+      </div>
+
+      <div class="modality-card" data-modality="ct">
+        <div class="modality-header">
+          <div class="modality-icon">🔲</div>
+          <div class="modality-name">CT Scan</div>
+        </div>
+        <div class="modality-stats">
+          <div class="stat">Active: <span class="stat-value">8</span></div>
+          <div class="stat">Queue: <span class="stat-value">3</span></div>
+          <div class="stat" style="grid-column: 1/-1;">Today: <span class="stat-value">142</span></div>
+        </div>
+      </div>
+
+      <div class="modality-card" data-modality="mri">
+        <div class="modality-header">
+          <div class="modality-icon">🧲</div>
+          <div class="modality-name">MRI</div>
+        </div>
+        <div class="modality-stats">
+          <div class="stat">Active: <span class="stat-value">6</span></div>
+          <div class="stat">Queue: <span class="stat-value">2</span></div>
+          <div class="stat" style="grid-column: 1/-1;">Today: <span class="stat-value">89</span></div>
+        </div>
+      </div>
+
+      <div class="modality-card" data-modality="xray">
+        <div class="modality-header">
+          <div class="modality-icon">📷</div>
+          <div class="modality-name">X-Ray</div>
+        </div>
+        <div class="modality-stats">
+          <div class="stat">Active: <span class="stat-value">5</span></div>
+          <div class="stat">Queue: <span class="stat-value">1</span></div>
+          <div class="stat" style="grid-column: 1/-1;">Today: <span class="stat-value">256</span></div>
+        </div>
+      </div>
+
+      <div class="modality-card" data-modality="ultrasound">
+        <div class="modality-header">
+          <div class="modality-icon">🔊</div>
+          <div class="modality-name">Ultrasound</div>
+        </div>
+        <div class="modality-stats">
+          <div class="stat">Active: <span class="stat-value">3</span></div>
+          <div class="stat">Queue: <span class="stat-value">1</span></div>
+          <div class="stat" style="grid-column: 1/-1;">Today: <span class="stat-value">178</span></div>
+        </div>
+      </div>
+
+      <div class="modality-card" data-modality="mammo">
+        <div class="modality-header">
+          <div class="modality-icon">🎯</div>
+          <div class="modality-name">Mammography</div>
+        </div>
+        <div class="modality-stats">
+          <div class="stat">Active: <span class="stat-value">2</span></div>
+          <div class="stat">Queue: <span class="stat-value">0</span></div>
+          <div class="stat" style="grid-column: 1/-1;">Today: <span class="stat-value">67</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="section-title">Quick Navigation</div>
+      <a href="./alf-detect.html" class="nav-link">🧠 AlF-DETECT System</a>
+      <a href="../frontend/" class="nav-link">🖥️ DICOM Viewer</a>
+      <a href="./scada.html" class="nav-link">📊 SCADA Monitor</a>
+      <a href="./plc.html" class="nav-link">🔧 PLC-004 Controls</a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Patient Study Queue -->
+    <div class="panel study-queue">
+      <div class="panel-header">
+        <div class="panel-title">📋 Patient Study Queue</div>
+        <div class="panel-action" onclick="refreshQueue()">🔄 Refresh</div>
+      </div>
+
+      <div id="study-queue-container">
+        <div class="study-item priority-high" onclick="openStudy('S001')">
+          <div class="study-icon">🔴</div>
+          <div class="study-info">
+            <div class="study-patient">ADAMS, John (M/67)</div>
+            <div class="study-description">Brain CT - Suspected Stroke</div>
+            <div><span class="study-modality">CT</span></div>
+          </div>
+          <div class="study-time">
+            <div>Acquired: 14:23</div>
+            <div style="color: #666;">Series: 4</div>
+          </div>
+          <div class="study-status processing">PROCESSING</div>
+          <div style="color: #00ccff; font-size: 0.9em;">AlF-DETECT ⚡</div>
+        </div>
+
+        <div class="study-item priority-medium" onclick="openStudy('S002')">
+          <div class="study-icon">🟡</div>
+          <div class="study-info">
+            <div class="study-patient">CHEN, Maria (F/54)</div>
+            <div class="study-description">Chest X-Ray - Routine</div>
+            <div><span class="study-modality">X-RAY</span></div>
+          </div>
+          <div class="study-time">
+            <div>Acquired: 14:18</div>
+            <div style="color: #666;">Series: 2</div>
+          </div>
+          <div class="study-status pending">PENDING</div>
+          <div style="color: #666; font-size: 0.9em;">--</div>
+        </div>
+
+        <div class="study-item" onclick="openStudy('S003')">
+          <div class="study-icon">🟢</div>
+          <div class="study-info">
+            <div class="study-patient">GARCIA, Robert (M/42)</div>
+            <div class="study-description">Knee MRI - Sports Injury</div>
+            <div><span class="study-modality">MRI</span></div>
+          </div>
+          <div class="study-time">
+            <div>Acquired: 13:45</div>
+            <div style="color: #666;">Series: 6</div>
+          </div>
+          <div class="study-status completed">COMPLETED</div>
+          <div style="color: #00ff88; font-size: 0.9em;">✓ Ready</div>
+        </div>
+
+        <div class="study-item priority-high" onclick="openStudy('S004')">
+          <div class="study-icon">🔴</div>
+          <div class="study-info">
+            <div class="study-patient">WILSON, Sarah (F/71)</div>
+            <div class="study-description">Brain X-Ray - Alzheimer's Screening</div>
+            <div><span class="study-modality">X-RAY</span></div>
+          </div>
+          <div class="study-time">
+            <div>Acquired: 13:30</div>
+            <div style="color: #666;">Series: 3</div>
+          </div>
+          <div class="study-status processing">PROCESSING</div>
+          <div style="color: #ff88ff; font-size: 0.9em;">AlF-DETECT 🧠</div>
+        </div>
+
+        <div class="study-item" onclick="openStudy('S005')">
+          <div class="study-icon">🟢</div>
+          <div class="study-info">
+            <div class="study-patient">PATEL, Amir (M/35)</div>
+            <div class="study-description">Abdominal Ultrasound</div>
+            <div><span class="study-modality">ULTRASOUND</span></div>
+          </div>
+          <div class="study-time">
+            <div>Acquired: 13:15</div>
+            <div style="color: #666;">Series: 8</div>
+          </div>
+          <div class="study-status completed">COMPLETED</div>
+          <div style="color: #00ff88; font-size: 0.9em;">✓ Ready</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="content-grid">
+      <!-- DICOM Workflow -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">🔄 DICOM Processing Pipeline</div>
+        </div>
+        <div class="workflow">
+          <div class="workflow-step">
+            <div class="workflow-icon">📥</div>
+            <div class="workflow-label">Received</div>
+            <div class="workflow-count">18</div>
+          </div>
+          <div class="workflow-step">
+            <div class="workflow-icon">🔍</div>
+            <div class="workflow-label">Analyzing</div>
+            <div class="workflow-count">6</div>
+          </div>
+          <div class="workflow-step">
+            <div class="workflow-icon">🧬</div>
+            <div class="workflow-label">AI Processing</div>
+            <div class="workflow-count">4</div>
+          </div>
+          <div class="workflow-step">
+            <div class="workflow-icon">✅</div>
+            <div class="workflow-label">Complete</div>
+            <div class="workflow-count">732</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quality Metrics -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">📊 Quality Control Metrics</div>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-value">98.7%</div>
+            <div class="metric-label">Image Quality</div>
+            <div class="metric-trend up">↑ 0.3%</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">2.4s</div>
+            <div class="metric-label">Avg Process Time</div>
+            <div class="metric-trend down">↓ 0.2s</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">99.1%</div>
+            <div class="metric-label">System Uptime</div>
+            <div class="metric-trend up">↑ 0.1%</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">0</div>
+            <div class="metric-label">Active Alarms</div>
+            <div class="metric-trend" style="color: #00ff88;">● Normal</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AlF-DETECT Results -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">🧠 AlF-DETECT Screening Results</div>
+          <div class="panel-action" onclick="window.location.href='./alf-detect.html'">View All →</div>
+        </div>
+
+        <div class="alf-result">
+          <div class="alf-header">
+            <div class="alf-patient">ADAMS, John (M/67)</div>
+            <div class="alf-score">HIGH RISK</div>
+          </div>
+          <div class="alf-probabilities">
+            <div class="alf-prob">
+              <div class="alf-prob-label">Alzheimer's</div>
+              <div class="alf-prob-value alzheimers">73.2%</div>
+            </div>
+            <div class="alf-prob">
+              <div class="alf-prob-label">Autism</div>
+              <div class="alf-prob-value autism">8.4%</div>
+            </div>
+            <div class="alf-prob">
+              <div class="alf-prob-label">Normal</div>
+              <div class="alf-prob-value normal">18.4%</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alf-result">
+          <div class="alf-header">
+            <div class="alf-patient">WILSON, Sarah (F/71)</div>
+            <div class="alf-score" style="color: #ffaa00;">MEDIUM RISK</div>
+          </div>
+          <div class="alf-probabilities">
+            <div class="alf-prob">
+              <div class="alf-prob-label">Alzheimer's</div>
+              <div class="alf-prob-value alzheimers">42.1%</div>
+            </div>
+            <div class="alf-prob">
+              <div class="alf-prob-label">Autism</div>
+              <div class="alf-prob-value autism">5.2%</div>
+            </div>
+            <div class="alf-prob">
+              <div class="alf-prob-label">Normal</div>
+              <div class="alf-prob-value normal">52.7%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Processing Statistics -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">📈 Processing Statistics (24h)</div>
+        </div>
+        <div class="chart-container">
+          <div>📊 Real-time chart visualization (Integration with Qdrant metrics)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Sidebar - Tools -->
+  <div class="tools-panel">
+    <div class="tool-section">
+      <div class="section-title">Vector Search</div>
+      <input type="text" class="search-box" placeholder="Search similar images in Qdrant..." id="search-input">
+      <button class="quick-action" onclick="performSearch()">🔍 Search Similar Cases</button>
+    </div>
+
+    <div class="tool-section">
+      <div class="section-title">Quick Actions</div>
+      <button class="quick-action" onclick="newStudy()">➕ New Study</button>
+      <button class="quick-action secondary" onclick="uploadDicom()">📤 Upload DICOM</button>
+      <button class="quick-action secondary" onclick="exportReport()">📄 Export Report</button>
+      <button class="quick-action secondary" onclick="viewArchive()">🗄️ View Archive</button>
+    </div>
+
+    <div class="tool-section">
+      <div class="section-title">System Information</div>
+      <div style="background: #0a0a0a; padding: 15px; border-radius: 8px; font-size: 0.85em;">
+        <div style="margin-bottom: 10px;">
+          <div style="color: #666;">PLC Controller</div>
+          <div style="color: #00ff88; font-weight: bold;">PLC-004</div>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <div style="color: #666;">Total Tags</div>
+          <div style="color: #00ff88; font-weight: bold;">223 tags</div>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <div style="color: #666;">Active Routines</div>
+          <div style="color: #00ff88; font-weight: bold;">28 routines</div>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <div style="color: #666;">Embedding Model</div>
+          <div style="color: #00ccff; font-weight: bold;">BiomedCLIP</div>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <div style="color: #666;">Vector Database</div>
+          <div style="color: #00ccff; font-weight: bold;">Qdrant</div>
+        </div>
+        <div>
+          <div style="color: #666;">Images Processed</div>
+          <div style="color: #00ff88; font-weight: bold;" id="images-processed">1,247</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tool-section">
+      <div class="section-title">Recent Activity</div>
+      <div style="font-size: 0.8em; color: #888;">
+        <div style="padding: 8px; background: #0a0a0a; border-left: 2px solid #00ff88; margin-bottom: 8px; border-radius: 4px;">
+          <div style="color: #00ff88;">Study Completed</div>
+          <div style="font-size: 0.9em; margin-top: 3px;">GARCIA, Robert - MRI</div>
+        </div>
+        <div style="padding: 8px; background: #0a0a0a; border-left: 2px solid #00ccff; margin-bottom: 8px; border-radius: 4px;">
+          <div style="color: #00ccff;">AlF Analysis Started</div>
+          <div style="font-size: 0.9em; margin-top: 3px;">ADAMS, John - CT Brain</div>
+        </div>
+        <div style="padding: 8px; background: #0a0a0a; border-left: 2px solid #ff88ff; margin-bottom: 8px; border-radius: 4px;">
+          <div style="color: #ff88ff;">Similarity Search</div>
+          <div style="font-size: 0.9em; margin-top: 3px;">Found 15 similar cases</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-info">
+      <div class="footer-item">
+        <div class="footer-label">System:</div>
+        <div class="footer-value">Medical Imaging SCADA v2.1</div>
+      </div>
+      <div class="footer-item">
+        <div class="footer-label">ISA-95 Level:</div>
+        <div class="footer-value">L2 - Control</div>
+      </div>
+      <div class="footer-item">
+        <div class="footer-label">Network:</div>
+        <div class="footer-value" id="network-status">ONLINE</div>
+      </div>
+    </div>
+    <div class="footer-info">
+      <div class="footer-item">
+        <div class="footer-label">Session:</div>
+        <div class="footer-value">admin@med-scada</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+  updateClock();
+  setInterval(updateClock, 1000);
+  loadSystemStatus();
+  initializeModalities();
+});
+
+function updateClock() {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
+  document.getElementById('current-time').textContent = timeStr;
+}
+
+async function loadSystemStatus() {
+  try {
+    // In production, fetch from tag provider
+    const response = await fetch('../controls/tag-providers/medical.json');
+    const data = await response.json();
+
+    // Update status indicators
+    updateStatusLED('dicom-led', data.tags.dicomReady.value);
+    updateStatusLED('qdrant-led', data.tags.qdrantConnected.value);
+    updateStatusLED('alf-led', data.tags.alfDetectReady.value);
+
+    // Update metrics
+    document.getElementById('images-processed').textContent =
+      data.tags.imagesProcessed.value.toLocaleString();
+  } catch (error) {
+    console.log('Tag provider not available, using demo mode');
+  }
+}
+
+function updateStatusLED(elementId, status) {
+  const led = document.getElementById(elementId);
+  if (status === true || status === 'RUNNING') {
+    led.className = 'status-led';
+  } else {
+    led.className = 'status-led offline';
+  }
+}
+
+function initializeModalities() {
+  const modalityCards = document.querySelectorAll('.modality-card');
+  modalityCards.forEach(card => {
+    card.addEventListener('click', function() {
+      modalityCards.forEach(c => c.classList.remove('active'));
+      this.classList.add('active');
+      filterStudies(this.dataset.modality);
+    });
+  });
+}
+
+function filterStudies(modality) {
+  console.log('Filtering studies by modality:', modality);
+  // In production, filter the study queue
+}
+
+function openStudy(studyId) {
+  console.log('Opening study:', studyId);
+  window.location.href = `../frontend/?study=${studyId}`;
+}
+
+function refreshQueue() {
+  console.log('Refreshing queue...');
+  // In production, reload study queue from backend
+  location.reload();
+}
+
+function performSearch() {
+  const query = document.getElementById('search-input').value;
+  console.log('Searching for:', query);
+  // In production, perform Qdrant vector search
+  alert(`Searching Qdrant for: ${query}\n\nThis will perform vector similarity search across all medical images.`);
+}
+
+function newStudy() {
+  alert('Opening new study dialog...\n\nThis would launch the patient registration and study creation interface.');
+}
+
+function uploadDicom() {
+  alert('Opening DICOM upload dialog...\n\nThis would allow direct DICOM file upload to the PACS system.');
+}
+
+function exportReport() {
+  alert('Exporting reports...\n\nThis would generate PDF reports for selected studies.');
+}
+
+function viewArchive() {
+  alert('Opening archive viewer...\n\nThis would show historical studies and long-term storage.');
+}
+
+// Simulate real-time updates
+setInterval(() => {
+  const imagesEl = document.getElementById('images-processed');
+  if (imagesEl) {
+    const current = parseInt(imagesEl.textContent.replace(/,/g, ''));
+    imagesEl.textContent = (current + Math.floor(Math.random() * 3)).toLocaleString();
+  }
+}, 5000);
+</script>
+
+</body>
+</html>

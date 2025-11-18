@@ -1,5 +1,5 @@
 {
-  "UUID": "7d8ab118-e069-4ab4-ab72-af5af7ad6aa2",
+  "UUID": "a1367e51-fcf3-4632-ab0d-bec9ffca04d2",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/templates/components/",
   "Directory_Name": "Components",
@@ -13,73 +13,19 @@
       "path": "/os/templates/components/controls/",
       "title": "Controls",
       "description": "controls subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 2
-    }
-  ],
-  "Sibling_Directories": [
-    {
-      "path": "/os/templates/controls/",
-      "title": "Controls",
-      "description": "controls area",
       "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/templates/layouts/",
-      "title": "Layouts",
-      "description": "layouts area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/templates/medical/",
-      "title": "Medical",
-      "description": "medical area",
-      "icon": "\ud83c\udfe5"
-    },
-    {
-      "path": "/os/templates/p-and-id/",
-      "title": "P And Id",
-      "description": "p-and-id area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/templates/views/",
-      "title": "Views",
-      "description": "views area",
-      "icon": "\ud83d\udcc1"
     }
   ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/templates/",
-      "title": "Templates",
-      "icon": "\ud83d\udcc4"
-    },
-    {
-      "path": "/os/templates/components/",
-      "title": "Components",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
   "has_plc": true,
   "has_hmi": true,
   "has_scada": true,
-  "plc_path": "plc.html",
-  "hmi_path": "hmi.html",
-  "scada_path": "scada.html",
+  "plc_path": "/os/templates/components/plc.html",
+  "hmi_path": "/os/templates/components/hmi.html",
+  "scada_path": "/os/templates/components/scada.html",
   "Features": [
     {
       "title": "Core Functionality",
@@ -149,78 +95,6 @@
       "path": "scada.html",
       "name": "SCADA",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "hmi.html",
-      "name": "Hmi",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3923
-    },
-    {
-      "path": "plc.html",
-      "name": "Plc",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3700
-    },
-    {
-      "path": "scada.html",
-      "name": "Scada",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 6053
-    },
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 1325
-    },
-    {
-      "path": "bootscreen.md",
-      "name": "Bootscreen",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 496
-    },
-    {
-      "path": "buttongroup.md",
-      "name": "Buttongroup",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 758
-    },
-    {
-      "path": "container.md",
-      "name": "Container",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 570
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4648
-    },
-    {
-      "path": "searchbar.md",
-      "name": "Searchbar",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 734
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3636
     }
   ]
 }

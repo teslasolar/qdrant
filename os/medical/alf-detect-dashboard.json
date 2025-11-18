@@ -1,0 +1,429 @@
+{
+  "uuid": "alf-detect-dashboard-001",
+  "type": "screen",
+  "category": "medical",
+  "metadata": {
+    "name": "AlF-DETECT Results Dashboard",
+    "description": "Real-time Alzheimer's/Autism screening results with advanced visualization and analytics",
+    "version": "1.0.0",
+    "author": "Medical AI System",
+    "created": "2025-01-17T00:00:00Z",
+    "modified": "2025-01-17T00:00:00Z",
+    "tags": ["medical", "alf-detect", "alzheimers", "autism", "dashboard", "ai"]
+  },
+  "layout": {
+    "grid": {
+      "columns": 12,
+      "rows": 8,
+      "gap": 15
+    },
+    "theme": "dark",
+    "colorScheme": "medical-purple"
+  },
+  "components": [
+    {
+      "uuid": "comp-header-001",
+      "type": "header-panel",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "width": 12,
+        "height": 1
+      },
+      "config": {
+        "title": "AlF-DETECT Screening Dashboard",
+        "subtitle": "Real-time Alzheimer's & Autism Detection via Aluminum Fluoride Analysis",
+        "icon": "🧠",
+        "showStatus": true,
+        "showTimestamp": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.alfDetectReady",
+          "medical.alfSystemStatus"
+        ]
+      }
+    },
+    {
+      "uuid": "comp-confidence-001",
+      "type": "probability-meter",
+      "position": {
+        "x": 0,
+        "y": 1,
+        "width": 4,
+        "height": 2
+      },
+      "config": {
+        "title": "Alzheimer's Probability",
+        "icon": "🧬",
+        "type": "radial-gauge",
+        "color": "#ff0044",
+        "gradientColors": ["#ff0044", "#ff4488"],
+        "threshold": {
+          "low": 30,
+          "medium": 60,
+          "high": 80
+        },
+        "showConfidenceInterval": true,
+        "showHistoricalComparison": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.alfAlzheimersProbability",
+          "medical.alfAlzheimersConfidence",
+          "medical.alfAlzheimersLowerBound",
+          "medical.alfAlzheimersUpperBound"
+        ]
+      }
+    },
+    {
+      "uuid": "comp-confidence-002",
+      "type": "probability-meter",
+      "position": {
+        "x": 4,
+        "y": 1,
+        "width": 4,
+        "height": 2
+      },
+      "config": {
+        "title": "Autism Spectrum Probability",
+        "icon": "🧩",
+        "type": "radial-gauge",
+        "color": "#00ccff",
+        "gradientColors": ["#00ccff", "#44eeff"],
+        "threshold": {
+          "low": 30,
+          "medium": 60,
+          "high": 80
+        },
+        "showConfidenceInterval": true,
+        "showHistoricalComparison": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.alfAutismProbability",
+          "medical.alfAutismConfidence",
+          "medical.alfAutismLowerBound",
+          "medical.alfAutismUpperBound"
+        ]
+      }
+    },
+    {
+      "uuid": "comp-confidence-003",
+      "type": "probability-meter",
+      "position": {
+        "x": 8,
+        "y": 1,
+        "width": 4,
+        "height": 2
+      },
+      "config": {
+        "title": "Normal/Healthy Probability",
+        "icon": "✓",
+        "type": "radial-gauge",
+        "color": "#00ff88",
+        "gradientColors": ["#00ff88", "#44ffaa"],
+        "threshold": {
+          "low": 50,
+          "medium": 70,
+          "high": 90
+        },
+        "showConfidenceInterval": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.alfNormalProbability",
+          "medical.alfNormalConfidence"
+        ]
+      }
+    },
+    {
+      "uuid": "comp-brain-region-001",
+      "type": "heatmap-visualization",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "width": 6,
+        "height": 3
+      },
+      "config": {
+        "title": "AlF Concentration Heatmap",
+        "type": "brain-overlay",
+        "colorScale": {
+          "min": 0,
+          "max": 100,
+          "colors": ["#00ff88", "#ffaa00", "#ff0044"]
+        },
+        "regions": [
+          "hippocampus",
+          "frontalCortex",
+          "temporalLobe",
+          "parietalLobe",
+          "occipitalLobe",
+          "cerebellum",
+          "amygdala",
+          "basalGanglia"
+        ],
+        "showLabels": true,
+        "interactive": true,
+        "overlay3D": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.alfHippocampusConc",
+          "medical.alfFrontalCortexConc",
+          "medical.alfTemporalLobeConc",
+          "medical.alfParietalLobeConc",
+          "medical.alfOccipitalLobeConc",
+          "medical.alfCerebellumConc",
+          "medical.alfAmygdalaConc",
+          "medical.alfBasalGangliaConc"
+        ]
+      }
+    },
+    {
+      "uuid": "comp-trend-001",
+      "type": "trend-chart",
+      "position": {
+        "x": 6,
+        "y": 3,
+        "width": 6,
+        "height": 3
+      },
+      "config": {
+        "title": "Historical Screening Trends (30 days)",
+        "chartType": "multi-line",
+        "timeRange": 2592000,
+        "series": [
+          {
+            "name": "Alzheimer's Detections",
+            "color": "#ff0044",
+            "lineWidth": 2,
+            "showMarkers": true
+          },
+          {
+            "name": "Autism Detections",
+            "color": "#00ccff",
+            "lineWidth": 2,
+            "showMarkers": true
+          },
+          {
+            "name": "Normal Results",
+            "color": "#00ff88",
+            "lineWidth": 2,
+            "showMarkers": true
+          }
+        ],
+        "showLegend": true,
+        "showGrid": true,
+        "enableZoom": true,
+        "enablePan": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.alfAlzheimersDetectionRate",
+          "medical.alfAutismDetectionRate",
+          "medical.alfNormalRate"
+        ]
+      }
+    },
+    {
+      "uuid": "comp-metrics-001",
+      "type": "metrics-panel",
+      "position": {
+        "x": 0,
+        "y": 6,
+        "width": 3,
+        "height": 2
+      },
+      "config": {
+        "title": "Performance Metrics",
+        "metrics": [
+          {
+            "label": "Positive Screenings",
+            "icon": "📊",
+            "color": "#ff88ff",
+            "format": "number"
+          },
+          {
+            "label": "Screening Queue",
+            "icon": "⏳",
+            "color": "#00ccff",
+            "format": "number"
+          },
+          {
+            "label": "Avg Confidence",
+            "icon": "🎯",
+            "color": "#00ff88",
+            "format": "percentage"
+          },
+          {
+            "label": "Processing Time",
+            "icon": "⚡",
+            "color": "#ffaa00",
+            "format": "milliseconds"
+          }
+        ]
+      },
+      "bindings": {
+        "tags": [
+          "medical.alfPositiveScreenings",
+          "medical.alfScreeningQueue",
+          "medical.alfAverageConfidence",
+          "medical.alfProcessingTime"
+        ]
+      }
+    },
+    {
+      "uuid": "comp-roc-001",
+      "type": "roc-curve",
+      "position": {
+        "x": 3,
+        "y": 6,
+        "width": 3,
+        "height": 2
+      },
+      "config": {
+        "title": "ROC Curve Analysis",
+        "showAUC": true,
+        "curves": [
+          {
+            "name": "Alzheimer's",
+            "color": "#ff0044"
+          },
+          {
+            "name": "Autism",
+            "color": "#00ccff"
+          }
+        ],
+        "showOptimalThreshold": true,
+        "showConfidenceBands": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.alfAlzheimersTPR",
+          "medical.alfAlzheimersFPR",
+          "medical.alfAlzheimersAUC",
+          "medical.alfAutismTPR",
+          "medical.alfAutismFPR",
+          "medical.alfAutismAUC"
+        ]
+      }
+    },
+    {
+      "uuid": "comp-fpfn-001",
+      "type": "confusion-matrix",
+      "position": {
+        "x": 6,
+        "y": 6,
+        "width": 3,
+        "height": 2
+      },
+      "config": {
+        "title": "False Positive/Negative Analysis",
+        "showPercentages": true,
+        "showCounts": true,
+        "colorScale": {
+          "good": "#00ff88",
+          "warning": "#ffaa00",
+          "error": "#ff0044"
+        },
+        "metrics": [
+          {
+            "label": "True Positives",
+            "position": "top-left"
+          },
+          {
+            "label": "False Positives",
+            "position": "top-right"
+          },
+          {
+            "label": "False Negatives",
+            "position": "bottom-left"
+          },
+          {
+            "label": "True Negatives",
+            "position": "bottom-right"
+          }
+        ]
+      },
+      "bindings": {
+        "tags": [
+          "medical.alfTruePositives",
+          "medical.alfFalsePositives",
+          "medical.alfFalseNegatives",
+          "medical.alfTrueNegatives",
+          "medical.alfPrecision",
+          "medical.alfRecall",
+          "medical.alfF1Score"
+        ]
+      }
+    },
+    {
+      "uuid": "comp-recent-001",
+      "type": "screening-list",
+      "position": {
+        "x": 9,
+        "y": 6,
+        "width": 3,
+        "height": 2
+      },
+      "config": {
+        "title": "Recent Screenings",
+        "maxItems": 10,
+        "showTimestamps": true,
+        "showConfidence": true,
+        "showPatientId": true,
+        "colorByResult": true,
+        "enableFiltering": true,
+        "enableSorting": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.alfRecentScreenings",
+          "medical.alfLastScreeningTime",
+          "medical.alfLastPatientId"
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "trigger": "onLoad",
+      "action": "subscribeToTags",
+      "params": {
+        "updateRate": 1000
+      }
+    },
+    {
+      "trigger": "onLoad",
+      "action": "connectMQTT",
+      "params": {
+        "topics": [
+          "chazon/os/medical/alf-detect/result",
+          "chazon/os/medical/alf-detect/alert",
+          "chazon/os/medical/alf-detect/status"
+        ]
+      }
+    },
+    {
+      "trigger": "highConfidenceDetection",
+      "action": "sendAlert",
+      "params": {
+        "priority": "High",
+        "notification": true,
+        "sound": true
+      }
+    }
+  ],
+  "mqtt": {
+    "topics": {
+      "results": "chazon/os/medical/alf-detect/result",
+      "alerts": "chazon/os/medical/alf-detect/alert",
+      "status": "chazon/os/medical/alf-detect/status",
+      "queue": "chazon/os/medical/alf-detect/queue"
+    },
+    "qos": 2,
+    "retained": true
+  }
+}

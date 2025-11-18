@@ -1,5 +1,5 @@
 {
-  "UUID": "234ee6d5-b46a-4966-baa3-9c069fc501ac",
+  "UUID": "42e25e9b-3d12-4622-848a-ac358af5c6ee",
   "ISA_Level": "L4_Business",
   "Directory_Path": "/docs/standards/isa/",
   "Directory_Name": "Isa",
@@ -13,54 +13,22 @@
       "path": "/docs/standards/isa/isa-101/",
       "title": "Isa 101",
       "description": "isa-101 subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 4
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/docs/standards/isa/isa-88/",
       "title": "Isa 88",
       "description": "isa-88 subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 4
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/docs/standards/isa/isa-95/",
       "title": "Isa 95",
       "description": "isa-95 subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 4
-    }
-  ],
-  "Sibling_Directories": [
-    {
-      "path": "/docs/standards/protocols/",
-      "title": "Protocols",
-      "description": "protocols area",
       "icon": "\ud83d\udcc1"
     }
   ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/docs/",
-      "title": "Docs",
-      "icon": "\ud83d\udcda"
-    },
-    {
-      "path": "/docs/standards/",
-      "title": "Standards",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/docs/standards/isa/",
-      "title": "Isa",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": null,
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
@@ -119,22 +87,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4565
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3600
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "UUID": "9f81673a-2175-4da8-9d4a-832e91aeccc5",
+  "UUID": "c91dc186-2722-4254-b714-8028f947662c",
   "ISA_Level": "L4_Business",
   "Directory_Path": "/docs/standards/protocols/modbus/",
   "Directory_Name": "Modbus",
@@ -9,47 +9,7 @@
   "Color_Scheme": "green",
   "Parent_Path": "/docs/standards/protocols/",
   "Child_Directories": [],
-  "Sibling_Directories": [
-    {
-      "path": "/docs/standards/protocols/mqtt/",
-      "title": "Mqtt",
-      "description": "mqtt area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/docs/standards/protocols/opc-ua/",
-      "title": "Opc Ua",
-      "description": "opc-ua area",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/docs/",
-      "title": "Docs",
-      "icon": "\ud83d\udcda"
-    },
-    {
-      "path": "/docs/standards/",
-      "title": "Standards",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/docs/standards/protocols/",
-      "title": "Protocols",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/docs/standards/protocols/modbus/",
-      "title": "Modbus",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
@@ -113,29 +73,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 5339
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4681
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3625
     }
   ]
 }

@@ -1,0 +1,42 @@
+{
+  "uuid": "med-comp-qdrant-001",
+  "type": "component",
+  "category": "medical",
+  "metadata": {
+    "name": "Qdrant Similarity Panel",
+    "description": "Displays vector similarity search results from Qdrant database",
+    "version": "1.0.0",
+    "tags": ["medical", "qdrant", "vector-search", "similarity", "ai"]
+  },
+  "template": {
+    "html": "<div class=\"qdrant-similarity-panel\">\n  <div class=\"panel-header\">\n    <div class=\"panel-title\">{{title}}</div>\n    <div class=\"panel-badge\">Qdrant</div>\n  </div>\n  <div class=\"search-controls\">\n    <input type=\"text\" class=\"search-input\" id=\"{{id}}-search\" placeholder=\"Search similar images...\">\n    <button class=\"search-btn\" id=\"{{id}}-btn\">🔍</button>\n  </div>\n  <div class=\"results-container\" id=\"{{id}}-results\">\n    <div class=\"no-results\">Enter a search query or select an image to find similar cases</div>\n  </div>\n</div>",
+    "css": ".qdrant-similarity-panel {\n  background: #1a1a2e;\n  border: 2px solid #ff88ff;\n  border-radius: 12px;\n  padding: 15px;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.panel-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 15px;\n  padding-bottom: 12px;\n  border-bottom: 2px solid #ff88ff;\n}\n.panel-title {\n  color: #ff88ff;\n  font-size: 1.1em;\n  font-weight: bold;\n}\n.panel-badge {\n  padding: 4px 10px;\n  background: linear-gradient(135deg, #ff88ff, #ff44ff);\n  color: #000;\n  font-size: 0.75em;\n  font-weight: bold;\n  border-radius: 4px;\n  text-transform: uppercase;\n}\n.search-controls {\n  display: flex;\n  gap: 8px;\n  margin-bottom: 15px;\n}\n.search-input {\n  flex: 1;\n  padding: 10px;\n  background: #0a0a0a;\n  border: 2px solid #333;\n  border-radius: 6px;\n  color: #00ff88;\n  font-family: inherit;\n  font-size: 0.9em;\n}\n.search-input:focus {\n  outline: none;\n  border-color: #ff88ff;\n}\n.search-btn {\n  padding: 10px 15px;\n  background: linear-gradient(135deg, #ff88ff, #ff44ff);\n  border: none;\n  border-radius: 6px;\n  color: #000;\n  font-size: 1.2em;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.search-btn:hover {\n  transform: scale(1.05);\n  box-shadow: 0 0 15px rgba(255, 136, 255, 0.5);\n}\n.results-container {\n  flex: 1;\n  overflow-y: auto;\n}\n.no-results {\n  text-align: center;\n  color: #666;\n  padding: 30px 15px;\n  font-size: 0.9em;\n}\n.similarity-result {\n  background: #0a0a0a;\n  border: 1px solid #333;\n  border-left: 3px solid #ff88ff;\n  border-radius: 6px;\n  padding: 12px;\n  margin-bottom: 10px;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.similarity-result:hover {\n  border-left-color: #00ff88;\n  background: rgba(255, 136, 255, 0.05);\n  transform: translateX(5px);\n}\n.result-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 8px;\n}\n.result-patient {\n  color: #00ff88;\n  font-weight: bold;\n  font-size: 0.95em;\n}\n.result-score {\n  padding: 4px 8px;\n  background: rgba(255, 136, 255, 0.2);\n  border: 1px solid #ff88ff;\n  border-radius: 4px;\n  color: #ff88ff;\n  font-size: 0.8em;\n  font-weight: bold;\n}\n.result-info {\n  font-size: 0.85em;\n  color: #888;\n  margin-top: 5px;\n}\n.result-modality {\n  display: inline-block;\n  padding: 2px 6px;\n  background: rgba(0, 204, 255, 0.2);\n  border: 1px solid #00ccff;\n  border-radius: 3px;\n  color: #00ccff;\n  font-size: 0.75em;\n  margin-right: 8px;\n}",
+    "js": "function initQdrantSimilarityPanel(element, config) {\n  const searchInput = element.querySelector('#' + config.id + '-search');\n  const searchBtn = element.querySelector('#' + config.id + '-btn');\n  const resultsContainer = element.querySelector('#' + config.id + '-results');\n  \n  function performSearch() {\n    const query = searchInput.value;\n    if (!query) return;\n    \n    // In production, call Qdrant API\n    console.log('Searching Qdrant for:', query);\n    \n    // Show loading state\n    resultsContainer.innerHTML = '<div class=\"no-results\">Searching Qdrant vector database...</div>';\n    \n    // Simulate API call\n    setTimeout(() => {\n      // Mock results\n      displayResults(mockResults());\n    }, 1000);\n  }\n  \n  function displayResults(results) {\n    if (!results || results.length === 0) {\n      resultsContainer.innerHTML = '<div class=\"no-results\">No similar cases found</div>';\n      return;\n    }\n    \n    resultsContainer.innerHTML = '';\n    results.forEach(result => {\n      const resultEl = createResultElement(result);\n      resultsContainer.appendChild(resultEl);\n    });\n  }\n  \n  function createResultElement(result) {\n    const div = document.createElement('div');\n    div.className = 'similarity-result';\n    div.innerHTML = `\n      <div class=\"result-header\">\n        <div class=\"result-patient\">${result.patientName}</div>\n        <div class=\"result-score\">${(result.score * 100).toFixed(1)}%</div>\n      </div>\n      <div class=\"result-info\">\n        <span class=\"result-modality\">${result.modality}</span>\n        ${result.description}\n      </div>\n      <div class=\"result-info\" style=\"margin-top: 5px; color: #666;\">\n        ${result.date} • ${result.diagnosis || 'No diagnosis'}\n      </div>\n    `;\n    \n    div.addEventListener('click', () => {\n      if (config.onResultClick) {\n        config.onResultClick(result);\n      }\n    });\n    \n    return div;\n  }\n  \n  function mockResults() {\n    return [\n      {\n        patientName: 'SMITH, Jane',\n        score: 0.94,\n        modality: 'CT',\n        description: 'Brain CT - Similar pattern',\n        date: '2025-10-15',\n        diagnosis: \"Alzheimer's - Early stage\"\n      },\n      {\n        patientName: 'DOE, John',\n        score: 0.87,\n        modality: 'MR',\n        description: 'Brain MRI - Hippocampal atrophy',\n        date: '2025-09-22',\n        diagnosis: \"Alzheimer's - Moderate\"\n      },\n      {\n        patientName: 'JOHNSON, Mary',\n        score: 0.82,\n        modality: 'XR',\n        description: 'Brain X-Ray - AlF accumulation',\n        date: '2025-11-01',\n        diagnosis: 'High AlF risk'\n      }\n    ];\n  }\n  \n  searchBtn.addEventListener('click', performSearch);\n  searchInput.addEventListener('keypress', (e) => {\n    if (e.key === 'Enter') performSearch();\n  });\n  \n  return { displayResults };\n}"
+  },
+  "properties": [
+    {
+      "name": "title",
+      "type": "string",
+      "default": "Similar Cases"
+    },
+    {
+      "name": "maxResults",
+      "type": "number",
+      "default": 10
+    },
+    {
+      "name": "embeddingModel",
+      "type": "string",
+      "default": "BiomedCLIP"
+    }
+  ],
+  "bindings": {
+    "tags": [
+      {
+        "name": "resultsTag",
+        "property": "results",
+        "callback": "displayResults"
+      }
+    ]
+  }
+}

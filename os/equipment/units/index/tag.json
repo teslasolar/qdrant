@@ -1,5 +1,5 @@
 {
-  "UUID": "8df117c3-5d16-4d87-9a4b-2779d26fd5b4",
+  "UUID": "fce9bea5-62f6-4b11-8734-b9cacf51a6a4",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/equipment/units/",
   "Directory_Name": "Units",
@@ -13,76 +13,10 @@
       "path": "/os/equipment/units/controls/",
       "title": "Controls",
       "description": "controls subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 2
-    }
-  ],
-  "Sibling_Directories": [
-    {
-      "path": "/os/equipment/areas/",
-      "title": "Areas",
-      "description": "areas area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/equipment/control-modules/",
-      "title": "Control Modules",
-      "description": "control-modules area",
-      "icon": "\ud83d\udce6"
-    },
-    {
-      "path": "/os/equipment/controls/",
-      "title": "Controls",
-      "description": "controls area",
       "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/equipment/enterprise/",
-      "title": "Enterprise",
-      "description": "enterprise area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/equipment/equipment-modules/",
-      "title": "Equipment Modules",
-      "description": "equipment-modules area",
-      "icon": "\ud83d\udce6"
-    },
-    {
-      "path": "/os/equipment/process-cells/",
-      "title": "Process Cells",
-      "description": "process-cells area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/equipment/site/",
-      "title": "Site",
-      "description": "site area",
-      "icon": "\ud83d\udcc1"
     }
   ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/equipment/",
-      "title": "Equipment",
-      "icon": "\ud83c\udfed"
-    },
-    {
-      "path": "/os/equipment/units/",
-      "title": "Units",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": null,
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
@@ -141,29 +75,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4588
-    },
-    {
-      "path": "dicom-parser-unit.md",
-      "name": "Dicom Parser Unit",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 11777
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3616
     }
   ]
 }

@@ -1,0 +1,461 @@
+# X-Ray Modality-Specific Processing Profile
+# Specialized processing for CR (Computed Radiography) and DX (Digital X-Ray) images
+
+profile:
+  id: xray-processing-profile-001
+  name: X-Ray Processing Profile
+  version: "1.0.0"
+  modality: [CR, DX]
+  description: X-Ray specific image processing, enhancement, and analysis
+
+metadata:
+  author: Medical Imaging Team
+  created: 2025-11-17
+  updated: 2025-11-17
+  applicable_to:
+    - Computed Radiography (CR)
+    - Digital Radiography (DX)
+    - Digital X-Ray
+  tags:
+    - xray
+    - chest-xray
+    - radiography
+    - edge-enhancement
+
+# X-Ray Specific Parameters
+xray_parameters:
+  # Photometric Interpretation
+  photometric:
+    standard: MONOCHROME2
+    invert_if_needed: true
+    validate_inversion: true
+
+  # Exposure Indicators
+  exposure:
+    check_overexposure: true
+    check_underexposure: true
+    optimal_range_modality_specific: true
+
+  # VOI LUT (Value of Interest Lookup Table)
+  voi_lut:
+    apply_if_present: true
+    validate_correctness: true
+
+# Body Part Detection
+body_part_detection:
+  enabled: true
+  confidence_threshold: 0.8
+  supported_parts:
+    - CHEST
+    - ABDOMEN
+    - SPINE
+    - PELVIS
+    - EXTREMITY
+    - SKULL
+    - HAND
+    - FOOT
+
+  # View Position Detection
+  view_detection:
+    enabled: true
+    common_views:
+      - AP  # Anterior-Posterior
+      - PA  # Posterior-Anterior
+      - LATERAL
+      - OBLIQUE
+      - DECUBITUS
+
+# X-Ray Specific Processing Steps
+processing_steps:
+  - id: validate-xray-metadata
+    name: Validate X-Ray Metadata
+    type: validation
+    config:
+      required_tags:
+        - BodyPartExamined
+        - ViewPosition
+        - PhotometricInterpretation
+        - PixelSpacing
+        - Rows
+        - Columns
+      optional_tags:
+        - ExposureIndex
+        - TargetExposureIndex
+        - DeviationIndex
+
+  - id: detect-body-part-view
+    name: Detect Body Part and View
+    type: detection
+    config:
+      use_dicom_tags: true
+      use_ai_detection: true
+      model: body_part_classifier
+      validate_consistency: true
+      update_tags_if_missing: true
+
+  - id: apply-photometric-correction
+    name: Apply Photometric Correction
+    type: correction
+    config:
+      target_photometric: MONOCHROME2
+      invert_if_monochrome1: true
+      verify_after_inversion: true
+
+  - id: apply-voi-lut
+    name: Apply VOI LUT
+    type: windowing
+    config:
+      use_dicom_lut: true
+      fallback_to_auto: true
+      body_part_specific: true
+
+  - id: exposure-correction
+    name: Exposure Correction
+    type: correction
+    config:
+      check_exposure_index: true
+      auto_brightness: true
+      auto_contrast: true
+      preserve_diagnostic_range: true
+
+  - id: remove-xray-artifacts
+    name: Remove X-Ray Artifacts
+    type: artifact_removal
+    config:
+      grid_line_removal:
+        enabled: true
+        method: frequency_filter
+        grid_frequency_detection: auto
+
+      scatter_correction:
+        enabled: true
+        method: kernel_based
+
+      collimator_detection:
+        enabled: true
+        crop_to_anatomy: true
+        preserve_annotations: true
+
+      marker_removal:
+        enabled: false  # Keep anatomical markers
+        detect_markers: true
+
+  - id: enhance-xray-features
+    name: Enhance X-Ray Features
+    type: enhancement
+    config:
+      bone_enhancement:
+        enabled: true
+        sharpen: true
+        edge_enhancement: true
+        sharpening_radius: 1.0
+
+      soft_tissue_enhancement:
+        enabled: true
+        contrast_enhancement: clahe
+        clip_limit: 2.0
+
+      edge_enhancement:
+        enabled: true
+        method: unsharp_mask
+        strength: 0.7
+
+  - id: body-part-specific-processing
+    name: Apply Body Part Processing
+    type: routing
+    config:
+      route_by_body_part: true
+      profiles:
+        CHEST: chest_xray_processing
+        ABDOMEN: abdomen_xray_processing
+        SPINE: spine_xray_processing
+        EXTREMITY: extremity_xray_processing
+
+  - id: orientation-correction
+    name: Correct Image Orientation
+    type: geometric_correction
+    config:
+      detect_orientation: true
+      auto_rotate: true
+      detect_left_right_markers: true
+      validate_orientation: true
+
+  - id: quality-assessment
+    name: Assess Image Quality
+    type: quality_assessment
+    config:
+      check_positioning: true
+      check_exposure: true
+      check_artifacts: true
+      check_anatomical_coverage: true
+      generate_quality_score: true
+
+# Chest X-Ray Specific Processing
+chest_xray_processing:
+  enabled: true
+  applicable_views: [PA, AP, LATERAL]
+
+  processing_steps:
+    - id: lung-field-segmentation
+      name: Segment Lung Fields
+      type: segmentation
+      config:
+        method: deep_learning
+        model: lung_segmentation_unet
+        generate_masks: true
+
+    - id: detect-pathologies
+      name: Detect Chest Pathologies
+      type: ai_detection
+      config:
+        model: chest_xray_classifier
+        detections:
+          - pneumonia
+          - pleural_effusion
+          - pneumothorax
+          - cardiomegaly
+          - pulmonary_edema
+          - mass
+          - nodule
+          - atelectasis
+          - consolidation
+          - fracture
+        confidence_threshold: 0.7
+        generate_heatmaps: true
+
+    - id: measure-cardiothoracic-ratio
+      name: Calculate Cardiothoracic Ratio
+      type: measurement
+      config:
+        applicable_views: [PA, AP]
+        measure_heart_width: true
+        measure_thorax_width: true
+        calculate_ctr: true
+        normal_range: [0.4, 0.5]
+        flag_abnormal: true
+
+    - id: measure-lung-volumes
+      name: Estimate Lung Volumes
+      type: measurement
+      config:
+        segment_lungs: true
+        calculate_areas: true
+        compare_left_right: true
+        flag_asymmetry: true
+
+    - id: detect-tubes-lines
+      name: Detect Tubes and Lines
+      type: detection
+      config:
+        detect_objects:
+          - endotracheal_tube
+          - ng_tube
+          - central_line
+          - chest_tube
+          - pacemaker
+          - icd
+        verify_positioning: true
+        flag_malposition: true
+
+    - id: rib-fracture-detection
+      name: Detect Rib Fractures
+      type: ai_detection
+      config:
+        model: rib_fracture_detector
+        sensitivity: high
+        generate_overlays: true
+
+  quality_checks:
+    - proper_inspiration: "10 posterior ribs visible"
+    - rotation: "medial clavicles equidistant from spinous processes"
+    - penetration: "vertebral bodies faintly visible through heart"
+    - coverage: "lung apices and costophrenic angles included"
+
+# Extremity X-Ray Processing
+extremity_xray_processing:
+  enabled: true
+  applicable_parts: [HAND, WRIST, ELBOW, SHOULDER, HIP, KNEE, ANKLE, FOOT]
+
+  processing_steps:
+    - id: bone-segmentation
+      name: Segment Bones
+      type: segmentation
+      config:
+        method: deep_learning
+        model: bone_segmentation_model
+
+    - id: fracture-detection
+      name: Detect Fractures
+      type: ai_detection
+      config:
+        model: fracture_detection_model
+        detection_types:
+          - fracture
+          - dislocation
+          - bone_lesion
+        confidence_threshold: 0.7
+        generate_annotations: true
+
+    - id: joint-space-analysis
+      name: Analyze Joint Spaces
+      type: measurement
+      config:
+        measure_joint_space: true
+        detect_narrowing: true
+        detect_erosions: true
+
+    - id: bone-density-estimation
+      name: Estimate Bone Density
+      type: analysis
+      config:
+        method: texture_analysis
+        generate_osteoporosis_risk: true
+
+# Spine X-Ray Processing
+spine_xray_processing:
+  enabled: true
+  applicable_parts: [C-SPINE, T-SPINE, L-SPINE]
+
+  processing_steps:
+    - id: vertebra-detection
+      name: Detect Vertebrae
+      type: detection
+      config:
+        method: deep_learning
+        model: vertebra_detector
+        label_vertebrae: true
+
+    - id: spine-alignment-analysis
+      name: Analyze Spine Alignment
+      type: measurement
+      config:
+        measure_cobb_angle: true
+        detect_scoliosis: true
+        detect_lordosis: true
+        detect_kyphosis: true
+        flag_abnormal_curvature: true
+
+    - id: disk-space-analysis
+      name: Analyze Disk Spaces
+      type: measurement
+      config:
+        measure_disk_heights: true
+        detect_narrowing: true
+        compare_adjacent_levels: true
+
+    - id: fracture-detection
+      name: Detect Vertebral Fractures
+      type: ai_detection
+      config:
+        model: vertebral_fracture_detector
+        detect_compression: true
+        measure_compression_ratio: true
+
+# X-Ray Enhancement Profiles
+enhancement_profiles:
+  standard:
+    contrast_enhancement: moderate
+    edge_enhancement: moderate
+    noise_reduction: moderate
+
+  bone:
+    contrast_enhancement: high
+    edge_enhancement: high
+    sharpening: aggressive
+    highlight_edges: true
+
+  soft_tissue:
+    contrast_enhancement: moderate
+    edge_enhancement: low
+    noise_reduction: high
+    preserve_gradients: true
+
+  chest:
+    lung_enhancement: true
+    mediastinum_enhancement: true
+    rib_suppression: optional
+    dual_energy: false
+
+# Quality Control
+quality_control:
+  positioning_assessment:
+    check_anatomy_included: true
+    check_rotation: true
+    check_angulation: true
+
+  exposure_assessment:
+    check_underexposure: true
+    check_overexposure: true
+    check_histogram: true
+
+  artifact_assessment:
+    check_motion_blur: true
+    check_grid_artifacts: true
+    check_scatter: true
+
+  labeling_verification:
+    check_left_right_markers: true
+    check_patient_id: true
+    check_view_labels: true
+
+# Advanced Processing
+advanced_processing:
+  # Bone Suppression (for chest X-rays)
+  bone_suppression:
+    enabled: false  # Optional feature
+    method: deep_learning
+    model: bone_suppression_gan
+    generate_both_versions: true
+
+  # Dual Energy
+  dual_energy:
+    enabled: false
+    decomposition:
+      - bone_image
+      - soft_tissue_image
+
+  # Tomosynthesis
+  tomosynthesis:
+    enabled: false
+    reconstruction: true
+    slice_thickness: 1.0  # mm
+
+# Performance Optimization
+performance:
+  parallel_processing: true
+  gpu_acceleration: true
+  batch_processing: true
+  cache_models: true
+
+# Output Configuration
+output:
+  preserve_original: true
+  generate_formats:
+    - dicom
+    - jpeg  # For viewing
+    - png  # For annotations
+
+  annotations:
+    overlay_detections: true
+    overlay_measurements: true
+    include_confidence_scores: true
+
+  reports:
+    generate_findings_report: true
+    include_measurements: true
+    include_quality_metrics: true
+
+# Monitoring
+monitoring:
+  track_metrics:
+    - xray_studies_processed
+    - pathologies_detected
+    - fractures_detected
+    - quality_failures
+    - average_processing_time
+
+  tags:
+    - XRAY_STUDIES_PROCESSED
+    - XRAY_AVG_PROCESSING_TIME
+    - XRAY_PATHOLOGIES_DETECTED
+    - XRAY_QUALITY_ISSUES

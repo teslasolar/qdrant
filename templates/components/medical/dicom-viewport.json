@@ -1,0 +1,52 @@
+{
+  "uuid": "med-comp-viewport-001",
+  "type": "component",
+  "category": "medical",
+  "metadata": {
+    "name": "DICOM Viewport",
+    "description": "Advanced DICOM image viewer with medical imaging tools",
+    "version": "1.0.0",
+    "tags": ["medical", "dicom", "viewer", "imaging"]
+  },
+  "template": {
+    "html": "<div class=\"dicom-viewport\">\n  <div class=\"viewport-header\">\n    <div class=\"viewport-title\">{{title}}</div>\n    <div class=\"viewport-tools\" id=\"{{id}}-tools\"></div>\n  </div>\n  <div class=\"viewport-canvas-container\">\n    <canvas class=\"viewport-canvas\" id=\"{{id}}-canvas\"></canvas>\n    <div class=\"viewport-overlay\" id=\"{{id}}-overlay\">\n      <div class=\"overlay-top-left\">\n        <div class=\"overlay-item\">{{patientName}}</div>\n        <div class=\"overlay-item\">{{patientID}}</div>\n      </div>\n      <div class=\"overlay-top-right\">\n        <div class=\"overlay-item\">{{modality}}</div>\n        <div class=\"overlay-item\">{{studyDate}}</div>\n      </div>\n      <div class=\"overlay-bottom-left\">\n        <div class=\"overlay-item\">Series: {{seriesNumber}}</div>\n        <div class=\"overlay-item\">Image: {{imageNumber}}/{{totalImages}}</div>\n      </div>\n      <div class=\"overlay-bottom-right\">\n        <div class=\"overlay-item\">W: {{windowWidth}} L: {{windowLevel}}</div>\n        <div class=\"overlay-item\">Zoom: {{zoomLevel}}%</div>\n      </div>\n    </div>\n  </div>\n  <div class=\"viewport-controls\">\n    <button class=\"tool-btn\" data-tool=\"zoom\" title=\"Zoom\">🔍</button>\n    <button class=\"tool-btn\" data-tool=\"pan\" title=\"Pan\">✋</button>\n    <button class=\"tool-btn\" data-tool=\"windowing\" title=\"Window/Level\">🎚️</button>\n    <button class=\"tool-btn\" data-tool=\"measure\" title=\"Measure\">📏</button>\n    <button class=\"tool-btn\" data-tool=\"annotate\" title=\"Annotate\">✏️</button>\n    <button class=\"tool-btn\" data-tool=\"reset\" title=\"Reset\">🔄</button>\n  </div>\n</div>",
+    "css": ".dicom-viewport {\n  display: flex;\n  flex-direction: column;\n  background: #000;\n  border: 2px solid #00ff88;\n  border-radius: 8px;\n  overflow: hidden;\n  height: 100%;\n}\n.viewport-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 10px 15px;\n  background: #1a1a2e;\n  border-bottom: 1px solid #00ff88;\n}\n.viewport-title {\n  color: #00ff88;\n  font-weight: bold;\n  font-size: 1.1em;\n}\n.viewport-canvas-container {\n  position: relative;\n  flex: 1;\n  background: #000;\n  overflow: hidden;\n}\n.viewport-canvas {\n  width: 100%;\n  height: 100%;\n  cursor: crosshair;\n}\n.viewport-overlay {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  pointer-events: none;\n  color: #00ff88;\n  font-size: 0.85em;\n  font-family: 'Courier New', monospace;\n}\n.overlay-top-left {\n  position: absolute;\n  top: 10px;\n  left: 10px;\n}\n.overlay-top-right {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n  text-align: right;\n}\n.overlay-bottom-left {\n  position: absolute;\n  bottom: 10px;\n  left: 10px;\n}\n.overlay-bottom-right {\n  position: absolute;\n  bottom: 10px;\n  right: 10px;\n  text-align: right;\n}\n.overlay-item {\n  margin: 3px 0;\n  text-shadow: 1px 1px 2px #000;\n}\n.viewport-controls {\n  display: flex;\n  gap: 8px;\n  padding: 10px;\n  background: #1a1a2e;\n  border-top: 1px solid #00ff88;\n}\n.tool-btn {\n  padding: 8px 12px;\n  background: #0a0a0a;\n  border: 1px solid #333;\n  border-radius: 4px;\n  color: #00ff88;\n  cursor: pointer;\n  transition: all 0.2s;\n  font-size: 1.2em;\n}\n.tool-btn:hover {\n  border-color: #00ff88;\n  background: rgba(0, 255, 136, 0.1);\n}\n.tool-btn.active {\n  border-color: #00ccff;\n  background: rgba(0, 204, 255, 0.2);\n  box-shadow: 0 0 10px rgba(0, 204, 255, 0.3);\n}",
+    "js": "function initDicomViewport(element, config) {\n  const canvas = element.querySelector('.viewport-canvas');\n  const ctx = canvas.getContext('2d');\n  let currentImage = null;\n  let viewport = {\n    zoom: 1.0,\n    pan: { x: 0, y: 0 },\n    windowLevel: config.defaultWindowLevel || 40,\n    windowWidth: config.defaultWindowWidth || 400\n  };\n  \n  function loadImage(imageData) {\n    currentImage = imageData;\n    renderImage();\n  }\n  \n  function renderImage() {\n    if (!currentImage) return;\n    \n    // Apply window/level and render\n    ctx.clearRect(0, 0, canvas.width, canvas.height);\n    // Actual DICOM rendering would go here\n    // This is a placeholder for the rendering logic\n    \n    updateOverlay();\n  }\n  \n  function updateOverlay() {\n    const overlay = element.querySelector('.viewport-overlay');\n    overlay.querySelector('.overlay-bottom-right .overlay-item:nth-child(1)').textContent = \n      `W: ${viewport.windowWidth} L: ${viewport.windowLevel}`;\n    overlay.querySelector('.overlay-bottom-right .overlay-item:nth-child(2)').textContent = \n      `Zoom: ${(viewport.zoom * 100).toFixed(0)}%`;\n  }\n  \n  // Tool button handlers\n  element.querySelectorAll('.tool-btn').forEach(btn => {\n    btn.addEventListener('click', function() {\n      const tool = this.dataset.tool;\n      handleTool(tool);\n    });\n  });\n  \n  function handleTool(tool) {\n    console.log('Tool activated:', tool);\n    // Implement tool logic\n  }\n  \n  return { loadImage, renderImage, viewport };\n}"
+  },
+  "properties": [
+    {
+      "name": "title",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "modality",
+      "type": "string",
+      "default": "CT"
+    },
+    {
+      "name": "defaultWindowLevel",
+      "type": "number",
+      "default": 40
+    },
+    {
+      "name": "defaultWindowWidth",
+      "type": "number",
+      "default": 400
+    }
+  ],
+  "bindings": {
+    "tags": [
+      {
+        "name": "imageTag",
+        "property": "imageData",
+        "callback": "loadImage"
+      },
+      {
+        "name": "windowLevelTag",
+        "property": "windowLevel",
+        "callback": "renderImage"
+      }
+    ]
+  }
+}

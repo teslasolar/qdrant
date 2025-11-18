@@ -1,61 +1,15 @@
 {
-  "UUID": "b5b407b7-a328-4bbb-be7b-bfb447f66e92",
+  "UUID": "442b7634-090f-4930-81f7-a666381e56d4",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/modules/controls/tags/",
   "Directory_Name": "Tags",
   "Title": "Tags",
   "Description": "ISA-95 L3_MES - tags subsystem",
-  "Icon": "\ud83c\udff7\ufe0f",
+  "Icon": "\ud83d\udcc1",
   "Color_Scheme": "blue",
   "Parent_Path": "/os/modules/controls/",
   "Child_Directories": [],
-  "Sibling_Directories": [
-    {
-      "path": "/os/modules/controls/hmi/",
-      "title": "Hmi",
-      "description": "hmi area",
-      "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/modules/controls/plc/",
-      "title": "Plc",
-      "description": "plc area",
-      "icon": "\u2699\ufe0f"
-    },
-    {
-      "path": "/os/modules/controls/scada/",
-      "title": "Scada",
-      "description": "scada area",
-      "icon": "\ud83d\udcca"
-    }
-  ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/modules/",
-      "title": "Modules",
-      "icon": "\ud83d\udce6"
-    },
-    {
-      "path": "/os/modules/controls/",
-      "title": "Controls",
-      "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/modules/controls/tags/",
-      "title": "Tags",
-      "icon": "\ud83c\udff7\ufe0f"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": null,
   "Status_Path": null,
@@ -109,15 +63,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 747
     }
   ]
 }

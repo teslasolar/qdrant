@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maintenance Planning - Medical Imaging Factory</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    color: #e0e0e0;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border-bottom: 3px solid #00ff88;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header h1 {
+    color: #00ff88;
+    font-size: 2em;
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #2a2a3e;
+    border: 2px solid #00ff88;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #00ff88;
+  }
+
+  .breadcrumb {
+    background: #1a1a2e;
+    border-bottom: 2px solid #333;
+    padding: 15px 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #888;
+  }
+
+  .breadcrumb a {
+    color: #00ccff;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .breadcrumb a:hover { color: #00ff88; }
+  .breadcrumb-current { color: #00ff88; font-weight: 600; }
+
+  .container {
+    padding: 40px;
+    max-width: 1800px;
+    margin: 0 auto;
+  }
+
+  .section {
+    background: #1a1a2e;
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #333;
+  }
+
+  .section h2 {
+    color: #00ff88;
+    font-size: 1.8em;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  /* Maintenance Stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border: 2px solid #333;
+    border-left: 5px solid #00ff88;
+    border-radius: 12px;
+    padding: 25px;
+    transition: all 0.3s;
+  }
+
+  .stat-card:hover {
+    border-color: #00ff88;
+    box-shadow: 0 8px 30px rgba(0, 255, 136, 0.2);
+    transform: translateY(-3px);
+  }
+
+  .stat-card.blue { border-left-color: #00ccff; }
+  .stat-card.orange { border-left-color: #ffaa00; }
+  .stat-card.red { border-left-color: #ff6666; }
+
+  .stat-icon {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+  }
+
+  .stat-title {
+    color: #888;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .stat-value {
+    color: #00ff88;
+    font-size: 2.2em;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .stat-subtitle {
+    color: #aaa;
+    font-size: 0.9em;
+  }
+
+  /* Calendar */
+  .maintenance-calendar {
+    background: #0a0a0a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 25px;
+    margin-top: 20px;
+  }
+
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+  }
+
+  .calendar-header h3 {
+    color: #00ccff;
+    font-size: 1.4em;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+  }
+
+  .calendar-day {
+    background: #1a1a2e;
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 15px;
+    min-height: 120px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .calendar-day:hover {
+    border-color: #00ff88;
+    background: #2a2a3e;
+  }
+
+  .calendar-day.has-maintenance {
+    border-color: #ffaa00;
+  }
+
+  .day-number {
+    color: #00ff88;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+  }
+
+  .day-event {
+    background: rgba(255, 170, 0, 0.2);
+    border-left: 3px solid #ffaa00;
+    padding: 5px 8px;
+    margin: 5px 0;
+    font-size: 0.85em;
+    border-radius: 4px;
+    color: #e0e0e0;
+  }
+
+  .day-event.pm {
+    background: rgba(0, 255, 136, 0.2);
+    border-left-color: #00ff88;
+  }
+
+  .day-event.cm {
+    background: rgba(255, 102, 102, 0.2);
+    border-left-color: #ff6666;
+  }
+
+  /* Work Orders */
+  .work-order-card {
+    background: #2a2a3e;
+    border: 2px solid #444;
+    border-left: 4px solid #00ccff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    transition: all 0.3s;
+  }
+
+  .work-order-card:hover {
+    border-left-color: #00ff88;
+    background: #333;
+  }
+
+  .work-order-card.preventive { border-left-color: #00ff88; }
+  .work-order-card.corrective { border-left-color: #ff6666; }
+  .work-order-card.inspection { border-left-color: #00ccff; }
+
+  .wo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .wo-id {
+    color: #00ccff;
+    font-weight: 600;
+    font-size: 1.2em;
+  }
+
+  .wo-priority {
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 600;
+  }
+
+  .wo-priority.high {
+    background: rgba(255, 102, 102, 0.2);
+    color: #ff6666;
+  }
+
+  .wo-priority.medium {
+    background: rgba(255, 170, 0, 0.2);
+    color: #ffaa00;
+  }
+
+  .wo-priority.low {
+    background: rgba(0, 255, 136, 0.2);
+    color: #00ff88;
+  }
+
+  .wo-title {
+    color: #e0e0e0;
+    font-size: 1.05em;
+    margin-bottom: 15px;
+  }
+
+  .wo-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    color: #888;
+    font-size: 0.9em;
+  }
+
+  .wo-detail-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .wo-detail-label {
+    color: #666;
+    font-size: 0.85em;
+    margin-bottom: 5px;
+  }
+
+  .wo-detail-value {
+    color: #e0e0e0;
+  }
+
+  .wo-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+  }
+
+  /* Downtime Tracking */
+  .downtime-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  .downtime-table th {
+    background: #2a2a3e;
+    color: #00ff88;
+    padding: 15px;
+    text-align: left;
+    border-bottom: 2px solid #00ff88;
+  }
+
+  .downtime-table td {
+    padding: 15px;
+    border-bottom: 1px solid #333;
+    color: #e0e0e0;
+  }
+
+  .downtime-table tr:hover {
+    background: #2a2a3e;
+  }
+
+  /* Spare Parts */
+  .parts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .part-card {
+    background: #2a2a3e;
+    border: 2px solid #444;
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .part-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+  }
+
+  .part-name {
+    color: #00ccff;
+    font-weight: 600;
+    font-size: 1.1em;
+  }
+
+  .stock-level {
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 600;
+  }
+
+  .stock-level.good {
+    background: rgba(0, 255, 136, 0.2);
+    color: #00ff88;
+  }
+
+  .stock-level.low {
+    background: rgba(255, 170, 0, 0.2);
+    color: #ffaa00;
+  }
+
+  .stock-level.critical {
+    background: rgba(255, 102, 102, 0.2);
+    color: #ff6666;
+  }
+
+  .part-details {
+    color: #888;
+    font-size: 0.9em;
+    line-height: 1.6;
+  }
+
+  .part-details div {
+    margin: 5px 0;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #00ff88, #00cc66);
+    color: #000;
+  }
+
+  .btn-secondary {
+    background: #2a2a3e;
+    color: #00ccff;
+    border: 2px solid #00ccff;
+  }
+
+  .btn-small {
+    padding: 8px 16px;
+    font-size: 0.9em;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3);
+  }
+
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: #666;
+    border-top: 2px solid #333;
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🔧 Maintenance Planning</h1>
+  <div>
+    <span class="badge">L4 - Business</span>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <a href="index.html">🏭 ISA-95 Level 4</a>
+  <span>›</span>
+  <a href="enterprise-portal.html">Enterprise Portal</a>
+  <span>›</span>
+  <span class="breadcrumb-current">Maintenance Planning</span>
+</div>
+
+<div class="container">
+
+  <!-- Maintenance Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">🔧</div>
+      <div class="stat-title">Open Work Orders</div>
+      <div class="stat-value">4</div>
+      <div class="stat-subtitle">2 Preventive, 2 Corrective</div>
+    </div>
+
+    <div class="stat-card blue">
+      <div class="stat-icon">📅</div>
+      <div class="stat-title">Scheduled This Month</div>
+      <div class="stat-value">12</div>
+      <div class="stat-subtitle">8 Completed, 4 Pending</div>
+    </div>
+
+    <div class="stat-card orange">
+      <div class="stat-icon">⏱️</div>
+      <div class="stat-title">Total Downtime</div>
+      <div class="stat-value">8.5h</div>
+      <div class="stat-subtitle">This Month</div>
+    </div>
+
+    <div class="stat-card red">
+      <div class="stat-icon">💰</div>
+      <div class="stat-title">Maintenance Costs</div>
+      <div class="stat-value">$18.2K</div>
+      <div class="stat-subtitle">MTD Expenses</div>
+    </div>
+  </div>
+
+  <!-- Preventive Maintenance Calendar -->
+  <div class="section">
+    <div class="section-header">
+      <h2>📅 Preventive Maintenance Calendar</h2>
+      <button class="btn btn-secondary" onclick="alert('Export calendar')">Export</button>
+    </div>
+
+    <div class="maintenance-calendar">
+      <div class="calendar-header">
+        <h3>November 2025</h3>
+        <div>
+          <button class="btn btn-secondary" style="padding: 8px 16px;">← Previous</button>
+          <button class="btn btn-secondary" style="padding: 8px 16px; margin-left: 10px;">Next →</button>
+        </div>
+      </div>
+
+      <div class="calendar-grid">
+        <div class="calendar-day">
+          <div class="day-number">17 Mon</div>
+        </div>
+
+        <div class="calendar-day has-maintenance">
+          <div class="day-number">18 Tue</div>
+          <div class="day-event pm">CT-001 PM</div>
+        </div>
+
+        <div class="calendar-day">
+          <div class="day-number">19 Wed</div>
+        </div>
+
+        <div class="calendar-day has-maintenance">
+          <div class="day-number">20 Thu</div>
+          <div class="day-event pm">MRI-001 Cal</div>
+        </div>
+
+        <div class="calendar-day has-maintenance">
+          <div class="day-number">21 Fri</div>
+          <div class="day-event pm">XR-002 Insp</div>
+          <div class="day-event cm">CT-003 Repair</div>
+        </div>
+
+        <div class="calendar-day">
+          <div class="day-number">22 Sat</div>
+        </div>
+
+        <div class="calendar-day">
+          <div class="day-number">23 Sun</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Work Order Management -->
+  <div class="section">
+    <div class="section-header">
+      <h2>📋 Work Order Management</h2>
+      <button class="btn btn-secondary" onclick="alert('Create new work order')">+ New Work Order</button>
+    </div>
+
+    <div class="work-order-card preventive">
+      <div class="wo-header">
+        <div class="wo-id">WO-2025-1147</div>
+        <div class="wo-priority medium">Medium Priority</div>
+      </div>
+      <div class="wo-title">Preventive Maintenance - CT Scanner #1</div>
+      <div class="wo-details">
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Type:</div>
+          <div class="wo-detail-value">Preventive Maintenance</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Equipment:</div>
+          <div class="wo-detail-value">CT-001</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Scheduled:</div>
+          <div class="wo-detail-value">2025-11-18 08:00</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Duration:</div>
+          <div class="wo-detail-value">2 hours</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Technician:</div>
+          <div class="wo-detail-value">John Smith</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Status:</div>
+          <div class="wo-detail-value" style="color: #00ccff;">Scheduled</div>
+        </div>
+      </div>
+      <div class="wo-actions">
+        <button class="btn btn-primary btn-small">View Details</button>
+        <button class="btn btn-secondary btn-small">Edit</button>
+        <button class="btn btn-secondary btn-small">Reschedule</button>
+      </div>
+    </div>
+
+    <div class="work-order-card corrective">
+      <div class="wo-header">
+        <div class="wo-id">WO-2025-1146</div>
+        <div class="wo-priority high">High Priority</div>
+      </div>
+      <div class="wo-title">Corrective Maintenance - CT Scanner #3 Calibration Issue</div>
+      <div class="wo-details">
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Type:</div>
+          <div class="wo-detail-value">Corrective Maintenance</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Equipment:</div>
+          <div class="wo-detail-value">CT-003</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Scheduled:</div>
+          <div class="wo-detail-value">2025-11-21 06:00</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Duration:</div>
+          <div class="wo-detail-value">4 hours</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Technician:</div>
+          <div class="wo-detail-value">Sarah Johnson</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Status:</div>
+          <div class="wo-detail-value" style="color: #ffaa00;">In Progress</div>
+        </div>
+      </div>
+      <div class="wo-actions">
+        <button class="btn btn-primary btn-small">View Details</button>
+        <button class="btn btn-secondary btn-small">Edit</button>
+        <button class="btn btn-secondary btn-small">Close WO</button>
+      </div>
+    </div>
+
+    <div class="work-order-card preventive">
+      <div class="wo-header">
+        <div class="wo-id">WO-2025-1145</div>
+        <div class="wo-priority medium">Medium Priority</div>
+      </div>
+      <div class="wo-title">Calibration Check - MRI System #1</div>
+      <div class="wo-details">
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Type:</div>
+          <div class="wo-detail-value">Preventive Maintenance</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Equipment:</div>
+          <div class="wo-detail-value">MRI-001</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Scheduled:</div>
+          <div class="wo-detail-value">2025-11-20 07:00</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Duration:</div>
+          <div class="wo-detail-value">3 hours</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Technician:</div>
+          <div class="wo-detail-value">Mike Chen</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Status:</div>
+          <div class="wo-detail-value" style="color: #00ccff;">Scheduled</div>
+        </div>
+      </div>
+      <div class="wo-actions">
+        <button class="btn btn-primary btn-small">View Details</button>
+        <button class="btn btn-secondary btn-small">Edit</button>
+        <button class="btn btn-secondary btn-small">Reschedule</button>
+      </div>
+    </div>
+
+    <div class="work-order-card inspection">
+      <div class="wo-header">
+        <div class="wo-id">WO-2025-1144</div>
+        <div class="wo-priority low">Low Priority</div>
+      </div>
+      <div class="wo-title">Quarterly Inspection - X-Ray Machine #2</div>
+      <div class="wo-details">
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Type:</div>
+          <div class="wo-detail-value">Inspection</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Equipment:</div>
+          <div class="wo-detail-value">XR-002</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Scheduled:</div>
+          <div class="wo-detail-value">2025-11-21 10:00</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Duration:</div>
+          <div class="wo-detail-value">1 hour</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Technician:</div>
+          <div class="wo-detail-value">Lisa Brown</div>
+        </div>
+        <div class="wo-detail-item">
+          <div class="wo-detail-label">Status:</div>
+          <div class="wo-detail-value" style="color: #00ccff;">Scheduled</div>
+        </div>
+      </div>
+      <div class="wo-actions">
+        <button class="btn btn-primary btn-small">View Details</button>
+        <button class="btn btn-secondary btn-small">Edit</button>
+        <button class="btn btn-secondary btn-small">Reschedule</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Equipment Downtime Tracking -->
+  <div class="section">
+    <div class="section-header">
+      <h2>⏱️ Equipment Downtime Tracking</h2>
+    </div>
+
+    <table class="downtime-table">
+      <thead>
+        <tr>
+          <th>Equipment</th>
+          <th>Date</th>
+          <th>Reason</th>
+          <th>Duration</th>
+          <th>Type</th>
+          <th>Impact</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>CT-003</strong></td>
+          <td>2025-11-16</td>
+          <td>Calibration Adjustment</td>
+          <td>4.0 hours</td>
+          <td>Corrective</td>
+          <td style="color: #ffaa00;">Medium</td>
+        </tr>
+        <tr>
+          <td><strong>XR-004</strong></td>
+          <td>2025-11-14</td>
+          <td>Scheduled PM</td>
+          <td>2.5 hours</td>
+          <td>Preventive</td>
+          <td style="color: #00ff88;">Low</td>
+        </tr>
+        <tr>
+          <td><strong>MRI-001</strong></td>
+          <td>2025-11-10</td>
+          <td>Software Update</td>
+          <td>1.5 hours</td>
+          <td>Preventive</td>
+          <td style="color: #00ff88;">Low</td>
+        </tr>
+        <tr>
+          <td><strong>CT-002</strong></td>
+          <td>2025-11-08</td>
+          <td>Component Replacement</td>
+          <td>3.5 hours</td>
+          <td>Corrective</td>
+          <td style="color: #ffaa00;">Medium</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Spare Parts Inventory -->
+  <div class="section">
+    <div class="section-header">
+      <h2>📦 Spare Parts Inventory</h2>
+      <button class="btn btn-secondary" onclick="alert('Order parts')">+ Order Parts</button>
+    </div>
+
+    <div class="parts-grid">
+      <div class="part-card">
+        <div class="part-header">
+          <div class="part-name">X-Ray Tube</div>
+          <div class="stock-level good">In Stock</div>
+        </div>
+        <div class="part-details">
+          <div><strong>Part #:</strong> XRT-2024-001</div>
+          <div><strong>Quantity:</strong> 3 units</div>
+          <div><strong>Location:</strong> Warehouse A-12</div>
+          <div><strong>Cost:</strong> $12,500 each</div>
+          <div><strong>Reorder Level:</strong> 2 units</div>
+        </div>
+      </div>
+
+      <div class="part-card">
+        <div class="part-header">
+          <div class="part-name">CT Detector Panel</div>
+          <div class="stock-level low">Low Stock</div>
+        </div>
+        <div class="part-details">
+          <div><strong>Part #:</strong> CTP-2024-002</div>
+          <div><strong>Quantity:</strong> 1 unit</div>
+          <div><strong>Location:</strong> Warehouse A-08</div>
+          <div><strong>Cost:</strong> $45,000 each</div>
+          <div><strong>Reorder Level:</strong> 1 unit</div>
+        </div>
+      </div>
+
+      <div class="part-card">
+        <div class="part-header">
+          <div class="part-name">MRI Coils (Head)</div>
+          <div class="stock-level good">In Stock</div>
+        </div>
+        <div class="part-details">
+          <div><strong>Part #:</strong> MRC-2024-003</div>
+          <div><strong>Quantity:</strong> 4 units</div>
+          <div><strong>Location:</strong> Warehouse B-15</div>
+          <div><strong>Cost:</strong> $8,200 each</div>
+          <div><strong>Reorder Level:</strong> 2 units</div>
+        </div>
+      </div>
+
+      <div class="part-card">
+        <div class="part-header">
+          <div class="part-name">Cooling System Filter</div>
+          <div class="stock-level critical">Critical</div>
+        </div>
+        <div class="part-details">
+          <div><strong>Part #:</strong> CSF-2024-004</div>
+          <div><strong>Quantity:</strong> 0 units</div>
+          <div><strong>Location:</strong> Out of Stock</div>
+          <div><strong>Cost:</strong> $450 each</div>
+          <div><strong>Reorder Level:</strong> 5 units</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="section">
+    <div class="section-header">
+      <h2>⚡ Quick Actions</h2>
+    </div>
+
+    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+      <button class="btn btn-primary" onclick="alert('Creating new work order...')">
+        + Create Work Order
+      </button>
+      <button class="btn btn-primary" onclick="alert('Scheduling maintenance...')">
+        Schedule Maintenance
+      </button>
+      <button class="btn btn-secondary" onclick="window.location.href='asset-management.html'">
+        Asset Management
+      </button>
+      <button class="btn btn-secondary" onclick="alert('Generating maintenance report...')">
+        Generate Report
+      </button>
+      <button class="btn btn-secondary" onclick="window.location.href='enterprise-portal.html'">
+        Back to Portal
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p><strong>ISA-95 Level 4 - Business Planning & Logistics</strong></p>
+  <p>Maintenance Planning - Medical Imaging Virtual Factory</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!-- South Dock - Status Bar -->
+<div class="status-item">
+  <span class="status-indicator normal" id="system-status"></span>
+  <span id="system-status-text">System Normal</span>
+</div>
+
+<div class="status-item">
+  <span>⏰</span>
+  <span id="current-time">--:--:--</span>
+</div>
+
+<div class="status-item">
+  <span>👤</span>
+  <span id="current-user">Operator</span>
+</div>
+
+<div class="status-item">
+  <span>📊</span>
+  <span id="active-studies">0 Active Studies</span>
+</div>
+
+<div class="status-item">
+  <span>🎛️</span>
+  <span id="isa-level">ISA-95 L4</span>
+</div>
+
+<div class="status-item" style="margin-left: auto;">
+  <span>🔌</span>
+  <span id="connection-status">Connected</span>
+</div>
+
+<script>
+// Update clock
+function updateClock() {
+  const now = new Date();
+  const timeString = now.toLocaleTimeString('en-US', { hour12: false });
+  document.getElementById('current-time').textContent = timeString;
+}
+
+setInterval(updateClock, 1000);
+updateClock();
+
+// Simulate status updates
+function updateStatus() {
+  const statuses = ['normal', 'warning', 'alarm'];
+  const statusTexts = ['System Normal', 'Warning: High Load', 'Alarm: Check Equipment'];
+
+  // For demo, keep it normal
+  const statusEl = document.getElementById('system-status');
+  const textEl = document.getElementById('system-status-text');
+
+  statusEl.className = 'status-indicator normal';
+  textEl.textContent = 'System Normal';
+}
+
+setInterval(updateStatus, 5000);
+updateStatus();
+
+// Update active studies count (simulated)
+function updateActiveStudies() {
+  const count = Math.floor(Math.random() * 15) + 5;
+  document.getElementById('active-studies').textContent = `${count} Active Studies`;
+}
+
+setInterval(updateActiveStudies, 10000);
+updateActiveStudies();
+</script>
+
+<style>
+.dock-south {
+  display: flex;
+  gap: 20px;
+}
+</style>

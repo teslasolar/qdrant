@@ -1,12 +1,33 @@
-# Chazon Medical Imaging SCADA System
+# CHAZON Medical Imaging SCADA
 
 AI-powered medical imaging analysis with industrial automation (ISA-95/88) architecture.
 
-**Live:** https://teslasolar.github.io/qdrant/ | **License:** MIT
+**Built for lablab.ai Hackathon** 🚀 | **Live:** https://teslasolar.github.io/qdrant/ | **License:** MIT
 
 ---
 
-## Quick Start
+## ⚡ Quick Start (lablab.ai Demo)
+
+**Zero setup required** - Works in seconds!
+
+```bash
+git clone https://github.com/teslasolar/qdrant && cd qdrant
+./start.sh   # Starts demo server on port 8000
+```
+
+Then open: **http://localhost:8000/screens/frontend/**
+
+**Demo Features:**
+- ✅ Mock AI (no GPU needed)
+- ✅ Pre-loaded sample images
+- ✅ All tools functional
+- ✅ Perfect for presentations
+
+**Switch Environments:** Edit `config.yaml` → change `environment: demo` to `dev` or `prod`
+
+---
+
+## Full Installation
 
 ### Client-Side Only (No Installation)
 ```bash

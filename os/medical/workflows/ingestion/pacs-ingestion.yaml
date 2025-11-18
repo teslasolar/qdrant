@@ -1,0 +1,217 @@
+# PACS Integration Ingestion Workflow
+# Retrieves DICOM studies from PACS (Picture Archiving and Communication System)
+
+workflow:
+  id: pacs-ingestion-001
+  name: PACS Study Retrieval
+  version: "1.0.0"
+  isa_level: L3_MES
+  category: ingestion
+  priority: high
+
+metadata:
+  description: Automated retrieval of DICOM studies from PACS servers
+  author: Medical Imaging Team
+  created: 2025-11-17
+  updated: 2025-11-17
+  tags:
+    - pacs
+    - ingestion
+    - dicom
+    - c-find
+    - c-move
+
+# Source Configuration
+source:
+  type: PACS
+  protocol: DICOM
+  connection:
+    ae_title: CHAZON_MES
+    host: ${PACS_HOST}
+    port: ${PACS_PORT:11112}
+    called_ae_title: ${PACS_AE_TITLE}
+    timeout: 30
+    max_pdu_size: 16384
+
+  # Query Parameters
+  query:
+    level: STUDY  # PATIENT, STUDY, SERIES, IMAGE
+    filters:
+      - modality: ["CT", "MR", "CR", "DX", "MG", "US", "PT", "NM"]
+      - study_date: ${QUERY_DATE_RANGE}
+      - accession_number: ${ACCESSION_NUMBER}
+      - patient_id: ${PATIENT_ID}
+      - study_instance_uid: ${STUDY_UID}
+
+  # Polling Configuration
+  polling:
+    enabled: true
+    interval: 300  # seconds
+    query_window: 24  # hours
+    max_retries: 3
+    retry_delay: 60
+
+# Workflow Steps
+steps:
+  - id: pacs-query
+    name: Query PACS
+    type: c-find
+    action: query_pacs
+    config:
+      query_level: STUDY
+      retrieve_attributes:
+        - StudyInstanceUID
+        - StudyDate
+        - StudyTime
+        - PatientID
+        - PatientName
+        - AccessionNumber
+        - Modality
+        - StudyDescription
+        - NumberOfStudyRelatedSeries
+        - NumberOfStudyRelatedInstances
+    on_success: validate-study
+    on_failure: log-error
+    timeout: 60
+
+  - id: validate-study
+    name: Validate Study Metadata
+    type: validation
+    action: validate_dicom_metadata
+    config:
+      required_fields:
+        - StudyInstanceUID
+        - PatientID
+        - Modality
+      reject_if_missing: true
+    on_success: check-duplicate
+    on_failure: quarantine
+
+  - id: check-duplicate
+    name: Check for Duplicates
+    type: deduplication
+    action: check_existing_study
+    config:
+      check_by:
+        - StudyInstanceUID
+      database: qdrant
+      collection: medical_studies
+    on_success: retrieve-study
+    on_duplicate: skip-study
+    on_failure: log-error
+
+  - id: retrieve-study
+    name: Retrieve Study (C-MOVE)
+    type: c-move
+    action: retrieve_from_pacs
+    config:
+      destination_ae: CHAZON_MES
+      retrieve_level: STUDY
+      max_simultaneous: 5
+      compression: JPEG2000_LOSSLESS
+    on_success: verify-transfer
+    on_failure: retry-retrieval
+    timeout: 600
+
+  - id: verify-transfer
+    name: Verify Complete Transfer
+    type: verification
+    action: verify_dicom_transfer
+    config:
+      verify_instance_count: true
+      verify_series_count: true
+      calculate_checksum: true
+      allow_partial: false
+    on_success: register-study
+    on_failure: quarantine
+
+  - id: register-study
+    name: Register Study in MES
+    type: registration
+    action: register_study
+    config:
+      database: qdrant
+      collection: medical_studies
+      generate_uuid: true
+      initial_status: RECEIVED
+      timestamp: true
+    on_success: route-study
+    on_failure: log-error
+
+  - id: route-study
+    name: Route to Processing
+    type: routing
+    action: route_to_workflow
+    config:
+      next_workflow: processing-pipeline
+      routing_rules: /workflows/routing/study-routing-rules.yaml
+      notify_mqtt: true
+      mqtt_topic: chazon/os/medical/workflow/study-received
+    on_success: complete
+    on_failure: log-error
+
+# Error Handling
+error_handling:
+  quarantine:
+    enabled: true
+    path: /data/medical/quarantine/pacs-ingestion/
+    retention_days: 30
+    notify: true
+
+  retry_retrieval:
+    max_attempts: 3
+    backoff_strategy: exponential
+    base_delay: 60
+    max_delay: 600
+
+  skip-study:
+    action: log_and_continue
+    log_level: INFO
+    message: "Duplicate study detected, skipping retrieval"
+
+# Monitoring and Metrics
+monitoring:
+  tags:
+    - PACS_QUERIES_TOTAL
+    - PACS_STUDIES_RETRIEVED
+    - PACS_TRANSFER_ERRORS
+    - PACS_AVG_RETRIEVAL_TIME
+    - PACS_CONNECTION_STATUS
+
+  mqtt:
+    publish_events: true
+    topics:
+      - chazon/os/medical/pacs/query
+      - chazon/os/medical/pacs/retrieval
+      - chazon/os/medical/pacs/error
+
+  modbus:
+    holding_registers:
+      - address: 40100
+        name: PACS_STUDIES_RETRIEVED
+      - address: 40101
+        name: PACS_CONNECTION_STATUS
+      - address: 40102
+        name: PACS_AVG_RETRIEVAL_TIME
+
+# Performance Configuration
+performance:
+  max_concurrent_retrievals: 5
+  max_queue_size: 100
+  throttle_queries: true
+  query_rate_limit: 10  # per minute
+  bandwidth_limit: 100  # Mbps
+
+# Logging
+logging:
+  level: INFO
+  path: /var/log/medical/workflows/pacs-ingestion.log
+  rotation: daily
+  retention_days: 90
+  include_dicom_tags: true
+
+# Scheduling
+schedule:
+  enabled: true
+  cron: "*/5 * * * *"  # Every 5 minutes
+  timezone: UTC

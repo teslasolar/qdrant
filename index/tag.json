@@ -1,99 +1,212 @@
 {
-  "UUID": "d4cffc59-a266-42d2-82c6-bb9cf206ec65",
+  "UUID": "e1fc5f69-01cb-4ecc-97d8-9ccd48711ef0",
   "ISA_Level": "L4_Business",
   "Directory_Path": "/",
   "Directory_Name": "Root",
-  "Title": "Root",
-  "Description": "ISA-95 L4_Business - root subsystem",
-  "Icon": "📁",
+  "Title": "ISA-95 Level 4 - Business Planning & Logistics",
+  "Description": "Medical Imaging Virtual Factory - Enterprise business planning, production scheduling, quality management, and asset tracking",
+  "Icon": "\ud83d\udcc1",
   "Color_Scheme": "green",
   "Parent_Path": null,
   "Child_Directories": [
     {
       "path": "/cli/",
-      "title": "Cli",
-      "description": "cli subsystem",
-      "icon": "⌨️",
-      "page_count": 13
-    },
-    {
-      "path": "/collab/",
-      "title": "Collab",
-      "description": "collab subsystem",
-      "icon": "👥",
-      "page_count": 5
-    },
-    {
-      "path": "/index/controls/",
-      "title": "Controls",
-      "description": "ISA-95 L2 Controls Portal - HMI, SCADA, PLC, Tags",
-      "icon": "🎛️",
-      "page_count": 23
+      "title": "CLI Tools",
+      "description": "8 maintenance utilities - health checks, tag validation, project stats, streamlining",
+      "icon": "\u2328\ufe0f",
+      "page_count": 8
     },
     {
       "path": "/docs/",
-      "title": "Docs",
-      "description": "docs subsystem",
-      "icon": "📚",
-      "page_count": 9
+      "title": "Documentation Hub",
+      "description": "Complete documentation - API, security, user guides, developer guides, compliance (HIPAA, FDA 21 CFR Part 11)",
+      "icon": "\ud83d\udcda",
+      "page_count": 12
     },
     {
       "path": "/os/",
-      "title": "Os",
-      "description": "os subsystem",
-      "icon": "💻",
-      "page_count": 9
+      "title": "Medical Operating System",
+      "description": "Medical imaging SCADA system - DICOM workflows, AlF-DETECT screening, multi-modal analysis",
+      "icon": "\ud83d\udcbb",
+      "page_count": 45
+    },
+    {
+      "path": "/standards/",
+      "title": "Standards-as-Tags Framework",
+      "description": "Executable industrial standards - PackML, ISA-88, ISA-95, ISA-101, MQTT, OPC-UA with instantiation engine",
+      "icon": "\ud83d\udcd0",
+      "page_count": 20
+    },
+    {
+      "path": "/templates/",
+      "title": "Template System",
+      "description": "JSON-based templating for screens, components, tags - UUID/tag-based loading for HMIs",
+      "icon": "\ud83d\udcc4",
+      "page_count": 18
+    },
+    {
+      "path": "/tests/",
+      "title": "Test Infrastructure",
+      "description": "Pytest framework - unit, integration, e2e tests with fixtures for standards and medical workflows",
+      "icon": "\ud83e\uddea"
+    },
+    {
+      "path": "/examples/",
+      "title": "Medical Imaging Examples",
+      "description": "Open-source datasets - X-ray, CT, MRI, DICOM samples for testing (MIMIC-CXR, NIH, TCIA, OASIS)",
+      "icon": "\ud83d\uddc2\ufe0f"
     }
   ],
   "Sibling_Directories": [],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "🏠"
-    }
-  ],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
   "has_plc": true,
   "has_hmi": true,
   "has_scada": true,
-  "plc_path": "plc.html",
-  "hmi_path": "hmi.html",
-  "scada_path": "scada.html",
+  "plc_path": "/screens/Enterprise/L3/L2/L1/plc.html",
+  "hmi_path": "/screens/Enterprise/L3/L2/hmi.html",
+  "scada_path": "/screens/Enterprise/L3/L2/scada.html",
   "Features": [
     {
-      "title": "Core Functionality",
-      "description": "Primary system features",
-      "icon": "⚙️"
+      "title": "ISA-101 Docking System",
+      "description": "N/S/E/W/Center docking HMI with cream & purple theme - modular, responsive, ISA-101 compliant design",
+      "icon": "\ud83c\udfdb\ufe0f"
     },
     {
-      "title": "Data Management",
-      "description": "Structured data handling",
-      "icon": "📊"
+      "title": "Standards-as-Tags Framework",
+      "description": "Revolutionary executable standards - PackML, ISA-88, ISA-95 as instantiable processes with Meta-Standard Language (MSL)",
+      "icon": "\ud83d\udcd0"
     },
     {
-      "title": "Monitoring",
-      "description": "Real-time monitoring",
-      "icon": "👁️"
+      "title": "Template System",
+      "description": "JSON-based templating with UUID/tag-based loading - screens, components, and tags callable by HMIs",
+      "icon": "\ud83d\udcc4"
+    },
+    {
+      "title": "Medical Imaging SCADA",
+      "description": "Complete DICOM workflow - AlF-DETECT screening, multi-modal analysis, BiomedCLIP embeddings, Qdrant vector search",
+      "icon": "\ud83c\udfe5"
+    },
+    {
+      "title": "ISA-95 L4 Business Layer",
+      "description": "7 enterprise pages - production planning, quality management, analytics, asset management, maintenance",
+      "icon": "\ud83c\udfed"
+    },
+    {
+      "title": "CLI Maintenance Tools",
+      "description": "8 utilities - health checks, tag validation, project stats, streamlining, UUID generation",
+      "icon": "\u2328\ufe0f"
+    },
+    {
+      "title": "Test Infrastructure",
+      "description": "Pytest framework with fixtures for standards, medical workflows, and integration testing",
+      "icon": "\ud83e\uddea"
+    },
+    {
+      "title": "Comprehensive Documentation",
+      "description": "API docs, security compliance (HIPAA, FDA 21 CFR Part 11), user guides, developer guides",
+      "icon": "\ud83d\udcda"
     }
   ],
   "Quick_Actions": [
     {
-      "label": "View Status",
-      "path": "status.md",
+      "label": "\ud83c\udfe5 Medical Dashboard",
+      "path": "os/medical/dashboard.html",
       "type": "primary"
     },
     {
-      "label": "Controls",
-      "path": "controls.md",
+      "label": "\ud83c\udfed Enterprise Portal",
+      "path": "screens/Enterprise/enterprise-portal.html",
+      "type": "primary"
+    },
+    {
+      "label": "\ud83d\udcda Documentation Hub",
+      "path": "docs/INDEX.md",
+      "type": "primary"
+    },
+    {
+      "label": "\ud83d\udcd0 Standards Framework",
+      "path": "standards/",
       "type": "secondary"
     },
     {
-      "label": "Documentation",
-      "path": "README.md",
+      "label": "\ud83d\udcc4 Templates",
+      "path": "templates/",
       "type": "secondary"
+    },
+    {
+      "label": "\ud83e\uddea Tests",
+      "path": "tests/",
+      "type": "secondary"
+    }
+  ],
+  "Page_Links": [
+    {
+      "path": "screens/Enterprise/docking-hmi.html",
+      "name": "Docking HMI (Cream & Purple)",
+      "icon": "🎛️",
+      "size": 17000
+    },
+    {
+      "path": "screens/Enterprise/enterprise-portal.html",
+      "name": "Enterprise Portal",
+      "icon": "🏢",
+      "size": 25000
+    },
+    {
+      "path": "screens/Enterprise/production-planning.html",
+      "name": "Production Planning",
+      "icon": "📋",
+      "size": 23000
+    },
+    {
+      "path": "screens/Enterprise/quality-management.html",
+      "name": "Quality Management",
+      "icon": "✓",
+      "size": 24000
+    },
+    {
+      "path": "screens/Enterprise/analytics-reporting.html",
+      "name": "Analytics & Reporting",
+      "icon": "📊",
+      "size": 22000
+    },
+    {
+      "path": "screens/Enterprise/asset-management.html",
+      "name": "Asset Management",
+      "icon": "🏭",
+      "size": 21000
+    },
+    {
+      "path": "screens/Enterprise/maintenance-planning.html",
+      "name": "Maintenance Planning",
+      "icon": "🔧",
+      "size": 23000
+    },
+    {
+      "path": "screens/Enterprise/configuration.html",
+      "name": "Configuration",
+      "icon": "⚙️",
+      "size": 20000
+    },
+    {
+      "path": "screens/Enterprise/L3/L2/hmi.html",
+      "name": "HMI Control Panel",
+      "icon": "🎛️",
+      "size": 14126
+    },
+    {
+      "path": "screens/Enterprise/L3/L2/scada.html",
+      "name": "SCADA Gateway",
+      "icon": "📈",
+      "size": 12596
+    },
+    {
+      "path": "screens/Enterprise/L3/L2/L1/plc.html",
+      "name": "PLC Logic",
+      "icon": "⚙️",
+      "size": 8419
     }
   ],
   "Related_Files": [
@@ -118,89 +231,54 @@
       "type": "html"
     },
     {
-      "path": "index-custom.html",
-      "name": "Custom Index",
+      "path": "screens/Enterprise/enterprise-portal.html",
+      "name": "Enterprise Portal",
       "type": "html"
     },
     {
-      "path": "plc.html",
+      "path": "screens/Enterprise/production-planning.html",
+      "name": "Production Planning",
+      "type": "html"
+    },
+    {
+      "path": "screens/Enterprise/quality-management.html",
+      "name": "Quality Management",
+      "type": "html"
+    },
+    {
+      "path": "screens/Enterprise/analytics-reporting.html",
+      "name": "Analytics & Reporting",
+      "type": "html"
+    },
+    {
+      "path": "screens/Enterprise/asset-management.html",
+      "name": "Asset Management",
+      "type": "html"
+    },
+    {
+      "path": "screens/Enterprise/maintenance-planning.html",
+      "name": "Maintenance Planning",
+      "type": "html"
+    },
+    {
+      "path": "screens/Enterprise/configuration.html",
+      "name": "Configuration",
+      "type": "html"
+    },
+    {
+      "path": "screens/Enterprise/L3/L2/L1/plc.html",
       "name": "PLC",
       "type": "html"
     },
     {
-      "path": "hmi.html",
+      "path": "screens/Enterprise/L3/L2/hmi.html",
       "name": "HMI",
       "type": "html"
     },
     {
-      "path": "scada.html",
+      "path": "screens/Enterprise/L3/L2/scada.html",
       "name": "SCADA",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "hmi.html",
-      "name": "Hmi",
-      "type": "html",
-      "icon": "🌐",
-      "size": 10491
-    },
-    {
-      "path": "plc.html",
-      "name": "Plc",
-      "type": "html",
-      "icon": "🌐",
-      "size": 8419
-    },
-    {
-      "path": "scada.html",
-      "name": "Scada",
-      "type": "html",
-      "icon": "🌐",
-      "size": 12596
-    },
-    {
-      "path": "ABOUT.md",
-      "name": "About",
-      "type": "markdown",
-      "icon": "📝",
-      "size": 1541
-    },
-    {
-      "path": "CHANGELOG.md",
-      "name": "Changelog",
-      "type": "markdown",
-      "icon": "📝",
-      "size": 7554
-    },
-    {
-      "path": "MANIFEST.md",
-      "name": "Manifest",
-      "type": "markdown",
-      "icon": "📝",
-      "size": 7472
-    },
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "📝",
-      "size": 9332
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "📝",
-      "size": 4441
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "📝",
-      "size": 3595
     }
   ]
 }

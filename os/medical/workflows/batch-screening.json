@@ -1,0 +1,458 @@
+{
+  "uuid": "alf-batch-001",
+  "type": "workflow",
+  "category": "medical",
+  "metadata": {
+    "name": "Batch Screening Workflow",
+    "description": "Process multiple screenings in batch mode with optimized resource utilization",
+    "version": "1.0.0",
+    "created": "2025-01-17T00:00:00Z"
+  },
+  "enabled": true,
+  "configuration": {
+    "maxConcurrent": 5,
+    "maxQueueSize": 1000,
+    "priorityEnabled": true,
+    "autoScaling": {
+      "enabled": true,
+      "minInstances": 1,
+      "maxInstances": 10,
+      "scaleUpThreshold": 0.8,
+      "scaleDownThreshold": 0.3,
+      "cooldownPeriod": 300000
+    }
+  },
+  "inputSource": {
+    "types": [
+      {
+        "name": "directory-watch",
+        "path": "/os/medical/incoming/batch",
+        "pattern": "*.dcm",
+        "recursive": true,
+        "autoProcess": true
+      },
+      {
+        "name": "csv-manifest",
+        "path": "/os/medical/batch/manifest.csv",
+        "columns": [
+          "patientId",
+          "studyPath",
+          "priority",
+          "modalityType",
+          "requestingPhysician"
+        ]
+      },
+      {
+        "name": "api-batch",
+        "endpoint": "/api/medical/alf-detect/batch",
+        "method": "POST",
+        "maxPayloadSize": "100MB"
+      },
+      {
+        "name": "mqtt-queue",
+        "topic": "chazon/os/medical/alf-detect/batch/submit",
+        "qos": 2
+      }
+    ]
+  },
+  "priorityLevels": {
+    "URGENT": {
+      "value": 0,
+      "description": "Emergency cases - process immediately",
+      "maxWaitTime": 60000,
+      "preemptive": true
+    },
+    "HIGH": {
+      "value": 1,
+      "description": "High-priority cases",
+      "maxWaitTime": 300000,
+      "preemptive": false
+    },
+    "NORMAL": {
+      "value": 2,
+      "description": "Standard screening requests",
+      "maxWaitTime": 3600000,
+      "preemptive": false
+    },
+    "LOW": {
+      "value": 3,
+      "description": "Research or non-urgent screening",
+      "maxWaitTime": 86400000,
+      "preemptive": false
+    }
+  },
+  "workflow": {
+    "stages": [
+      {
+        "id": "stage-1",
+        "name": "Intake & Validation",
+        "description": "Receive and validate batch screening requests",
+        "steps": [
+          {
+            "id": "intake-1",
+            "name": "Receive Batch Request",
+            "action": "receiveBatchRequest",
+            "validateSchema": true,
+            "timeout": 30000
+          },
+          {
+            "id": "intake-2",
+            "name": "Create Batch Job",
+            "action": "createBatchJob",
+            "assignBatchId": true,
+            "timeout": 5000
+          },
+          {
+            "id": "intake-3",
+            "name": "Validate Images",
+            "action": "validateDICOMImages",
+            "parallel": true,
+            "checkIntegrity": true,
+            "checkQuality": true,
+            "minQualityScore": 0.7,
+            "timeout": 60000
+          },
+          {
+            "id": "intake-4",
+            "name": "Assign Priorities",
+            "action": "assignPriorities",
+            "defaultPriority": "NORMAL",
+            "timeout": 5000
+          },
+          {
+            "id": "intake-5",
+            "name": "Queue Items",
+            "action": "queueScreeningItems",
+            "updateTags": true,
+            "publishMQTT": true,
+            "timeout": 10000
+          }
+        ]
+      },
+      {
+        "id": "stage-2",
+        "name": "Preprocessing",
+        "description": "Prepare images for AI analysis",
+        "parallel": true,
+        "maxConcurrent": 10,
+        "steps": [
+          {
+            "id": "preprocess-1",
+            "name": "DICOM Conversion",
+            "action": "convertDICOM",
+            "outputFormat": "PNG",
+            "resolution": [1024, 1024],
+            "timeout": 30000
+          },
+          {
+            "id": "preprocess-2",
+            "name": "Image Normalization",
+            "action": "normalizeImage",
+            "method": "histogram-equalization",
+            "timeout": 10000
+          },
+          {
+            "id": "preprocess-3",
+            "name": "Artifact Removal",
+            "action": "removeArtifacts",
+            "algorithm": "ml-based",
+            "timeout": 15000
+          },
+          {
+            "id": "preprocess-4",
+            "name": "Quality Check",
+            "action": "checkImageQuality",
+            "minQuality": 0.8,
+            "rejectLowQuality": false,
+            "flagLowQuality": true,
+            "timeout": 5000
+          }
+        ]
+      },
+      {
+        "id": "stage-3",
+        "name": "AI Analysis",
+        "description": "Run AlF-DETECT AI models",
+        "parallel": true,
+        "maxConcurrent": 5,
+        "steps": [
+          {
+            "id": "analysis-1",
+            "name": "AlF Detection",
+            "action": "runAlfDetection",
+            "model": "vision-transformer-alf",
+            "batchSize": 8,
+            "usedGPU": true,
+            "timeout": 120000
+          },
+          {
+            "id": "analysis-2",
+            "name": "Brain Region Segmentation",
+            "action": "segmentBrainRegions",
+            "model": "unet-brain-segmentation",
+            "timeout": 60000
+          },
+          {
+            "id": "analysis-3",
+            "name": "Concentration Calculation",
+            "action": "calculateConcentrations",
+            "regions": [
+              "hippocampus",
+              "frontalCortex",
+              "temporalLobe",
+              "parietalLobe",
+              "occipitalLobe",
+              "cerebellum",
+              "amygdala",
+              "basalGanglia"
+            ],
+            "timeout": 30000
+          },
+          {
+            "id": "analysis-4",
+            "name": "Probability Estimation",
+            "action": "estimateProbabilities",
+            "model": "ensemble-classifier",
+            "includeConfidenceIntervals": true,
+            "timeout": 20000
+          },
+          {
+            "id": "analysis-5",
+            "name": "Qdrant Similarity Search",
+            "action": "searchSimilarCases",
+            "collection": "medical-cases",
+            "topK": 100,
+            "timeout": 15000
+          }
+        ]
+      },
+      {
+        "id": "stage-4",
+        "name": "Results Processing",
+        "description": "Process and validate analysis results",
+        "steps": [
+          {
+            "id": "results-1",
+            "name": "Quality Control",
+            "action": "qualityControlCheck",
+            "checkConsistency": true,
+            "checkOutliers": true,
+            "timeout": 10000
+          },
+          {
+            "id": "results-2",
+            "name": "Store Results",
+            "action": "storeResults",
+            "database": "medical-db",
+            "table": "screening_results",
+            "timeout": 15000
+          },
+          {
+            "id": "results-3",
+            "name": "Update Tags",
+            "action": "updateSCADATags",
+            "tags": [
+              "medical.alfPositiveScreenings",
+              "medical.alfScreeningQueue",
+              "medical.alfAverageConfidence",
+              "medical.alfProcessingTime"
+            ],
+            "timeout": 5000
+          },
+          {
+            "id": "results-4",
+            "name": "Trigger Alarms",
+            "action": "evaluateAlarmConditions",
+            "alarmConfig": "/os/medical/alarms/alf-detect-alarms.json",
+            "timeout": 5000
+          }
+        ]
+      },
+      {
+        "id": "stage-5",
+        "name": "Reporting & Distribution",
+        "description": "Generate reports and distribute results",
+        "parallel": true,
+        "steps": [
+          {
+            "id": "report-1",
+            "name": "Generate PDF Reports",
+            "action": "generatePDFReport",
+            "template": "/os/medical/reports/pdf-report-config.json",
+            "parallel": true,
+            "maxConcurrent": 3,
+            "timeout": 60000
+          },
+          {
+            "id": "report-2",
+            "name": "Publish MQTT Results",
+            "action": "publishMQTT",
+            "topic": "chazon/os/medical/alf-detect/batch/result",
+            "qos": 2,
+            "timeout": 5000
+          },
+          {
+            "id": "report-3",
+            "name": "Update Dashboard",
+            "action": "updateDashboard",
+            "dashboardPath": "/os/medical/alf-detect-dashboard.json",
+            "timeout": 5000
+          },
+          {
+            "id": "report-4",
+            "name": "Send Notifications",
+            "action": "sendNotifications",
+            "conditions": [
+              {
+                "if": "probability.alzheimers >= 70",
+                "notify": ["requesting-physician", "neurologist"],
+                "priority": "HIGH"
+              },
+              {
+                "if": "probability.autism >= 70",
+                "notify": ["requesting-physician", "developmental-specialist"],
+                "priority": "HIGH"
+              }
+            ],
+            "timeout": 10000
+          }
+        ]
+      },
+      {
+        "id": "stage-6",
+        "name": "Cleanup & Finalization",
+        "description": "Cleanup temporary files and finalize batch",
+        "steps": [
+          {
+            "id": "cleanup-1",
+            "name": "Archive Images",
+            "action": "archiveImages",
+            "destination": "/os/medical/archive",
+            "compression": "gzip",
+            "timeout": 60000
+          },
+          {
+            "id": "cleanup-2",
+            "name": "Cleanup Temp Files",
+            "action": "cleanupTempFiles",
+            "path": "/tmp/alf-detect",
+            "timeout": 30000
+          },
+          {
+            "id": "cleanup-3",
+            "name": "Update Batch Status",
+            "action": "updateBatchStatus",
+            "status": "COMPLETED",
+            "updateTags": true,
+            "publishMQTT": true,
+            "timeout": 5000
+          },
+          {
+            "id": "cleanup-4",
+            "name": "Generate Batch Summary",
+            "action": "generateBatchSummary",
+            "includeStatistics": true,
+            "includeErrors": true,
+            "timeout": 10000
+          }
+        ]
+      }
+    ]
+  },
+  "errorHandling": {
+    "retryPolicy": {
+      "maxRetries": 3,
+      "retryDelay": 5000,
+      "exponentialBackoff": true,
+      "retryOn": ["TIMEOUT", "NETWORK_ERROR", "RESOURCE_BUSY"]
+    },
+    "failureHandling": {
+      "onItemFailure": "continue",
+      "maxFailureRate": 0.2,
+      "abortBatchOnThreshold": true,
+      "logErrors": true,
+      "notifyOnFailure": true
+    },
+    "deadLetterQueue": {
+      "enabled": true,
+      "path": "/os/medical/batch/failed",
+      "retentionDays": 30
+    }
+  },
+  "monitoring": {
+    "tags": {
+      "batchActive": "medical.alfBatchProcessingActive",
+      "totalItems": "medical.alfBatchTotalItems",
+      "completedItems": "medical.alfBatchCompletedItems",
+      "failedItems": "medical.alfBatchFailedItems",
+      "currentStage": "medical.alfBatchCurrentStage",
+      "progress": "medical.alfBatchProgress",
+      "estimatedTimeRemaining": "medical.alfBatchETA"
+    },
+    "mqtt": {
+      "statusTopic": "chazon/os/medical/alf-detect/batch/status",
+      "progressTopic": "chazon/os/medical/alf-detect/batch/progress",
+      "errorTopic": "chazon/os/medical/alf-detect/batch/error",
+      "publishInterval": 5000
+    },
+    "metrics": {
+      "trackThroughput": true,
+      "trackLatency": true,
+      "trackResourceUtilization": true,
+      "trackQuality": true
+    }
+  },
+  "optimization": {
+    "caching": {
+      "enabled": true,
+      "cachePreprocessed": true,
+      "cacheModels": true,
+      "cacheSize": "10GB"
+    },
+    "batching": {
+      "enabled": true,
+      "dynamicBatchSize": true,
+      "minBatchSize": 4,
+      "maxBatchSize": 16,
+      "batchTimeout": 30000
+    },
+    "resourceManagement": {
+      "gpuAllocation": "dynamic",
+      "cpuPriority": "normal",
+      "memoryLimit": "32GB",
+      "diskIOPriority": "normal"
+    }
+  },
+  "scheduling": {
+    "scheduler": "priority-fifo",
+    "fairness": {
+      "enabled": true,
+      "preventStarvation": true,
+      "maxWaitTime": 3600000
+    },
+    "loadBalancing": {
+      "enabled": true,
+      "algorithm": "least-connections",
+      "healthCheck": true
+    }
+  },
+  "compliance": {
+    "hipaaCompliant": true,
+    "auditLogging": {
+      "enabled": true,
+      "logLevel": "DETAILED",
+      "logPath": "/os/logs/medical/batch-audit.log"
+    },
+    "dataRetention": {
+      "results": "7years",
+      "images": "7years",
+      "reports": "7years",
+      "logs": "7years"
+    },
+    "encryption": {
+      "atRest": true,
+      "inTransit": true,
+      "algorithm": "AES-256"
+    }
+  }
+}

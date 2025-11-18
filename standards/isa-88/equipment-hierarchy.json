@@ -1,0 +1,395 @@
+{
+  "standardId": "isa-88-equipment-v1.0",
+  "type": "hierarchy",
+  "metadata": {
+    "name": "ISA-88 Equipment Hierarchy",
+    "description": "Physical model hierarchy for batch control systems",
+    "version": "1.0.0",
+    "standard": "ANSI/ISA-88.01",
+    "created": "2025-11-17",
+    "tags": ["isa-88", "equipment", "hierarchy", "physical-model"]
+  },
+  "specification": {
+    "description": "Defines the physical equipment hierarchy from Enterprise to Control Module",
+    "purpose": "Organize equipment in a standardized hierarchical structure",
+    "application": "Manufacturing, batch processing, medical imaging systems, any hierarchical equipment organization"
+  },
+  "levels": {
+    "enterprise": {
+      "level": 0,
+      "name": "Enterprise",
+      "description": "Entire organization or company",
+      "parent": null,
+      "children": ["site"],
+      "typicalScope": "Global operations, multiple facilities",
+      "responsibilities": [
+        "Corporate strategy",
+        "Resource allocation",
+        "Cross-site coordination",
+        "Enterprise reporting"
+      ],
+      "attributes": {
+        "name": "{{enterpriseName}}",
+        "id": "{{enterpriseId}}",
+        "location": "Global",
+        "timezone": "{{primaryTimezone}}"
+      },
+      "tagStructure": {
+        "path": "{{enterpriseName}}",
+        "tags": {
+          "status": "Status.OverallStatus",
+          "productionRate": "KPI.ProductionRate",
+          "oee": "KPI.OEE",
+          "siteCount": "Metrics.SiteCount"
+        }
+      }
+    },
+    "site": {
+      "level": 1,
+      "name": "Site",
+      "description": "Physical facility or plant location",
+      "parent": "enterprise",
+      "children": ["area"],
+      "typicalScope": "Single factory, hospital, manufacturing plant",
+      "responsibilities": [
+        "Site-level production planning",
+        "Facility management",
+        "Local compliance",
+        "Site KPIs"
+      ],
+      "attributes": {
+        "name": "{{siteName}}",
+        "id": "{{siteId}}",
+        "location": "{{address}}",
+        "timezone": "{{timezone}}",
+        "capacity": "{{maxCapacity}}"
+      },
+      "tagStructure": {
+        "path": "{{enterpriseName}}/{{siteName}}",
+        "tags": {
+          "status": "Status.SiteStatus",
+          "areaCount": "Metrics.AreaCount",
+          "utilization": "KPI.Utilization",
+          "energyUsage": "Metrics.EnergyUsage"
+        }
+      }
+    },
+    "area": {
+      "level": 2,
+      "name": "Area",
+      "description": "Functional area within a site",
+      "parent": "site",
+      "children": ["processCell"],
+      "typicalScope": "Production area, department (e.g., Radiology, Compounding)",
+      "responsibilities": [
+        "Area-specific operations",
+        "Resource scheduling",
+        "Quality control",
+        "Area performance"
+      ],
+      "attributes": {
+        "name": "{{areaName}}",
+        "id": "{{areaId}}",
+        "type": "{{areaType}}",
+        "purpose": "{{areaPurpose}}"
+      },
+      "tagStructure": {
+        "path": "{{enterpriseName}}/{{siteName}}/{{areaName}}",
+        "tags": {
+          "status": "Status.AreaStatus",
+          "cellCount": "Metrics.CellCount",
+          "activeJobs": "Operations.ActiveJobs",
+          "throughput": "KPI.Throughput"
+        }
+      },
+      "examples": [
+        "Radiology Department",
+        "Filling Area",
+        "Packaging Line",
+        "Medical Imaging Suite"
+      ]
+    },
+    "processCell": {
+      "level": 3,
+      "name": "Process Cell",
+      "description": "Logical grouping of equipment to accomplish specific manufacturing task",
+      "parent": "area",
+      "children": ["unit"],
+      "typicalScope": "Production cell, workcell (e.g., CT Imaging Cell, Reactor Cell)",
+      "responsibilities": [
+        "Execute recipes/batches",
+        "Coordinate unit operations",
+        "Material handling",
+        "Cell-level control"
+      ],
+      "attributes": {
+        "name": "{{cellName}}",
+        "id": "{{cellId}}",
+        "capability": "{{cellCapability}}",
+        "maxBatchSize": "{{maxBatchSize}}"
+      },
+      "tagStructure": {
+        "path": "{{enterpriseName}}/{{siteName}}/{{areaName}}/{{cellName}}",
+        "tags": {
+          "status": "Status.CellStatus",
+          "currentRecipe": "Operations.CurrentRecipe",
+          "batchProgress": "Operations.BatchProgress",
+          "unitCount": "Metrics.UnitCount"
+        }
+      },
+      "examples": [
+        "CT Reconstruction Cell",
+        "Reactor Cell 1",
+        "Filling Cell A",
+        "X-Ray Analysis Pipeline"
+      ]
+    },
+    "unit": {
+      "level": 4,
+      "name": "Unit",
+      "description": "Equipment that can execute basic procedural control",
+      "parent": "processCell",
+      "children": ["equipmentModule"],
+      "typicalScope": "Individual machine (e.g., DICOM Viewer, Reactor, Filler)",
+      "responsibilities": [
+        "Execute unit procedures",
+        "Coordinate equipment modules",
+        "Unit-level state management",
+        "Alarms and events"
+      ],
+      "attributes": {
+        "name": "{{unitName}}",
+        "id": "{{unitId}}",
+        "type": "{{equipmentType}}",
+        "manufacturer": "{{manufacturer}}",
+        "model": "{{model}}",
+        "serialNumber": "{{serialNumber}}"
+      },
+      "tagStructure": {
+        "path": "{{enterpriseName}}/{{siteName}}/{{areaName}}/{{cellName}}/{{unitName}}",
+        "tags": {
+          "status": "Status.UnitStatus",
+          "mode": "Status.OperatingMode",
+          "stateMachine": "PackML.CurrentState",
+          "moduleCount": "Metrics.ModuleCount",
+          "currentOperation": "Operations.CurrentOperation",
+          "alarms": "Alarms.Active"
+        }
+      },
+      "stateManagement": {
+        "supportsPackML": true,
+        "supportsISA88States": true
+      },
+      "examples": [
+        "CT Scanner 1",
+        "Reactor R-101",
+        "Filler F-201",
+        "AI Inference Engine"
+      ]
+    },
+    "equipmentModule": {
+      "level": 5,
+      "name": "Equipment Module",
+      "description": "Functional group of control modules and equipment",
+      "parent": "unit",
+      "children": ["controlModule"],
+      "typicalScope": "Subsystem or module (e.g., Window/Level Filter, Agitator, Dosing Pump)",
+      "responsibilities": [
+        "Perform specific functions",
+        "Module-level control",
+        "Interface with control modules",
+        "Status reporting"
+      ],
+      "attributes": {
+        "name": "{{moduleName}}",
+        "id": "{{moduleId}}",
+        "function": "{{moduleFunction}}",
+        "reusable": true
+      },
+      "tagStructure": {
+        "path": "{{enterpriseName}}/{{siteName}}/{{areaName}}/{{cellName}}/{{unitName}}/{{moduleName}}",
+        "tags": {
+          "status": "Status.ModuleStatus",
+          "enabled": "Status.Enabled",
+          "controlModuleCount": "Metrics.ControlModuleCount",
+          "parameterSet": "Config.ActiveParameterSet"
+        }
+      },
+      "examples": [
+        "Image Denoiser",
+        "Temperature Control Loop",
+        "Dosing Pump System",
+        "Segmentation Module"
+      ]
+    },
+    "controlModule": {
+      "level": 6,
+      "name": "Control Module",
+      "description": "Lowest level - direct control of sensors/actuators",
+      "parent": "equipmentModule",
+      "children": null,
+      "typicalScope": "Individual control element (e.g., Valve, Motor, Sensor)",
+      "responsibilities": [
+        "Direct I/O control",
+        "Sensor reading",
+        "Actuator control",
+        "Basic interlocks"
+      ],
+      "attributes": {
+        "name": "{{controlModuleName}}",
+        "id": "{{controlModuleId}}",
+        "type": "{{ioType}}",
+        "address": "{{ioAddress}}"
+      },
+      "tagStructure": {
+        "path": "{{enterpriseName}}/{{siteName}}/{{areaName}}/{{cellName}}/{{unitName}}/{{moduleName}}/{{controlModuleName}}",
+        "tags": {
+          "value": "IO.Value",
+          "status": "IO.Status",
+          "command": "IO.Command",
+          "feedback": "IO.Feedback"
+        }
+      },
+      "ioTypes": [
+        "Digital Input",
+        "Digital Output",
+        "Analog Input",
+        "Analog Output",
+        "Motor Control",
+        "Valve Control",
+        "Temperature Sensor",
+        "Pressure Sensor"
+      ],
+      "examples": [
+        "Inlet Valve V-101",
+        "Agitator Motor M-201",
+        "Temperature Sensor TT-301",
+        "Pixel Intensity Processor"
+      ]
+    }
+  },
+  "relationships": {
+    "containment": {
+      "description": "Parent-child hierarchical relationship",
+      "rules": [
+        "Each element has exactly one parent (except Enterprise)",
+        "Each element can have multiple children",
+        "Equipment path is constructed from hierarchy"
+      ]
+    },
+    "communication": {
+      "description": "Information flow between levels",
+      "upward": ["Status", "Alarms", "Events", "Production data"],
+      "downward": ["Commands", "Recipes", "Parameters", "Setpoints"]
+    }
+  },
+  "naming": {
+    "convention": "{{level}}_{{name}}_{{id}}",
+    "rules": [
+      "Use alphanumeric characters",
+      "No spaces (use underscores)",
+      "Consistent capitalization",
+      "Meaningful abbreviations"
+    ],
+    "examples": {
+      "enterprise": "ACME_Corp",
+      "site": "Plant_Boston",
+      "area": "Area_Filling",
+      "processCell": "Cell_Reactor_1",
+      "unit": "Unit_Reactor_R101",
+      "equipmentModule": "Module_Agitator",
+      "controlModule": "Motor_M201"
+    }
+  },
+  "tagGeneration": {
+    "pathFormat": "{{enterprise}}/{{site}}/{{area}}/{{cell}}/{{unit}}/{{module}}/{{control}}",
+    "separator": "/",
+    "caseSensitive": false,
+    "maxDepth": 7,
+    "templates": {
+      "status": "{{path}}/Status/{{attribute}}",
+      "command": "{{path}}/Commands/{{command}}",
+      "alarm": "{{path}}/Alarms/{{alarmId}}",
+      "parameter": "{{path}}/Parameters/{{paramName}}"
+    }
+  },
+  "parameters": [
+    {
+      "name": "enterpriseName",
+      "type": "string",
+      "required": true,
+      "description": "Name of the enterprise",
+      "example": "MedTech_Industries"
+    },
+    {
+      "name": "siteName",
+      "type": "string",
+      "required": false,
+      "description": "Name of the site/facility",
+      "example": "Hospital_Boston"
+    },
+    {
+      "name": "includeMetrics",
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Generate metric tags at each level"
+    },
+    {
+      "name": "maxDepth",
+      "type": "integer",
+      "required": false,
+      "default": 7,
+      "description": "Maximum hierarchy depth to generate",
+      "min": 1,
+      "max": 7
+    },
+    {
+      "name": "tagSeparator",
+      "type": "string",
+      "required": false,
+      "default": "/",
+      "description": "Character to separate hierarchy levels in tag paths"
+    }
+  ],
+  "instantiation": {
+    "template": "isa88-equipment-hierarchy",
+    "generates": [
+      "Hierarchical tag structure",
+      "Equipment organization",
+      "Navigation paths",
+      "Reporting rollups",
+      "Security boundaries"
+    ],
+    "integrations": [
+      "PackML state machines at Unit level",
+      "ISA-95 functional levels mapping",
+      "MES/ERP systems",
+      "Historian organization"
+    ]
+  },
+  "validation": {
+    "rules": [
+      {
+        "rule": "uniquePaths",
+        "description": "Each equipment path must be unique",
+        "severity": "error"
+      },
+      {
+        "rule": "validParent",
+        "description": "Each element must have valid parent type",
+        "severity": "error"
+      },
+      {
+        "rule": "depthLimit",
+        "description": "Hierarchy depth should not exceed 7 levels",
+        "severity": "warning"
+      },
+      {
+        "rule": "namingConvention",
+        "description": "Names should follow defined convention",
+        "severity": "warning"
+      }
+    ]
+  }
+}

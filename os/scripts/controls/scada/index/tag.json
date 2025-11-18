@@ -1,61 +1,15 @@
 {
-  "UUID": "8d94bfb6-e50e-40fb-85c1-dfc0654c05e0",
+  "UUID": "abdaeb74-1466-4e3f-af39-428d9522a926",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/scripts/controls/scada/",
   "Directory_Name": "Scada",
   "Title": "Scada",
   "Description": "ISA-95 L3_MES - scada subsystem",
-  "Icon": "\ud83d\udcca",
+  "Icon": "\ud83d\udcc1",
   "Color_Scheme": "blue",
   "Parent_Path": "/os/scripts/controls/",
   "Child_Directories": [],
-  "Sibling_Directories": [
-    {
-      "path": "/os/scripts/controls/hmi/",
-      "title": "Hmi",
-      "description": "hmi area",
-      "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/scripts/controls/plc/",
-      "title": "Plc",
-      "description": "plc area",
-      "icon": "\u2699\ufe0f"
-    },
-    {
-      "path": "/os/scripts/controls/tags/",
-      "title": "Tags",
-      "description": "tags area",
-      "icon": "\ud83c\udff7\ufe0f"
-    }
-  ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/scripts/",
-      "title": "Scripts",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/scripts/controls/",
-      "title": "Controls",
-      "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/scripts/controls/scada/",
-      "title": "Scada",
-      "icon": "\ud83d\udcca"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": null,
   "Status_Path": null,
@@ -109,15 +63,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 785
     }
   ]
 }

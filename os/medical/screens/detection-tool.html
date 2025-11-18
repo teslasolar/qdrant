@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Object Detection Tool</title>
+<link rel="stylesheet" href="../styles/isa101-theme.css">
+<link rel="stylesheet" href="../styles/widgets.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>Object Detection</h1>
+
+  <div class="card">
+    <select id="detector" class="btn btn-primary">
+      <option>YOLOv8</option>
+      <option>Faster R-CNN</option>
+      <option>RetinaNet</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <canvas id="detect-canvas" width="512" height="512"></canvas>
+    <button id="run-detect" class="btn btn-primary">Detect Objects</button>
+  </div>
+
+  <div id="detections"></div>
+</div>
+
+<script type="module">
+import MedicalDetection from '../ai/detection.js';
+
+const detection = new MedicalDetection();
+const runBtn = document.getElementById('run-detect');
+
+runBtn.addEventListener('click', async () => {
+  const result = await detection.yoloDetect(null);
+  console.log('Detections:', result);
+});
+</script>
+
+</body>
+</html>

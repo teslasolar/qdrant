@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tag-Based Navigation Example</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Courier New', monospace;
+    background: #0a0a0a;
+    color: #00ff88;
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    color: #00ff88;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #00ff88;
+  }
+
+  .section {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border: 2px solid #00ff88;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .section h2 {
+    color: #00ff88;
+    margin-bottom: 15px;
+  }
+
+  .tag-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+  }
+
+  .tag-card {
+    background: #000;
+    border: 2px solid #00ff88;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tag-card:hover {
+    border-color: #00ccff;
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .tag-name {
+    color: #00ff88;
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 5px;
+  }
+
+  .tag-count {
+    color: #888;
+    font-size: 0.9em;
+  }
+
+  .screen-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+  }
+
+  .screen-card {
+    background: #0a0a0a;
+    border: 2px solid #00ccff;
+    border-radius: 8px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .screen-card:hover {
+    border-color: #00ff88;
+    transform: translateY(-2px);
+  }
+
+  .btn {
+    padding: 10px 20px;
+    background: #00ff88;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+
+  .btn:hover { background: #00cc66; }
+  .btn.secondary { background: #333; color: #00ff88; }
+
+  pre {
+    background: #000;
+    border: 2px solid #00ff88;
+    border-radius: 8px;
+    padding: 15px;
+    overflow-x: auto;
+    color: #00ccff;
+    margin: 10px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🏷️ Tag-Based Navigation Examples</h1>
+
+  <!-- Tag Cloud -->
+  <div class="section">
+    <h2>Available Tags</h2>
+    <p style="color: #888; margin-bottom: 15px;">
+      Click on a tag to view all screens with that tag.
+    </p>
+    <div id="tag-cloud" class="tag-grid">
+      <p style="color: #888;">Loading tags...</p>
+    </div>
+  </div>
+
+  <!-- Tag Filter -->
+  <div class="section">
+    <h2>Filter by Tag</h2>
+    <p style="color: #888; margin-bottom: 15px;">
+      Select a tag to filter and view matching screens.
+    </p>
+
+    <select id="tag-select" style="padding: 10px; background: #0a0a0a; color: #00ff88; border: 2px solid #00ff88; border-radius: 4px; font-family: inherit; width: 100%; max-width: 400px; margin-bottom: 10px;">
+      <option value="">-- Select a tag --</option>
+    </select>
+
+    <div id="filtered-screens"></div>
+  </div>
+
+  <!-- Multi-Tag Filter -->
+  <div class="section">
+    <h2>Multi-Tag Filter</h2>
+    <p style="color: #888; margin-bottom: 15px;">
+      Select multiple tags to find screens that match ALL selected tags.
+    </p>
+
+    <div id="tag-checkboxes" style="margin-bottom: 15px;">
+      <p style="color: #888;">Loading tags...</p>
+    </div>
+
+    <button class="btn" onclick="applyMultiTagFilter()">Apply Filter</button>
+    <button class="btn secondary" onclick="clearMultiTagFilter()">Clear Filter</button>
+
+    <div id="multi-tag-results"></div>
+  </div>
+
+  <!-- Code Examples -->
+  <div class="section">
+    <h2>Code Examples</h2>
+
+    <h3 style="color: #00ff88; margin-top: 15px; margin-bottom: 10px;">Load screens by single tag:</h3>
+    <pre>
+// Load all screens with a specific tag
+async function loadScreensByTag(tag) {
+  const screens = await window.templateLoader.loadScreensByTag(tag);
+  console.log(`Found ${screens.length} screens with tag "${tag}"`);
+
+  // Load first screen
+  if (screens.length > 0) {
+    await window.templateLoader.renderScreen(screens[0], 'hmi-container');
+  }
+}
+
+// Usage
+loadScreensByTag('overview');
+    </pre>
+
+    <h3 style="color: #00ff88; margin-top: 15px; margin-bottom: 10px;">Load screens by multiple tags:</h3>
+    <pre>
+// Find screens matching ALL tags
+async function loadScreensByMultipleTags(tags) {
+  await window.templateLoader.loadIndexes();
+  const allScreens = window.templateLoader.indexes.screens.screens;
+
+  const matching = allScreens.filter(screen =>
+    tags.every(tag => screen.tags && screen.tags.includes(tag))
+  );
+
+  return matching;
+}
+
+// Usage
+const screens = await loadScreensByMultipleTags(['overview', 'dashboard']);
+    </pre>
+
+    <h3 style="color: #00ff88; margin-top: 15px; margin-bottom: 10px;">Get all unique tags:</h3>
+    <pre>
+// Extract all unique tags from screens
+async function getAllTags() {
+  await window.templateLoader.loadIndexes();
+  const screens = window.templateLoader.indexes.screens.screens;
+
+  const tagSet = new Set();
+  screens.forEach(screen => {
+    if (screen.tags) {
+      screen.tags.forEach(tag => tagSet.add(tag));
+    }
+  });
+
+  return Array.from(tagSet).sort();
+}
+
+// Usage
+const tags = await getAllTags();
+console.log('Available tags:', tags);
+    </pre>
+  </div>
+
+  <!-- Tag Statistics -->
+  <div class="section">
+    <h2>Tag Statistics</h2>
+    <div id="tag-stats">
+      <p style="color: #888;">Loading statistics...</p>
+    </div>
+  </div>
+</div>
+
+<script src="../template-loader.js"></script>
+<script>
+let allScreens = [];
+let allTags = [];
+
+// Initialize
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadData();
+  renderTagCloud();
+  renderTagSelect();
+  renderTagCheckboxes();
+  renderTagStatistics();
+});
+
+// Load all data
+async function loadData() {
+  try {
+    await window.templateLoader.loadIndexes();
+    allScreens = window.templateLoader.indexes.screens.screens;
+    allTags = extractAllTags();
+  } catch (error) {
+    console.error('Error loading data:', error);
+  }
+}
+
+// Extract all unique tags
+function extractAllTags() {
+  const tagSet = new Set();
+  allScreens.forEach(screen => {
+    if (screen.tags) {
+      screen.tags.forEach(tag => tagSet.add(tag));
+    }
+  });
+  return Array.from(tagSet).sort();
+}
+
+// Count screens per tag
+function countScreensPerTag() {
+  const tagCounts = {};
+  allScreens.forEach(screen => {
+    if (screen.tags) {
+      screen.tags.forEach(tag => {
+        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+      });
+    }
+  });
+  return tagCounts;
+}
+
+// Render tag cloud
+function renderTagCloud() {
+  const container = document.getElementById('tag-cloud');
+  const tagCounts = countScreensPerTag();
+
+  let html = '';
+  allTags.forEach(tag => {
+    const count = tagCounts[tag] || 0;
+    html += `
+      <div class="tag-card" onclick="showScreensForTag('${tag}')">
+        <div class="tag-name">${tag}</div>
+        <div class="tag-count">${count} screen${count !== 1 ? 's' : ''}</div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+// Render tag select dropdown
+function renderTagSelect() {
+  const select = document.getElementById('tag-select');
+  const tagCounts = countScreensPerTag();
+
+  allTags.forEach(tag => {
+    const option = document.createElement('option');
+    option.value = tag;
+    option.textContent = `${tag} (${tagCounts[tag]} screens)`;
+    select.appendChild(option);
+  });
+
+  select.addEventListener('change', (e) => {
+    if (e.target.value) {
+      showScreensForTag(e.target.value);
+    } else {
+      document.getElementById('filtered-screens').innerHTML = '';
+    }
+  });
+}
+
+// Render tag checkboxes
+function renderTagCheckboxes() {
+  const container = document.getElementById('tag-checkboxes');
+  const tagCounts = countScreensPerTag();
+
+  let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">';
+  allTags.forEach(tag => {
+    html += `
+      <label style="color: #00ff88; cursor: pointer; user-select: none;">
+        <input type="checkbox" value="${tag}" style="margin-right: 5px;">
+        ${tag} (${tagCounts[tag]})
+      </label>
+    `;
+  });
+  html += '</div>';
+
+  container.innerHTML = html;
+}
+
+// Show screens for a specific tag
+async function showScreensForTag(tag) {
+  const screens = allScreens.filter(s => s.tags && s.tags.includes(tag));
+
+  const container = document.getElementById('filtered-screens');
+  container.innerHTML = `<h3 style="color: #00ff88; margin: 20px 0 10px 0;">Screens tagged "${tag}":</h3>`;
+
+  if (screens.length === 0) {
+    container.innerHTML += '<p style="color: #888;">No screens found</p>';
+    return;
+  }
+
+  let html = '<div class="screen-list">';
+  screens.forEach(screen => {
+    html += `
+      <div class="screen-card" onclick="navigateToScreen('${screen.uuid}')">
+        <div style="font-weight: bold; color: #00ff88; margin-bottom: 5px;">${screen.name}</div>
+        <div style="color: #888; font-size: 0.9em; margin-bottom: 8px;">${screen.description}</div>
+        <div style="color: #00ccff; font-size: 0.85em;">
+          Category: ${screen.category}
+        </div>
+        <div style="color: #888; font-size: 0.85em;">
+          Tags: ${screen.tags.join(', ')}
+        </div>
+      </div>
+    `;
+  });
+  html += '</div>';
+
+  container.innerHTML += html;
+}
+
+// Apply multi-tag filter
+function applyMultiTagFilter() {
+  const checkboxes = document.querySelectorAll('#tag-checkboxes input:checked');
+  const selectedTags = Array.from(checkboxes).map(cb => cb.value);
+
+  if (selectedTags.length === 0) {
+    alert('Please select at least one tag');
+    return;
+  }
+
+  const matching = allScreens.filter(screen =>
+    selectedTags.every(tag => screen.tags && screen.tags.includes(tag))
+  );
+
+  const container = document.getElementById('multi-tag-results');
+  container.innerHTML = `<h3 style="color: #00ff88; margin: 20px 0 10px 0;">
+    Screens matching tags: ${selectedTags.join(' + ')}
+  </h3>`;
+
+  if (matching.length === 0) {
+    container.innerHTML += '<p style="color: #888;">No screens match all selected tags</p>';
+    return;
+  }
+
+  let html = '<div class="screen-list">';
+  matching.forEach(screen => {
+    html += `
+      <div class="screen-card" onclick="navigateToScreen('${screen.uuid}')">
+        <div style="font-weight: bold; color: #00ff88; margin-bottom: 5px;">${screen.name}</div>
+        <div style="color: #888; font-size: 0.9em; margin-bottom: 8px;">${screen.description}</div>
+        <div style="color: #00ccff; font-size: 0.85em;">
+          Tags: ${screen.tags.join(', ')}
+        </div>
+      </div>
+    `;
+  });
+  html += '</div>';
+
+  container.innerHTML += html;
+}
+
+// Clear multi-tag filter
+function clearMultiTagFilter() {
+  document.querySelectorAll('#tag-checkboxes input').forEach(cb => cb.checked = false);
+  document.getElementById('multi-tag-results').innerHTML = '';
+}
+
+// Navigate to screen
+function navigateToScreen(uuid) {
+  window.open(`../example-hmi.html?uuid=${uuid}`, '_blank');
+}
+
+// Render tag statistics
+function renderTagStatistics() {
+  const container = document.getElementById('tag-stats');
+  const tagCounts = countScreensPerTag();
+
+  const stats = Object.entries(tagCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([tag, count]) => ({ tag, count }));
+
+  let html = '<table style="width: 100%; border-collapse: collapse;">';
+  html += `
+    <thead>
+      <tr style="border-bottom: 2px solid #00ff88;">
+        <th style="text-align: left; padding: 10px; color: #00ff88;">Tag</th>
+        <th style="text-align: right; padding: 10px; color: #00ff88;">Screen Count</th>
+        <th style="text-align: left; padding: 10px; color: #00ff88;">Percentage</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
+
+  const total = allScreens.length;
+  stats.forEach(({ tag, count }) => {
+    const percentage = ((count / total) * 100).toFixed(1);
+    html += `
+      <tr style="border-bottom: 1px solid #333;">
+        <td style="padding: 10px; color: #00ff88;">${tag}</td>
+        <td style="padding: 10px; text-align: right; color: #00ccff;">${count}</td>
+        <td style="padding: 10px; color: #888;">${percentage}%</td>
+      </tr>
+    `;
+  });
+
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!-- East Dock - Metrics & Alerts -->
+<div class="dock-section-title">📊 Live Metrics</div>
+
+<div class="widget">
+  <div class="widget-title">Throughput</div>
+  <div class="widget-value" id="throughput-value">
+    127<span class="widget-unit">studies/day</span>
+  </div>
+  <div style="margin-top: 8px; font-size: 0.85em; color: var(--color-normal);">
+    ▲ +8.2% vs yesterday
+  </div>
+</div>
+
+<div class="widget">
+  <div class="widget-title">Queue Depth</div>
+  <div class="widget-value" id="queue-value">
+    23<span class="widget-unit">pending</span>
+  </div>
+  <div style="margin-top: 8px; font-size: 0.85em; color: var(--color-cream-dark);">
+    Average wait: 4.2 min
+  </div>
+</div>
+
+<div class="widget">
+  <div class="widget-title">Equipment Utilization</div>
+  <div class="widget-value" id="utilization-value">
+    82<span class="widget-unit">%</span>
+  </div>
+  <div style="margin-top: 8px;">
+    <div style="background: rgba(245, 242, 232, 0.1); height: 8px; border-radius: 4px; overflow: hidden;">
+      <div id="utilization-bar" style="background: var(--color-normal); height: 100%; width: 82%; transition: width 1s;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="widget">
+  <div class="widget-title">Quality Score</div>
+  <div class="widget-value" id="quality-value">
+    98.1<span class="widget-unit">%</span>
+  </div>
+  <div style="margin-top: 8px; font-size: 0.85em; color: var(--color-normal);">
+    ✓ Within SLA
+  </div>
+</div>
+
+<div class="dock-section-title" style="margin-top: 20px;">🔔 Recent Alerts</div>
+
+<div id="alerts-container">
+  <div class="widget" style="border-left: 3px solid var(--color-normal);">
+    <div style="font-size: 0.85em; color: var(--color-cream-dark);">12:45 PM</div>
+    <div style="margin-top: 4px; font-weight: 600;">CT-001 Scan Complete</div>
+    <div style="font-size: 0.85em; color: var(--color-purple-light); margin-top: 4px;">Study ID: ST-2847</div>
+  </div>
+
+  <div class="widget" style="border-left: 3px solid var(--color-warning);">
+    <div style="font-size: 0.85em; color: var(--color-cream-dark);">12:42 PM</div>
+    <div style="margin-top: 4px; font-weight: 600;">High Queue Detected</div>
+    <div style="font-size: 0.85em; color: var(--color-purple-light); margin-top: 4px;">MRI queue: 8 studies</div>
+  </div>
+
+  <div class="widget" style="border-left: 3px solid var(--color-normal);">
+    <div style="font-size: 0.85em; color: var(--color-cream-dark);">12:38 PM</div>
+    <div style="margin-top: 4px; font-weight: 600;">AlF-DETECT Analysis</div>
+    <div style="font-size: 0.85em; color: var(--color-purple-light); margin-top: 4px;">Screening complete</div>
+  </div>
+</div>
+
+<script>
+// Simulate live metric updates
+function updateMetrics() {
+  // Throughput
+  const throughput = 110 + Math.floor(Math.random() * 30);
+  document.getElementById('throughput-value').innerHTML = `${throughput}<span class="widget-unit">studies/day</span>`;
+
+  // Queue
+  const queue = 15 + Math.floor(Math.random() * 20);
+  document.getElementById('queue-value').innerHTML = `${queue}<span class="widget-unit">pending</span>`;
+
+  // Utilization
+  const utilization = 75 + Math.floor(Math.random() * 20);
+  document.getElementById('utilization-value').innerHTML = `${utilization}<span class="widget-unit">%</span>`;
+  document.getElementById('utilization-bar').style.width = utilization + '%';
+
+  // Quality
+  const quality = (96 + Math.random() * 3).toFixed(1);
+  document.getElementById('quality-value').innerHTML = `${quality}<span class="widget-unit">%</span>`;
+}
+
+// Update every 3 seconds
+setInterval(updateMetrics, 3000);
+
+// Add new alert (simulated)
+function addAlert(type, title, details) {
+  const alertsContainer = document.getElementById('alerts-container');
+  const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+  const colors = {
+    normal: 'var(--color-normal)',
+    warning: 'var(--color-warning)',
+    alarm: 'var(--color-alarm)'
+  };
+
+  const alertHTML = `
+    <div class="widget" style="border-left: 3px solid ${colors[type]};">
+      <div style="font-size: 0.85em; color: var(--color-cream-dark);">${time}</div>
+      <div style="margin-top: 4px; font-weight: 600;">${title}</div>
+      <div style="font-size: 0.85em; color: var(--color-purple-light); margin-top: 4px;">${details}</div>
+    </div>
+  `;
+
+  alertsContainer.insertAdjacentHTML('afterbegin', alertHTML);
+
+  // Keep only last 5 alerts
+  const alerts = alertsContainer.querySelectorAll('.widget');
+  if (alerts.length > 5) {
+    alerts[alerts.length - 1].remove();
+  }
+}
+
+// Simulate alerts
+setInterval(() => {
+  const alerts = [
+    { type: 'normal', title: 'Scan Complete', details: 'Study ID: ST-' + Math.floor(Math.random() * 9999) },
+    { type: 'normal', title: 'Quality Check Passed', details: 'Equipment: CT-001' },
+    { type: 'warning', title: 'Queue Building', details: 'X-Ray queue: ' + (5 + Math.floor(Math.random() * 5)) + ' studies' }
+  ];
+
+  const alert = alerts[Math.floor(Math.random() * alerts.length)];
+  addAlert(alert.type, alert.title, alert.details);
+}, 15000);
+</script>

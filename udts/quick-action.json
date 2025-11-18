@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "quick-action-udt",
+  "title": "Quick Action UDT",
+  "description": "Reusable quick action button",
+  "type": "object",
+  "required": ["label", "path", "type"],
+  "properties": {
+    "label": {"type": "string", "maxLength": 30},
+    "path": {"type": "string"},
+    "type": {"type": "string", "enum": ["primary", "secondary"]}
+  }
+}

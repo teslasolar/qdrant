@@ -1,10 +1,10 @@
 {
-  "UUID": "3442ad20-39ec-4bdf-b0f8-348c2c078609",
+  "UUID": "e525ed6a-3b89-426c-b7de-5371379144b8",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/cli/",
   "Directory_Name": "Cli",
-  "Title": "Cli",
-  "Description": "ISA-95 L3_MES - cli subsystem",
+  "Title": "CLI Maintenance Tools",
+  "Description": "8 command-line utilities - health checks, tag validation, project stats, streamlining, UUID generation",
   "Icon": "\u2328\ufe0f",
   "Color_Scheme": "blue",
   "Parent_Path": null,
@@ -13,63 +13,28 @@
       "path": "/cli/backup/",
       "title": "Backup",
       "description": "backup subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 3
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/cli/dev/",
       "title": "Dev",
       "description": "dev subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 5
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/cli/logs/",
       "title": "Logs",
       "description": "logs subsystem",
-      "icon": "\ud83d\udcdd",
-      "page_count": 3
+      "icon": "\ud83d\udcdd"
     },
     {
       "path": "/cli/models/",
       "title": "Models",
       "description": "models subsystem",
-      "icon": "\ud83e\udd16",
-      "page_count": 5
+      "icon": "\ud83e\udd16"
     }
   ],
-  "Sibling_Directories": [
-    {
-      "path": "/collab/",
-      "title": "Collab",
-      "description": "collab area",
-      "icon": "\ud83d\udc65"
-    },
-    {
-      "path": "/docs/",
-      "title": "Docs",
-      "description": "docs area",
-      "icon": "\ud83d\udcda"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "description": "os area",
-      "icon": "\ud83d\udcbb"
-    }
-  ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/cli/",
-      "title": "Cli",
-      "icon": "\u2328\ufe0f"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
@@ -81,19 +46,24 @@
   "scada_path": null,
   "Features": [
     {
-      "title": "Core Functionality",
-      "description": "Primary system features",
-      "icon": "\u2699\ufe0f"
+      "title": "Health Checks",
+      "description": "Validate project structure, tags, and dependencies",
+      "icon": "\ud83c\udfaf"
     },
     {
-      "title": "Data Management",
-      "description": "Structured data handling",
+      "title": "Tag Validation",
+      "description": "Ensure all tag.json files are correctly formatted",
+      "icon": "\u2713"
+    },
+    {
+      "title": "Project Statistics",
+      "description": "Generate metrics, reports, and analysis",
       "icon": "\ud83d\udcca"
     },
     {
-      "title": "Monitoring",
-      "description": "Real-time monitoring",
-      "icon": "\ud83d\udc41\ufe0f"
+      "title": "Streamlining",
+      "description": "Remove duplicates and optimize structure",
+      "icon": "\ud83e\uddf9"
     }
   ],
   "Quick_Actions": [
@@ -133,92 +103,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 13225
-    },
-    {
-      "path": "api-wrapper.md",
-      "name": "Api Wrapper",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 10331
-    },
-    {
-      "path": "boot.md",
-      "name": "Boot",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3782
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4450
-    },
-    {
-      "path": "deploy.md",
-      "name": "Deploy",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3820
-    },
-    {
-      "path": "health.md",
-      "name": "Health",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4555
-    },
-    {
-      "path": "logs.md",
-      "name": "Logs",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4510
-    },
-    {
-      "path": "mcp-wrapper.md",
-      "name": "Mcp Wrapper",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 14285
-    },
-    {
-      "path": "restart.md",
-      "name": "Restart",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 1696
-    },
-    {
-      "path": "start.md",
-      "name": "Start",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3786
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3581
-    },
-    {
-      "path": "stop.md",
-      "name": "Stop",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 2657
     }
   ]
 }

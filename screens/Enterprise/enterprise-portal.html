@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Portal - Medical Imaging Factory</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    color: #e0e0e0;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border-bottom: 3px solid #00ff88;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header h1 {
+    color: #00ff88;
+    font-size: 2em;
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+  }
+
+  .header-info {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #2a2a3e;
+    border: 2px solid #00ff88;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #00ff88;
+  }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    background: #1a1a2e;
+    border-bottom: 2px solid #333;
+    padding: 15px 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #888;
+  }
+
+  .breadcrumb a {
+    color: #00ccff;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .breadcrumb a:hover { color: #00ff88; }
+  .breadcrumb-current { color: #00ff88; font-weight: 600; }
+
+  /* Main Container */
+  .container {
+    padding: 40px;
+    max-width: 1800px;
+    margin: 0 auto;
+  }
+
+  /* Executive Summary */
+  .executive-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+  }
+
+  .summary-card {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border: 2px solid #333;
+    border-left: 5px solid #00ff88;
+    border-radius: 12px;
+    padding: 25px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .summary-card:hover {
+    border-color: #00ff88;
+    box-shadow: 0 10px 40px rgba(0, 255, 136, 0.2);
+    transform: translateY(-3px);
+  }
+
+  .summary-card.blue { border-left-color: #00ccff; }
+  .summary-card.purple { border-left-color: #ff88ff; }
+  .summary-card.orange { border-left-color: #ffaa00; }
+  .summary-card.red { border-left-color: #ff6666; }
+
+  .summary-icon {
+    font-size: 3em;
+    margin-bottom: 15px;
+    opacity: 0.9;
+  }
+
+  .summary-label {
+    color: #888;
+    font-size: 0.95em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .summary-value {
+    color: #00ff88;
+    font-size: 2.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+  }
+
+  .summary-subtitle {
+    color: #aaa;
+    font-size: 0.9em;
+  }
+
+  .trend {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 0.9em;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+
+  .trend.up {
+    background: rgba(0, 255, 136, 0.2);
+    color: #00ff88;
+  }
+
+  .trend.down {
+    background: rgba(255, 102, 102, 0.2);
+    color: #ff6666;
+  }
+
+  /* Section */
+  .section {
+    background: #1a1a2e;
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #333;
+  }
+
+  .section h2 {
+    color: #00ff88;
+    font-size: 1.8em;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  /* KPI Dashboard */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+
+  .kpi-card {
+    background: #2a2a3e;
+    border: 2px solid #444;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .kpi-card:hover {
+    border-color: #00ff88;
+    background: #333;
+  }
+
+  .kpi-title {
+    color: #888;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+  }
+
+  .kpi-value {
+    color: #00ccff;
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .kpi-target {
+    color: #666;
+    font-size: 0.85em;
+  }
+
+  /* System Health */
+  .health-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+  }
+
+  .health-item {
+    background: #2a2a3e;
+    border: 2px solid #444;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .health-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .health-indicator.green {
+    background: #00ff88;
+    box-shadow: 0 0 15px #00ff88;
+  }
+
+  .health-indicator.yellow {
+    background: #ffaa00;
+    box-shadow: 0 0 15px #ffaa00;
+  }
+
+  .health-indicator.red {
+    background: #ff6666;
+    box-shadow: 0 0 15px #ff6666;
+  }
+
+  .health-name {
+    color: #e0e0e0;
+    font-weight: 600;
+    flex: 1;
+  }
+
+  .health-status {
+    color: #888;
+    font-size: 0.9em;
+  }
+
+  /* Quick Access Grid */
+  .quick-access {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .access-card {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 25px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: block;
+  }
+
+  .access-card:hover {
+    border-color: #00ff88;
+    box-shadow: 0 8px 30px rgba(0, 255, 136, 0.2);
+    transform: translateY(-3px);
+  }
+
+  .access-icon {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+  }
+
+  .access-title {
+    color: #00ff88;
+    font-size: 1.3em;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .access-description {
+    color: #aaa;
+    font-size: 0.95em;
+    line-height: 1.5;
+  }
+
+  /* Chart Container */
+  .chart-container {
+    background: #0a0a0a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+  }
+
+  /* Button */
+  .btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #00ff88, #00cc66);
+    color: #000;
+  }
+
+  .btn-secondary {
+    background: #2a2a3e;
+    color: #00ccff;
+    border: 2px solid #00ccff;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3);
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: #666;
+    border-top: 2px solid #333;
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <h1>🏢 Enterprise Portal</h1>
+  <div class="header-info">
+    <span class="badge">L4 - Business</span>
+    <span id="current-time" style="color: #00ccff; font-size: 1.2em;">00:00:00</span>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="index.html">🏭 ISA-95 Level 4</a>
+  <span>›</span>
+  <span class="breadcrumb-current">Enterprise Portal</span>
+</div>
+
+<!-- Main Container -->
+<div class="container">
+
+  <!-- Executive Summary -->
+  <div class="executive-summary">
+    <div class="summary-card">
+      <div class="trend up">↑ 5.2%</div>
+      <div class="summary-icon">📊</div>
+      <div class="summary-label">Daily Throughput</div>
+      <div class="summary-value" id="throughput">1,247</div>
+      <div class="summary-subtitle">Studies Completed Today</div>
+    </div>
+
+    <div class="summary-card blue">
+      <div class="trend up">↑ 2.1%</div>
+      <div class="summary-icon">⚡</div>
+      <div class="summary-label">System Uptime</div>
+      <div class="summary-value" id="uptime">99.7%</div>
+      <div class="summary-subtitle">Last 30 Days Average</div>
+    </div>
+
+    <div class="summary-card purple">
+      <div class="trend up">↑ 1.8%</div>
+      <div class="summary-icon">✓</div>
+      <div class="summary-label">Quality Score</div>
+      <div class="summary-value" id="quality">98.3%</div>
+      <div class="summary-subtitle">First Pass Success Rate</div>
+    </div>
+
+    <div class="summary-card orange">
+      <div class="trend up">↑ 12.5%</div>
+      <div class="summary-icon">💰</div>
+      <div class="summary-label">Revenue (Today)</div>
+      <div class="summary-value" id="revenue">$42.8K</div>
+      <div class="summary-subtitle">Estimated Daily Revenue</div>
+    </div>
+  </div>
+
+  <!-- KPI Dashboard -->
+  <div class="section">
+    <div class="section-header">
+      <h2>📈 Key Performance Indicators</h2>
+      <button class="btn btn-secondary" onclick="window.location.href='analytics-reporting.html'">View Full Analytics</button>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-title">CT Scanner Utilization</div>
+        <div class="kpi-value">87.5%</div>
+        <div class="kpi-target">Target: 85%</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">MRI Utilization</div>
+        <div class="kpi-value">92.3%</div>
+        <div class="kpi-target">Target: 90%</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">X-Ray Utilization</div>
+        <div class="kpi-value">78.9%</div>
+        <div class="kpi-target">Target: 75%</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">Average Study Time</div>
+        <div class="kpi-value">12.3 min</div>
+        <div class="kpi-target">Target: ≤ 15 min</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">Failed Studies</div>
+        <div class="kpi-value">1.7%</div>
+        <div class="kpi-target">Target: ≤ 2%</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">SLA Compliance</div>
+        <div class="kpi-value">99.1%</div>
+        <div class="kpi-target">Target: ≥ 98%</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">Equipment OEE</div>
+        <div class="kpi-value">89.2%</div>
+        <div class="kpi-target">Target: ≥ 85%</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">Maintenance Backlog</div>
+        <div class="kpi-value">4 Items</div>
+        <div class="kpi-target">Target: ≤ 5</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Health Overview -->
+  <div class="section">
+    <div class="section-header">
+      <h2>🏥 System Health Overview</h2>
+      <button class="btn btn-secondary" onclick="window.location.href='scada.html'">Open SCADA</button>
+    </div>
+
+    <div class="health-grid">
+      <div class="health-item">
+        <div class="health-indicator green"></div>
+        <div>
+          <div class="health-name">CT Scanners</div>
+          <div class="health-status">3/3 Online</div>
+        </div>
+      </div>
+
+      <div class="health-item">
+        <div class="health-indicator green"></div>
+        <div>
+          <div class="health-name">MRI Systems</div>
+          <div class="health-status">2/2 Online</div>
+        </div>
+      </div>
+
+      <div class="health-item">
+        <div class="health-indicator green"></div>
+        <div>
+          <div class="health-name">X-Ray Machines</div>
+          <div class="health-status">4/4 Online</div>
+        </div>
+      </div>
+
+      <div class="health-item">
+        <div class="health-indicator yellow"></div>
+        <div>
+          <div class="health-name">PACS Server</div>
+          <div class="health-status">High Load (78%)</div>
+        </div>
+      </div>
+
+      <div class="health-item">
+        <div class="health-indicator green"></div>
+        <div>
+          <div class="health-name">DICOM Router</div>
+          <div class="health-status">Active</div>
+        </div>
+      </div>
+
+      <div class="health-item">
+        <div class="health-indicator green"></div>
+        <div>
+          <div class="health-name">HL7 Interface</div>
+          <div class="health-status">Connected</div>
+        </div>
+      </div>
+
+      <div class="health-item">
+        <div class="health-indicator green"></div>
+        <div>
+          <div class="health-name">AI Detection</div>
+          <div class="health-status">Running</div>
+        </div>
+      </div>
+
+      <div class="health-item">
+        <div class="health-indicator green"></div>
+        <div>
+          <div class="health-name">Quality Control</div>
+          <div class="health-status">Monitoring</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Access to L4 Pages -->
+  <div class="section">
+    <div class="section-header">
+      <h2>⚡ Quick Access - Business Functions</h2>
+    </div>
+
+    <div class="quick-access">
+      <a href="production-planning.html" class="access-card">
+        <div class="access-icon">📋</div>
+        <div class="access-title">Production Planning</div>
+        <div class="access-description">Study volume planning, resource allocation, and scheduling optimization</div>
+      </a>
+
+      <a href="quality-management.html" class="access-card">
+        <div class="access-icon">✓</div>
+        <div class="access-title">Quality Management</div>
+        <div class="access-description">Quality metrics, defect tracking, SLA compliance, and CAPA management</div>
+      </a>
+
+      <a href="analytics-reporting.html" class="access-card">
+        <div class="access-icon">📊</div>
+        <div class="access-title">Analytics & Reporting</div>
+        <div class="access-description">Business intelligence, custom reports, and predictive analytics</div>
+      </a>
+
+      <a href="asset-management.html" class="access-card">
+        <div class="access-icon">🏭</div>
+        <div class="access-title">Asset Management</div>
+        <div class="access-description">Equipment inventory, utilization tracking, and ROI analysis</div>
+      </a>
+
+      <a href="maintenance-planning.html" class="access-card">
+        <div class="access-icon">🔧</div>
+        <div class="access-title">Maintenance Planning</div>
+        <div class="access-description">Preventive maintenance, work orders, and spare parts management</div>
+      </a>
+
+      <a href="configuration.html" class="access-card">
+        <div class="access-icon">⚙️</div>
+        <div class="access-title">Configuration</div>
+        <div class="access-description">System settings, user management, and audit logs</div>
+      </a>
+
+      <a href="hmi.html" class="access-card">
+        <div class="access-icon">🎛️</div>
+        <div class="access-title">HMI Control Panel</div>
+        <div class="access-description">Human-Machine Interface for system control and monitoring</div>
+      </a>
+
+      <a href="scada.html" class="access-card">
+        <div class="access-icon">📈</div>
+        <div class="access-title">SCADA Gateway</div>
+        <div class="access-description">Supervisory control and data acquisition system</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Navigation to Other ISA Levels -->
+  <div class="section">
+    <div class="section-header">
+      <h2>🔗 ISA-95 Architecture Navigation</h2>
+    </div>
+
+    <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+      <button class="btn btn-primary" onclick="alert('L3 - MES (Manufacturing Execution System) - Coming Soon')">
+        L3 - MES
+      </button>
+      <button class="btn btn-secondary" onclick="window.location.href='scada.html'">
+        L2 - SCADA
+      </button>
+      <button class="btn btn-secondary" onclick="window.location.href='plc.html'">
+        L1 - PLC
+      </button>
+      <button class="btn btn-secondary" onclick="alert('L0 - Field Devices - Hardware Layer')">
+        L0 - Field Devices
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <p><strong>ISA-95 Level 4 - Business Planning & Logistics</strong></p>
+  <p>Medical Imaging Virtual Factory Enterprise Portal</p>
+</div>
+
+<script>
+// Update current time
+function updateTime() {
+  const now = new Date();
+  document.getElementById('current-time').textContent = now.toLocaleTimeString();
+}
+
+// Update metrics with simulated real-time data
+function updateMetrics() {
+  const baseValues = {
+    throughput: 1247,
+    uptime: 99.7,
+    quality: 98.3,
+    revenue: 42.8
+  };
+
+  // Add small random variations
+  document.getElementById('throughput').textContent =
+    (baseValues.throughput + Math.floor(Math.random() * 10 - 5)).toLocaleString();
+
+  document.getElementById('uptime').textContent =
+    (baseValues.uptime + (Math.random() * 0.2 - 0.1)).toFixed(1) + '%';
+
+  document.getElementById('quality').textContent =
+    (baseValues.quality + (Math.random() * 0.2 - 0.1)).toFixed(1) + '%';
+
+  document.getElementById('revenue').textContent =
+    '$' + (baseValues.revenue + (Math.random() * 1 - 0.5)).toFixed(1) + 'K';
+}
+
+// Initialize
+updateTime();
+updateMetrics();
+setInterval(updateTime, 1000);
+setInterval(updateMetrics, 5000);
+</script>
+
+</body>
+</html>

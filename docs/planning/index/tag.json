@@ -1,5 +1,5 @@
 {
-  "UUID": "90c59447-0790-49a9-8dfb-8c0cc459a599",
+  "UUID": "2c011a6c-1e63-4cce-bffe-d37c7dcb2829",
   "ISA_Level": "L4_Business",
   "Directory_Path": "/docs/planning/",
   "Directory_Name": "Planning",
@@ -9,49 +9,7 @@
   "Color_Scheme": "green",
   "Parent_Path": "/docs/",
   "Child_Directories": [],
-  "Sibling_Directories": [
-    {
-      "path": "/docs/guides/",
-      "title": "Guides",
-      "description": "guides area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/docs/presentation/",
-      "title": "Presentation",
-      "description": "presentation area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/docs/standards/",
-      "title": "Standards",
-      "description": "standards area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/docs/udts/",
-      "title": "Udts",
-      "description": "udts area",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/docs/",
-      "title": "Docs",
-      "icon": "\ud83d\udcda"
-    },
-    {
-      "path": "/docs/planning/",
-      "title": "Planning",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
@@ -115,50 +73,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "HACKATHON_ANALYSIS.md",
-      "name": "Hackathon Analysis",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 9714
-    },
-    {
-      "path": "IMPROVEMENT_PLAN.md",
-      "name": "Improvement Plan",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 13682
-    },
-    {
-      "path": "PROJECT_STATUS.md",
-      "name": "Project Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 13355
-    },
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 867
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4545
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3611
     }
   ]
 }

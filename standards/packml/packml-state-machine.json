@@ -1,0 +1,457 @@
+{
+  "standardId": "packml-v1.0",
+  "type": "state-machine",
+  "metadata": {
+    "name": "PackML State Machine",
+    "description": "ISA-TR88.00.02 - Packaging Machine Language State Model",
+    "version": "1.0.0",
+    "standard": "ISA-TR88.00.02",
+    "created": "2025-11-17",
+    "tags": ["state-machine", "packml", "isa-88", "equipment-control"]
+  },
+  "specification": {
+    "description": "Standard state machine for packaging and manufacturing equipment control",
+    "baseStandard": "ISA-88",
+    "extends": "ISA-88 Procedural State Model",
+    "application": "Equipment-level control for any automated system"
+  },
+  "states": {
+    "stopped": {
+      "id": 1,
+      "name": "Stopped",
+      "description": "Equipment has executed Stopped state and is at standstill",
+      "category": "stopped",
+      "color": "#E53E3E",
+      "allowedTransitions": ["resetting"],
+      "entryActions": [
+        "disableAllActuators",
+        "logStopTime",
+        "updateStatus"
+      ],
+      "exitActions": ["prepareForReset"]
+    },
+    "stopping": {
+      "id": 2,
+      "name": "Stopping",
+      "description": "Bringing equipment to controlled stop",
+      "category": "acting",
+      "color": "#DD6B20",
+      "allowedTransitions": ["stopped", "aborting"],
+      "whileActive": [
+        "decelerateMotion",
+        "closeValves",
+        "monitorStopConditions"
+      ],
+      "completionCriteria": "allMotionStopped && allValvesClosed"
+    },
+    "idle": {
+      "id": 3,
+      "name": "Idle",
+      "description": "Equipment is powered and ready but not producing",
+      "category": "idle",
+      "color": "#48BB78",
+      "allowedTransitions": ["starting", "stopping"],
+      "entryActions": ["logIdleEntry", "enableManualMode"],
+      "exitActions": ["disableManualMode"]
+    },
+    "starting": {
+      "id": 4,
+      "name": "Starting",
+      "description": "Preparing equipment to execute",
+      "category": "acting",
+      "color": "#4299E1",
+      "allowedTransitions": ["execute", "idle", "aborting"],
+      "whileActive": [
+        "enableSystems",
+        "performSafetyChecks",
+        "loadRecipe",
+        "moveToHomePosition"
+      ],
+      "completionCriteria": "safetyChecksPassed && systemsEnabled && recipeLoaded"
+    },
+    "execute": {
+      "id": 5,
+      "name": "Execute",
+      "description": "Normal production state - equipment is executing its function",
+      "category": "execute",
+      "color": "#38B2AC",
+      "allowedTransitions": ["completing", "holding", "stopping", "aborting"],
+      "whileActive": [
+        "runProductionCycle",
+        "monitorProcessVariables",
+        "checkQuality",
+        "updateCounters"
+      ],
+      "exitActions": ["logExecutionMetrics"]
+    },
+    "completing": {
+      "id": 6,
+      "name": "Completing",
+      "description": "Finalizing current batch/cycle before going complete",
+      "category": "acting",
+      "color": "#9F7AEA",
+      "allowedTransitions": ["complete", "aborting"],
+      "whileActive": [
+        "finishCurrentCycle",
+        "ejectProduct",
+        "cleanupResources"
+      ],
+      "completionCriteria": "currentCycleComplete && productEjected"
+    },
+    "complete": {
+      "id": 7,
+      "name": "Complete",
+      "description": "Batch/order successfully completed",
+      "category": "complete",
+      "color": "#805AD5",
+      "allowedTransitions": ["resetting"],
+      "entryActions": [
+        "logCompletion",
+        "generateReport",
+        "updateInventory",
+        "notifyOperator"
+      ]
+    },
+    "resetting": {
+      "id": 8,
+      "name": "Resetting",
+      "description": "Resetting equipment to initial state",
+      "category": "acting",
+      "color": "#3182CE",
+      "allowedTransitions": ["idle", "aborting"],
+      "whileActive": [
+        "clearAlarms",
+        "resetCounters",
+        "returnToHome",
+        "loadDefaultParameters"
+      ],
+      "completionCriteria": "alarmsCleared && atHomePosition && parametersLoaded"
+    },
+    "holding": {
+      "id": 9,
+      "name": "Holding",
+      "description": "Pausing execution - transitioning to held state",
+      "category": "acting",
+      "color": "#F6AD55",
+      "allowedTransitions": ["held", "aborting"],
+      "whileActive": [
+        "pauseProduction",
+        "saveCurrentState",
+        "maintainSafeConditions"
+      ],
+      "completionCriteria": "productionPaused && stateSaved"
+    },
+    "held": {
+      "id": 10,
+      "name": "Held",
+      "description": "Execution paused - can be resumed",
+      "category": "held",
+      "color": "#ED8936",
+      "allowedTransitions": ["unholding", "stopping"],
+      "whileActive": [
+        "maintainProcessConditions",
+        "allowAdjustments"
+      ]
+    },
+    "unholding": {
+      "id": 11,
+      "name": "Unholding",
+      "description": "Resuming from held state",
+      "category": "acting",
+      "color": "#F6E05E",
+      "allowedTransitions": ["execute", "holding", "aborting"],
+      "whileActive": [
+        "restoreState",
+        "verifyConditions",
+        "resumeProduction"
+      ],
+      "completionCriteria": "stateRestored && conditionsVerified"
+    },
+    "suspending": {
+      "id": 12,
+      "name": "Suspending",
+      "description": "Temporary suspension for external reasons",
+      "category": "acting",
+      "color": "#F687B3",
+      "allowedTransitions": ["suspended", "aborting"],
+      "whileActive": [
+        "suspendOperations",
+        "saveContext",
+        "enterSafeMode"
+      ],
+      "completionCriteria": "operationsSuspended && contextSaved"
+    },
+    "suspended": {
+      "id": 13,
+      "name": "Suspended",
+      "description": "Temporarily suspended - waiting for external condition",
+      "category": "suspended",
+      "color": "#D53F8C",
+      "allowedTransitions": ["unsuspending", "aborting"],
+      "whileActive": [
+        "waitForClearance",
+        "monitorExternalConditions"
+      ]
+    },
+    "unsuspending": {
+      "id": 14,
+      "name": "Unsuspending",
+      "description": "Resuming from suspended state",
+      "category": "acting",
+      "color": "#B794F4",
+      "allowedTransitions": ["execute", "suspending", "aborting"],
+      "whileActive": [
+        "restoreContext",
+        "verifyExternalConditions",
+        "resumeOperations"
+      ],
+      "completionCriteria": "contextRestored && externalConditionsOK"
+    },
+    "aborting": {
+      "id": 15,
+      "name": "Aborting",
+      "description": "Emergency shutdown in progress",
+      "category": "acting",
+      "color": "#FC8181",
+      "allowedTransitions": ["aborted"],
+      "whileActive": [
+        "emergencyStop",
+        "cutPower",
+        "ventsafe",
+        "logEmergency"
+      ],
+      "completionCriteria": "allSystemsSafe",
+      "priority": "highest"
+    },
+    "aborted": {
+      "id": 16,
+      "name": "Aborted",
+      "description": "Emergency stop complete - requires intervention",
+      "category": "aborted",
+      "color": "#C53030",
+      "allowedTransitions": ["clearing"],
+      "entryActions": [
+        "lockEquipment",
+        "notifyMaintenance",
+        "generateIncidentReport"
+      ]
+    },
+    "clearing": {
+      "id": 17,
+      "name": "Clearing",
+      "description": "Clearing aborted state after intervention",
+      "category": "acting",
+      "color": "#90CDF4",
+      "allowedTransitions": ["stopped", "aborting"],
+      "whileActive": [
+        "verifyIntervention",
+        "clearFaults",
+        "performSafetyChecks",
+        "unlockEquipment"
+      ],
+      "completionCriteria": "faultsCleared && safetyChecksPassed && interventionVerified"
+    },
+    "undefined": {
+      "id": 0,
+      "name": "Undefined",
+      "description": "State machine not initialized or communication lost",
+      "category": "undefined",
+      "color": "#A0AEC0",
+      "allowedTransitions": ["aborting", "clearing"],
+      "whileActive": ["attemptRecovery"]
+    }
+  },
+  "stateCategories": {
+    "stopped": {
+      "description": "Equipment is stopped",
+      "color": "#E53E3E"
+    },
+    "idle": {
+      "description": "Ready but not executing",
+      "color": "#48BB78"
+    },
+    "execute": {
+      "description": "Normal production",
+      "color": "#38B2AC"
+    },
+    "complete": {
+      "description": "Successfully completed",
+      "color": "#805AD5"
+    },
+    "held": {
+      "description": "Paused and can resume",
+      "color": "#ED8936"
+    },
+    "suspended": {
+      "description": "Waiting for external condition",
+      "color": "#D53F8C"
+    },
+    "aborted": {
+      "description": "Emergency stopped",
+      "color": "#C53030"
+    },
+    "acting": {
+      "description": "Transition in progress",
+      "color": "#4299E1"
+    },
+    "undefined": {
+      "description": "Unknown or initializing",
+      "color": "#A0AEC0"
+    }
+  },
+  "commands": {
+    "reset": {
+      "description": "Command to reset equipment",
+      "sourceStates": ["stopped", "complete"],
+      "targetState": "resetting"
+    },
+    "start": {
+      "description": "Command to start production",
+      "sourceStates": ["idle"],
+      "targetState": "starting"
+    },
+    "stop": {
+      "description": "Command to stop equipment",
+      "sourceStates": ["execute", "held", "suspended", "starting", "unholding", "unsuspending"],
+      "targetState": "stopping"
+    },
+    "hold": {
+      "description": "Command to pause execution",
+      "sourceStates": ["execute"],
+      "targetState": "holding"
+    },
+    "unhold": {
+      "description": "Command to resume from held",
+      "sourceStates": ["held"],
+      "targetState": "unholding"
+    },
+    "suspend": {
+      "description": "Command to suspend for external reason",
+      "sourceStates": ["execute"],
+      "targetState": "suspending"
+    },
+    "unsuspend": {
+      "description": "Command to resume from suspended",
+      "sourceStates": ["suspended"],
+      "targetState": "unsuspending"
+    },
+    "abort": {
+      "description": "Emergency abort command",
+      "sourceStates": ["*"],
+      "targetState": "aborting",
+      "priority": "highest"
+    },
+    "clear": {
+      "description": "Clear aborted state",
+      "sourceStates": ["aborted"],
+      "targetState": "clearing"
+    },
+    "complete": {
+      "description": "Signal completion of batch/order",
+      "sourceStates": ["execute"],
+      "targetState": "completing"
+    }
+  },
+  "tags": {
+    "status": {
+      "tagName": "{{equipmentPath}}.Status.CurrentState",
+      "dataType": "Integer",
+      "description": "Current state ID",
+      "accessMode": "Read"
+    },
+    "stateName": {
+      "tagName": "{{equipmentPath}}.Status.StateName",
+      "dataType": "String",
+      "description": "Current state name",
+      "accessMode": "Read"
+    },
+    "stateCategory": {
+      "tagName": "{{equipmentPath}}.Status.StateCategory",
+      "dataType": "String",
+      "description": "Current state category",
+      "accessMode": "Read"
+    },
+    "commands": {
+      "reset": "{{equipmentPath}}.Commands.Reset",
+      "start": "{{equipmentPath}}.Commands.Start",
+      "stop": "{{equipmentPath}}.Commands.Stop",
+      "hold": "{{equipmentPath}}.Commands.Hold",
+      "unhold": "{{equipmentPath}}.Commands.Unhold",
+      "suspend": "{{equipmentPath}}.Commands.Suspend",
+      "unsuspend": "{{equipmentPath}}.Commands.Unsuspend",
+      "abort": "{{equipmentPath}}.Commands.Abort",
+      "clear": "{{equipmentPath}}.Commands.Clear",
+      "complete": "{{equipmentPath}}.Commands.Complete"
+    },
+    "indicators": {
+      "isStopped": "{{equipmentPath}}.Status.IsStopped",
+      "isIdle": "{{equipmentPath}}.Status.IsIdle",
+      "isExecuting": "{{equipmentPath}}.Status.IsExecuting",
+      "isComplete": "{{equipmentPath}}.Status.IsComplete",
+      "isHeld": "{{equipmentPath}}.Status.IsHeld",
+      "isSuspended": "{{equipmentPath}}.Status.IsSuspended",
+      "isAborted": "{{equipmentPath}}.Status.IsAborted",
+      "isActing": "{{equipmentPath}}.Status.IsActing"
+    }
+  },
+  "parameters": [
+    {
+      "name": "equipmentPath",
+      "type": "string",
+      "required": true,
+      "description": "Tag path for the equipment (e.g., 'Site/Area/Line1/Machine1')",
+      "example": "Medical/Radiology/CT_Scanner_1"
+    },
+    {
+      "name": "enableManualMode",
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable manual operator control in Idle state"
+    },
+    {
+      "name": "autoComplete",
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Automatically transition to Complete when batch count reached"
+    },
+    {
+      "name": "safetyLevel",
+      "type": "string",
+      "required": false,
+      "default": "standard",
+      "enum": ["basic", "standard", "high", "sil2", "sil3"],
+      "description": "Safety integrity level for state transitions"
+    }
+  ],
+  "validation": {
+    "rules": [
+      {
+        "rule": "noDirectTransition",
+        "description": "Cannot transition directly between Execute and Stopped without intermediate states",
+        "check": "!(currentState === 'execute' && targetState === 'stopped')"
+      },
+      {
+        "rule": "abortFromAny",
+        "description": "Abort command must be available from any state",
+        "check": "commands.abort.sourceStates includes '*'"
+      },
+      {
+        "rule": "uniqueStateIds",
+        "description": "Each state must have unique ID",
+        "check": "stateIds.length === uniqueStateIds.length"
+      }
+    ]
+  },
+  "instantiation": {
+    "template": "packml-instance",
+    "generates": [
+      "State machine logic",
+      "Tag structure",
+      "HMI bindings",
+      "Event handlers",
+      "Alarm definitions"
+    ]
+  }
+}

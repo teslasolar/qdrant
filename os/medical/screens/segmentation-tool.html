@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Segmentation Tool</title>
+<link rel="stylesheet" href="../styles/isa101-theme.css">
+<link rel="stylesheet" href="../styles/widgets.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>AI Segmentation Tool</h1>
+
+  <div class="card">
+    <div class="widget-title">Model Selection</div>
+    <select id="model-select" class="btn btn-primary">
+      <option>U-Net</option>
+      <option>Mask R-CNN</option>
+      <option>DeepLab v3+</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <canvas id="seg-canvas" width="512" height="512"></canvas>
+    <button id="run-seg" class="btn btn-primary">Run Segmentation</button>
+  </div>
+
+  <div class="metric-grid">
+    <div class="widget">
+      <div class="widget-title">Confidence</div>
+      <div class="widget-value" id="confidence">--</div>
+    </div>
+    <div class="widget">
+      <div class="widget-title">Processing Time</div>
+      <div class="widget-value" id="proc-time">--</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import MedicalSegmentation from '../ai/segmentation.js';
+
+const segmentation = new MedicalSegmentation();
+const runBtn = document.getElementById('run-seg');
+
+runBtn.addEventListener('click', async () => {
+  const model = document.getElementById('model-select').value;
+  console.log('Running segmentation with:', model);
+  // Run segmentation
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+{
+  "UUID": "2b36780b-1c73-4db3-b59e-34c4c50ae68d",
+  "ISA_Level": "L4_Business",
+  "Directory_Path": "/templates/screens/trend/",
+  "Directory_Name": "Trend",
+  "Title": "Trend",
+  "Description": "ISA-95 L4_Business - trend subsystem",
+  "Icon": "\ud83d\udcc1",
+  "Color_Scheme": "green",
+  "Parent_Path": "/templates/screens/",
+  "Child_Directories": [],
+  "Sibling_Directories": [],
+  "README_Path": null,
+  "Controls_Path": null,
+  "Status_Path": null,
+  "has_plc": false,
+  "has_hmi": false,
+  "has_scada": false,
+  "plc_path": null,
+  "hmi_path": null,
+  "scada_path": null,
+  "Features": [
+    {
+      "title": "Core Functionality",
+      "description": "Primary system features",
+      "icon": "\u2699\ufe0f"
+    },
+    {
+      "title": "Data Management",
+      "description": "Structured data handling",
+      "icon": "\ud83d\udcca"
+    },
+    {
+      "title": "Monitoring",
+      "description": "Real-time monitoring",
+      "icon": "\ud83d\udc41\ufe0f"
+    }
+  ],
+  "Quick_Actions": [
+    {
+      "label": "View Status",
+      "path": "status.md",
+      "type": "primary"
+    },
+    {
+      "label": "Controls",
+      "path": "controls.md",
+      "type": "secondary"
+    },
+    {
+      "label": "Documentation",
+      "path": "README.md",
+      "type": "secondary"
+    }
+  ],
+  "Related_Files": []
+}

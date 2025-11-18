@@ -1,72 +1,15 @@
 {
-  "UUID": "62c482ec-6a8c-4b51-9bf8-ec7e288b1b39",
+  "UUID": "7f2e772b-231d-442e-ac74-4beb9544869b",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/logs/system/controls/plc/",
   "Directory_Name": "Plc",
   "Title": "Plc",
   "Description": "ISA-95 L3_MES - plc subsystem",
-  "Icon": "\u2699\ufe0f",
+  "Icon": "\ud83d\udcc1",
   "Color_Scheme": "blue",
   "Parent_Path": "/os/logs/system/controls/",
   "Child_Directories": [],
-  "Sibling_Directories": [
-    {
-      "path": "/os/logs/system/controls/controls/",
-      "title": "Controls",
-      "description": "controls area",
-      "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/logs/system/controls/hmi/",
-      "title": "Hmi",
-      "description": "hmi area",
-      "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/logs/system/controls/scada/",
-      "title": "Scada",
-      "description": "scada area",
-      "icon": "\ud83d\udcca"
-    },
-    {
-      "path": "/os/logs/system/controls/tags/",
-      "title": "Tags",
-      "description": "tags area",
-      "icon": "\ud83c\udff7\ufe0f"
-    }
-  ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/logs/",
-      "title": "Logs",
-      "icon": "\ud83d\udcdd"
-    },
-    {
-      "path": "/os/logs/system/",
-      "title": "System",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/logs/system/controls/",
-      "title": "Controls",
-      "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/logs/system/controls/plc/",
-      "title": "Plc",
-      "icon": "\u2699\ufe0f"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": null,
   "Status_Path": null,
@@ -120,15 +63,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 758
     }
   ]
 }

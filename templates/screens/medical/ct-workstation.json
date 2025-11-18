@@ -1,0 +1,170 @@
+{
+  "uuid": "med-screen-ct-001",
+  "type": "screen",
+  "category": "medical",
+  "metadata": {
+    "name": "CT Workstation",
+    "description": "Computed Tomography imaging workstation with advanced viewing tools",
+    "version": "1.0.0",
+    "author": "Medical Imaging SCADA",
+    "created": "2025-11-17T00:00:00Z",
+    "modified": "2025-11-17T00:00:00Z",
+    "tags": ["medical", "ct", "imaging", "radiology"]
+  },
+  "layout": {
+    "grid": {
+      "columns": 4,
+      "rows": 4,
+      "gap": 10
+    },
+    "theme": "dark",
+    "colorScheme": "medical-blue"
+  },
+  "components": [
+    {
+      "uuid": "ct-viewer-main",
+      "type": "dicom-viewport",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "width": 3,
+        "height": 3
+      },
+      "config": {
+        "title": "CT Series Viewer",
+        "modality": "CT",
+        "tools": ["windowing", "zoom", "pan", "measure", "3d-mpr"],
+        "overlayInfo": true,
+        "cineMode": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.ct.currentSeries",
+          "medical.ct.windowLevel",
+          "medical.ct.windowWidth"
+        ]
+      }
+    },
+    {
+      "uuid": "ct-thumbnails",
+      "type": "series-thumbnail-strip",
+      "position": {
+        "x": 3,
+        "y": 0,
+        "width": 1,
+        "height": 2
+      },
+      "config": {
+        "orientation": "vertical",
+        "showLabels": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.ct.seriesList"
+        ]
+      }
+    },
+    {
+      "uuid": "ct-tools",
+      "type": "imaging-tools-panel",
+      "position": {
+        "x": 3,
+        "y": 2,
+        "width": 1,
+        "height": 2
+      },
+      "config": {
+        "tools": [
+          "hounsfield-units",
+          "slice-thickness",
+          "contrast-enhancement",
+          "bone-window",
+          "soft-tissue-window",
+          "lung-window"
+        ]
+      }
+    },
+    {
+      "uuid": "ct-patient-info",
+      "type": "patient-info-card",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "width": 2,
+        "height": 1
+      },
+      "config": {
+        "showDemographics": true,
+        "showStudyInfo": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.ct.patientName",
+          "medical.ct.patientID",
+          "medical.ct.studyDate",
+          "medical.ct.studyDescription"
+        ]
+      }
+    },
+    {
+      "uuid": "ct-measurements",
+      "type": "measurement-panel",
+      "position": {
+        "x": 2,
+        "y": 3,
+        "width": 1,
+        "height": 1
+      },
+      "config": {
+        "measurementTypes": ["length", "area", "volume", "density"],
+        "units": "metric"
+      },
+      "bindings": {
+        "tags": [
+          "medical.ct.measurements"
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "trigger": "onLoad",
+      "action": "loadCTStudy",
+      "params": {
+        "autoplay": false,
+        "defaultWindow": "soft-tissue"
+      }
+    },
+    {
+      "trigger": "onSeriesChange",
+      "action": "updateViewport",
+      "params": {
+        "preserveWindowSettings": true
+      }
+    }
+  ],
+  "presets": {
+    "windows": [
+      {
+        "name": "Brain",
+        "level": 40,
+        "width": 80
+      },
+      {
+        "name": "Lung",
+        "level": -600,
+        "width": 1500
+      },
+      {
+        "name": "Bone",
+        "level": 300,
+        "width": 1500
+      },
+      {
+        "name": "Soft Tissue",
+        "level": 40,
+        "width": 400
+      }
+    ]
+  }
+}

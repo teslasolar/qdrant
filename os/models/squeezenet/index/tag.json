@@ -1,5 +1,5 @@
 {
-  "UUID": "428075fa-7b7f-4754-a9a6-7bda139c7af6",
+  "UUID": "03e07ac9-951a-4db5-a8db-bf91f335e379",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/models/squeezenet/",
   "Directory_Name": "Squeezenet",
@@ -13,67 +13,19 @@
       "path": "/os/models/squeezenet/controls/",
       "title": "Controls",
       "description": "controls subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 2
-    }
-  ],
-  "Sibling_Directories": [
-    {
-      "path": "/os/models/bert-tiny/",
-      "title": "Bert Tiny",
-      "description": "bert-tiny area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/models/controls/",
-      "title": "Controls",
-      "description": "controls area",
       "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/models/mobilenet-v2/",
-      "title": "Mobilenet V2",
-      "description": "mobilenet-v2 area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/models/resnet18/",
-      "title": "Resnet18",
-      "description": "resnet18 area",
-      "icon": "\ud83d\udcc1"
     }
   ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/models/",
-      "title": "Models",
-      "icon": "\ud83e\udd16"
-    },
-    {
-      "path": "/os/models/squeezenet/",
-      "title": "Squeezenet",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
   "has_plc": true,
   "has_hmi": true,
   "has_scada": true,
-  "plc_path": "plc.html",
-  "hmi_path": "hmi.html",
-  "scada_path": "scada.html",
+  "plc_path": "/os/models/squeezenet/plc.html",
+  "hmi_path": "/os/models/squeezenet/hmi.html",
+  "scada_path": "/os/models/squeezenet/scada.html",
   "Features": [
     {
       "title": "Core Functionality",
@@ -143,50 +95,6 @@
       "path": "scada.html",
       "name": "SCADA",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "hmi.html",
-      "name": "Hmi",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3923
-    },
-    {
-      "path": "plc.html",
-      "name": "Plc",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3700
-    },
-    {
-      "path": "scada.html",
-      "name": "Scada",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 6053
-    },
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 1315
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4624
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3632
     }
   ]
 }

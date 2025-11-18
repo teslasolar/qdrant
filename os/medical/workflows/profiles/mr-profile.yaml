@@ -1,0 +1,452 @@
+# MRI Modality-Specific Processing Profile
+# Specialized processing for MR (Magnetic Resonance) images
+
+profile:
+  id: mr-processing-profile-001
+  name: MRI Processing Profile
+  version: "1.0.0"
+  modality: MR
+  description: MRI-specific image processing, sequence optimization, and enhancement
+
+metadata:
+  author: Medical Imaging Team
+  created: 2025-11-17
+  updated: 2025-11-17
+  applicable_to:
+    - Magnetic Resonance Imaging
+    - fMRI
+    - DTI
+    - MRA
+    - MRS
+  tags:
+    - mri
+    - sequences
+    - bias-correction
+    - registration
+
+# MRI-Specific Parameters
+mri_parameters:
+  # Sequence Detection
+  sequence_detection:
+    detect_from_tags: true
+    detect_from_protocol: true
+    tags_to_check:
+      - ScanningSequence
+      - SequenceVariant
+      - ScanOptions
+      - MRAcquisitionType
+      - EchoTime
+      - RepetitionTime
+      - InversionTime
+      - FlipAngle
+
+  # Common Sequences
+  known_sequences:
+    - T1
+    - T2
+    - FLAIR
+    - DWI
+    - ADC
+    - T2_STAR
+    - SWI
+    - PDW
+    - STIR
+    - TOF
+    - PHASE_CONTRAST
+
+  # Intensity Normalization
+  intensity:
+    normalize: true
+    method: histogram_matching  # histogram_matching, z_score, percentile
+    reference_tissue: white_matter
+    preserve_contrast: true
+
+# MRI Sequence-Specific Processing
+sequence_profiles:
+  T1:
+    description: T1-weighted imaging
+    typical_te: [10, 30]  # ms
+    typical_tr: [400, 1000]  # ms
+    processing:
+      - bias_field_correction
+      - intensity_normalization
+      - brain_extraction
+      - tissue_segmentation
+    windowing:
+      - method: percentile
+        lower: 1
+        upper: 99
+
+  T2:
+    description: T2-weighted imaging
+    typical_te: [80, 120]  # ms
+    typical_tr: [2000, 6000]  # ms
+    processing:
+      - bias_field_correction
+      - intensity_normalization
+      - edema_enhancement
+    windowing:
+      - method: percentile
+        lower: 1
+        upper: 99
+
+  FLAIR:
+    description: Fluid-attenuated inversion recovery
+    typical_te: [80, 140]  # ms
+    typical_tr: [6000, 10000]  # ms
+    typical_ti: [1500, 2500]  # ms
+    processing:
+      - bias_field_correction
+      - intensity_normalization
+      - lesion_enhancement
+      - csf_suppression_validation
+    applications:
+      - white_matter_lesion_detection
+      - ms_lesion_detection
+
+  DWI:
+    description: Diffusion-weighted imaging
+    processing:
+      - distortion_correction
+      - motion_correction
+      - adc_map_generation
+      - apparent_diffusion_coefficient
+    applications:
+      - stroke_detection
+      - tumor_characterization
+    quality_checks:
+      - multiple_b_values
+      - gradient_directions
+
+  SWI:
+    description: Susceptibility-weighted imaging
+    processing:
+      - phase_unwrapping
+      - susceptibility_mapping
+      - venography_generation
+    applications:
+      - hemorrhage_detection
+      - venous_imaging
+      - iron_deposition
+
+  TOF:
+    description: Time-of-flight angiography
+    processing:
+      - mip_generation
+      - vessel_enhancement
+      - background_suppression
+    applications:
+      - aneurysm_detection
+      - stenosis_assessment
+
+# MRI-Specific Processing Steps
+processing_steps:
+  - id: validate-mri-metadata
+    name: Validate MRI Metadata
+    type: validation
+    config:
+      required_tags:
+        - EchoTime
+        - RepetitionTime
+        - MagneticFieldStrength
+        - ImageOrientationPatient
+        - PixelSpacing
+        - SliceThickness
+      validate_sequence_parameters: true
+
+  - id: detect-sequence-type
+    name: Detect MRI Sequence Type
+    type: sequence_detection
+    config:
+      use_dicom_tags: true
+      use_protocol_name: true
+      use_timing_parameters: true
+      confidence_threshold: 0.8
+      label_unknown: true
+
+  - id: bias-field-correction
+    name: Bias Field Correction
+    type: preprocessing
+    config:
+      method: N4ITK
+      convergence_threshold: 0.001
+      max_iterations: [50, 50, 50, 50]
+      fitting_levels: 4
+      shrink_factor: 4
+      preserve_intensity_range: true
+
+  - id: motion-correction
+    name: Motion Correction
+    type: registration
+    config:
+      detect_motion: true
+      motion_threshold: 1.0  # mm
+      correction_method: rigid_registration
+      reference_frame: middle
+      interpolation: linear
+
+  - id: distortion-correction
+    name: Distortion Correction
+    type: geometric_correction
+    config:
+      correct_susceptibility: true
+      field_map_based: true
+      reverse_phase_encoding: true
+      effective_echo_spacing: auto
+
+  - id: intensity-normalization
+    name: Intensity Normalization
+    type: normalization
+    config:
+      method: histogram_matching
+      reference_sequence: T1
+      normalize_per_sequence: true
+      tissue_based: true
+      reference_tissues:
+        - white_matter
+        - gray_matter
+
+  - id: brain-extraction
+    name: Brain Extraction (Skull Stripping)
+    type: segmentation
+    config:
+      method: deep_learning  # or bet, bse
+      model: synthstrip
+      applicable_sequences: [T1, T2, FLAIR]
+      generate_mask: true
+      refine_mask: true
+
+  - id: tissue-segmentation
+    name: Brain Tissue Segmentation
+    type: segmentation
+    config:
+      method: deep_learning
+      model: fastsurfer
+      segment_tissues:
+        - gray_matter
+        - white_matter
+        - csf
+      applicable_sequences: [T1]
+      generate_probability_maps: true
+
+  - id: lesion-detection
+    name: Lesion Detection
+    type: analysis
+    config:
+      applicable_sequences: [FLAIR, T2]
+      detection_method: deep_learning
+      model: lesion_detector
+      min_lesion_volume: 3  # mm³
+      generate_masks: true
+      quantify_load: true
+
+  - id: register-sequences
+    name: Co-register Multi-Sequence
+    type: registration
+    config:
+      reference_sequence: T1
+      other_sequences: [T2, FLAIR, DWI]
+      registration_type: rigid
+      cost_function: mutual_information
+      interpolation: linear
+
+  - id: generate-derived-maps
+    name: Generate Derived Maps
+    type: map_generation
+    config:
+      adc_map:
+        enabled: true
+        requires: DWI
+        b_values: [0, 1000]
+
+      fa_map:
+        enabled: false
+        requires: DTI
+
+      susceptibility_map:
+        enabled: true
+        requires: SWI
+        method: qsm
+
+  - id: enhance-contrast
+    name: Sequence-Specific Enhancement
+    type: enhancement
+    config:
+      t1_enhancement:
+        contrast_stretching: true
+        histogram_equalization: false
+
+      t2_enhancement:
+        fluid_suppression: false
+        edema_enhancement: true
+
+      flair_enhancement:
+        lesion_enhancement: true
+        contrast_boosting: true
+
+# MRI-Specific Quality Control
+quality_control:
+  motion_assessment:
+    check_motion_artifacts: true
+    score_image_quality: true
+    flag_excessive_motion: true
+
+  snr_assessment:
+    calculate_snr: true
+    min_acceptable_snr: 10
+    method: background_noise
+
+  geometric_fidelity:
+    check_distortion: true
+    check_ghosting: true
+    check_aliasing: true
+
+  sequence_validation:
+    verify_contrast: true
+    verify_suppression: true  # For FLAIR, STIR
+    verify_diffusion: true  # For DWI
+
+# Protocol-Based Processing
+protocol_detection:
+  rules:
+    - name: brain_mri_standard
+      conditions:
+        - body_part: BRAIN
+        - has_sequences: [T1, T2, FLAIR]
+      processing:
+        - brain_extraction
+        - tissue_segmentation
+        - lesion_detection
+        - multi_sequence_registration
+
+    - name: stroke_protocol
+      conditions:
+        - body_part: BRAIN
+        - has_sequences: [DWI, ADC]
+        - clinical_indication: "*STROKE*"
+      processing:
+        - adc_map_generation
+        - acute_infarct_detection
+        - perfusion_analysis
+
+    - name: ms_protocol
+      conditions:
+        - has_sequences: [T1, T2, FLAIR]
+        - clinical_indication: "*MS*"
+      processing:
+        - lesion_detection
+        - lesion_load_calculation
+        - brain_volume_measurement
+
+    - name: spine_mri
+      conditions:
+        - body_part: SPINE
+      processing:
+        - spinal_cord_segmentation
+        - disk_detection
+        - compression_assessment
+
+# Advanced MRI Processing
+advanced_processing:
+  # Functional MRI
+  fmri:
+    enabled: false
+    preprocessing:
+      - motion_correction
+      - slice_timing_correction
+      - temporal_filtering
+      - spatial_smoothing
+    analysis:
+      - activation_detection
+      - connectivity_analysis
+
+  # Diffusion Tensor Imaging
+  dti:
+    enabled: false
+    preprocessing:
+      - eddy_current_correction
+      - motion_correction
+    analysis:
+      - tensor_estimation
+      - tractography
+      - fa_calculation
+      - md_calculation
+
+  # Perfusion Imaging
+  perfusion:
+    enabled: false
+    methods:
+      - dsc  # Dynamic Susceptibility Contrast
+      - asl  # Arterial Spin Labeling
+    calculate:
+      - cerebral_blood_flow
+      - cerebral_blood_volume
+      - mean_transit_time
+
+  # Spectroscopy
+  mrs:
+    enabled: false
+    processing:
+      - water_suppression
+      - baseline_correction
+      - peak_fitting
+    metabolites:
+      - NAA
+      - Cho
+      - Cr
+      - Lac
+
+# Volumetric Analysis
+volumetric_analysis:
+  enabled: true
+  structures:
+    - whole_brain
+    - gray_matter
+    - white_matter
+    - csf
+    - hippocampus
+    - ventricles
+  normalization: icv  # Intracranial volume
+  age_correction: true
+  generate_percentiles: true
+
+# Performance Optimization
+performance:
+  parallel_processing: true
+  gpu_acceleration: true
+  sequence_specific_optimization: true
+  cache_intermediate_results: true
+
+# Output Configuration
+output:
+  preserve_original: true
+  generate_formats:
+    - dicom
+    - nifti
+    - png  # For quick preview
+
+  save_intermediate:
+    - brain_masks
+    - tissue_segmentations
+    - lesion_masks
+    - registered_sequences
+
+  reports:
+    - volumetric_report
+    - lesion_report
+    - quality_report
+
+# Monitoring
+monitoring:
+  track_metrics:
+    - mri_studies_processed
+    - sequences_detected
+    - motion_artifacts_detected
+    - lesions_detected
+    - average_processing_time
+
+  tags:
+    - MRI_STUDIES_PROCESSED
+    - MRI_AVG_PROCESSING_TIME
+    - MRI_MOTION_ARTIFACTS
+    - MRI_LESIONS_DETECTED

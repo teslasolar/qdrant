@@ -1,5 +1,5 @@
 {
-  "UUID": "49801c96-1374-4d00-b161-fac2080b8b88",
+  "UUID": "e2107275-4fbf-4ec8-9e64-1cbd0316510e",
   "ISA_Level": "L4_Business",
   "Directory_Path": "/docs/standards/isa/isa-95/",
   "Directory_Name": "Isa 95",
@@ -9,47 +9,7 @@
   "Color_Scheme": "green",
   "Parent_Path": "/docs/standards/isa/",
   "Child_Directories": [],
-  "Sibling_Directories": [
-    {
-      "path": "/docs/standards/isa/isa-101/",
-      "title": "Isa 101",
-      "description": "isa-101 area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/docs/standards/isa/isa-88/",
-      "title": "Isa 88",
-      "description": "isa-88 area",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/docs/",
-      "title": "Docs",
-      "icon": "\ud83d\udcda"
-    },
-    {
-      "path": "/docs/standards/",
-      "title": "Standards",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/docs/standards/isa/",
-      "title": "Isa",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/docs/standards/isa/isa-95/",
-      "title": "Isa 95",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
@@ -113,29 +73,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 5486
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4633
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3611
     }
   ]
 }

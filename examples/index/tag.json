@@ -1,0 +1,96 @@
+{
+  "UUID": "a4f8c2e1-9b7d-4a3c-8e5f-1d6b9c4a7e2f",
+  "ISA_Level": "L4_Business",
+  "Directory_Path": "/examples/",
+  "Directory_Name": "Examples",
+  "Title": "Medical Imaging Examples & Datasets",
+  "Description": "Open-source medical imaging datasets (X-ray, CT, MRI, DICOM) for testing and development",
+  "Icon": "🗂️",
+  "Color_Scheme": "cyan",
+  "Parent_Path": "/",
+  "Child_Directories": [
+    {
+      "path": "/examples/xray/",
+      "title": "X-Ray Images",
+      "description": "Chest X-rays, radiographs (JPEG, PNG, DICOM)",
+      "icon": "📷"
+    },
+    {
+      "path": "/examples/ct/",
+      "title": "CT Scans",
+      "description": "Computed tomography volumes and slices",
+      "icon": "🩻"
+    },
+    {
+      "path": "/examples/mri/",
+      "title": "MRI Scans",
+      "description": "T1, T2, FLAIR, DWI sequences",
+      "icon": "🧠"
+    },
+    {
+      "path": "/examples/dicom/",
+      "title": "DICOM Files",
+      "description": "Raw DICOM format medical images",
+      "icon": "💾"
+    },
+    {
+      "path": "/examples/datasets/",
+      "title": "Dataset Archives",
+      "description": "Downloaded open-source datasets",
+      "icon": "📦"
+    }
+  ],
+  "Sibling_Directories": [],
+  "has_plc": false,
+  "has_hmi": false,
+  "has_scada": false,
+  "plc_path": null,
+  "hmi_path": null,
+  "scada_path": null,
+  "Features": [
+    {
+      "title": "Multi-Modal Support",
+      "description": "X-ray, CT, MRI, DICOM, NIfTI, JPEG/PNG formats",
+      "icon": "🔄"
+    },
+    {
+      "title": "Open Source Datasets",
+      "description": "MIMIC-CXR, NIH, TCIA, OASIS, ADNI, BraTS collections",
+      "icon": "🌐"
+    },
+    {
+      "title": "AI Testing Data",
+      "description": "Pre-labeled datasets for segmentation, classification, detection",
+      "icon": "🤖"
+    },
+    {
+      "title": "Research Compliant",
+      "description": "HIPAA-compliant, de-identified medical imaging data",
+      "icon": "🔒"
+    }
+  ],
+  "Quick_Actions": [
+    {
+      "label": "📚 Dataset Documentation",
+      "path": "README.md",
+      "type": "primary"
+    },
+    {
+      "label": "📷 X-Ray Examples",
+      "path": "xray/",
+      "type": "secondary"
+    },
+    {
+      "label": "🧠 MRI Examples",
+      "path": "mri/",
+      "type": "secondary"
+    }
+  ],
+  "Related_Files": [
+    {
+      "path": "README.md",
+      "name": "Dataset Guide",
+      "type": "markdown"
+    }
+  ]
+}

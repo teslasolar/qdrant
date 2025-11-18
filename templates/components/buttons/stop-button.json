@@ -1,0 +1,52 @@
+{
+  "uuid": "btn-stop-001",
+  "type": "component",
+  "category": "button",
+  "metadata": {
+    "name": "Stop Button",
+    "description": "Standard stop button for equipment control",
+    "version": "1.0.0",
+    "tags": ["button", "control", "stop"]
+  },
+  "template": {
+    "html": "<button class=\"control-btn stop-btn\" data-action=\"stop\">\n  <span class=\"icon\">⏹️</span>\n  <span class=\"label\">{{label}}</span>\n</button>",
+    "css": ".stop-btn {\n  background: linear-gradient(135deg, #ff0044, #cc0033);\n  color: #fff;\n  border: 2px solid #ff0044;\n  border-radius: 8px;\n  padding: 12px 24px;\n  font-weight: bold;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.stop-btn:hover {\n  box-shadow: 0 0 20px rgba(255, 0, 68, 0.5);\n  transform: scale(1.05);\n}\n.stop-btn:active {\n  transform: scale(0.95);\n}\n.stop-btn:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}",
+    "js": "function initStopButton(element, config) {\n  element.addEventListener('click', () => {\n    if (config.confirmRequired) {\n      if (confirm(`Stop ${config.equipmentName}?`)) {\n        writeTag(config.writeTag, config.writeValue);\n      }\n    } else {\n      writeTag(config.writeTag, config.writeValue);\n    }\n  });\n}"
+  },
+  "properties": [
+    {
+      "name": "label",
+      "type": "string",
+      "default": "Stop"
+    },
+    {
+      "name": "writeTag",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "writeValue",
+      "type": "any",
+      "default": false
+    },
+    {
+      "name": "confirmRequired",
+      "type": "boolean",
+      "default": true
+    },
+    {
+      "name": "equipmentName",
+      "type": "string",
+      "default": "Equipment"
+    }
+  ],
+  "bindings": {
+    "tags": [
+      {
+        "name": "enableTag",
+        "property": "disabled",
+        "transform": "not"
+      }
+    ]
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "UUID": "cc942780-8105-4eff-b58e-329000a2fd13",
+  "ISA_Level": "L4_Business",
+  "Directory_Path": "/templates/",
+  "Directory_Name": "Templates",
+  "Title": "Template System",
+  "Description": "JSON-based templating for screens, components, tags - UUID/tag-based loading for HMIs with ISA-101 docking system",
+  "Icon": "\ud83d\udcc4",
+  "Color_Scheme": "green",
+  "Parent_Path": null,
+  "Child_Directories": [
+    {
+      "path": "/templates/docking/",
+      "title": "Docking System",
+      "description": "ISA-101 N/S/E/W/Center docking HMI with cream & purple theme",
+      "icon": "\ud83c\udfdb\ufe0f"
+    },
+    {
+      "path": "/templates/components/",
+      "title": "Components",
+      "description": "Reusable UI components and widgets",
+      "icon": "\ud83e\udde9"
+    },
+    {
+      "path": "/templates/screens/",
+      "title": "Screens",
+      "description": "screens subsystem",
+      "icon": "\ud83d\udcc1"
+    },
+    {
+      "path": "/templates/tags/",
+      "title": "Tags",
+      "description": "tags subsystem",
+      "icon": "\ud83d\udcc1"
+    }
+  ],
+  "Sibling_Directories": [],
+  "README_Path": "README.md",
+  "Controls_Path": null,
+  "Status_Path": null,
+  "has_plc": false,
+  "has_hmi": false,
+  "has_scada": false,
+  "plc_path": null,
+  "hmi_path": null,
+  "scada_path": null,
+  "Features": [
+    {
+      "title": "ISA-101 Docking System",
+      "description": "N/S/E/W/Center panel layout with cream & purple theme",
+      "icon": "\ud83c\udfdb\ufe0f"
+    },
+    {
+      "title": "UUID-Based Loading",
+      "description": "Load screens and components by UUID or tag name",
+      "icon": "\ud83c\udfaf"
+    },
+    {
+      "title": "JSON Templates",
+      "description": "Declarative screen and component definitions",
+      "icon": "\ud83d\udcc4"
+    },
+    {
+      "title": "Template Loader",
+      "description": "JavaScript loader with async rendering",
+      "icon": "\ud83d\ude80"
+    }
+  ],
+  "Quick_Actions": [
+    {
+      "label": "Docking Layout",
+      "path": "docking/docking-layout.html",
+      "type": "primary"
+    },
+    {
+      "label": "Docking Docs",
+      "path": "docking/README.md",
+      "type": "primary"
+    },
+    {
+      "label": "Template Loader",
+      "path": "template-loader.js",
+      "type": "secondary"
+    }
+  ],
+  "Related_Files": [
+    {
+      "path": "README.md",
+      "name": "README",
+      "type": "markdown"
+    }
+  ]
+}

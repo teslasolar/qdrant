@@ -1,0 +1,68 @@
+{
+  "uuid": "tag-di-001",
+  "type": "tag",
+  "category": "digital",
+  "metadata": {
+    "name": "Digital Input Template",
+    "description": "Standard digital input tag template (e.g., limit switches, status)",
+    "version": "1.0.0",
+    "tags": ["digital", "input", "boolean"]
+  },
+  "config": {
+    "dataType": "Boolean",
+    "accessMode": "Read",
+    "scanRate": 500,
+    "labels": {
+      "true": "{{onLabel}}",
+      "false": "{{offLabel}}"
+    },
+    "alarms": {
+      "enabled": true,
+      "onAlarm": {
+        "enabled": "{{alarmOnHigh}}",
+        "message": "{{name}} is ON",
+        "priority": "Medium"
+      },
+      "offAlarm": {
+        "enabled": "{{alarmOnLow}}",
+        "message": "{{name}} is OFF",
+        "priority": "Medium"
+      }
+    },
+    "historization": {
+      "enabled": true,
+      "provider": "default",
+      "sampleMode": "OnChange"
+    },
+    "quality": {
+      "enabled": true,
+      "timeoutMs": 2000
+    }
+  },
+  "examples": [
+    {
+      "name": "Motor Running",
+      "path": "equipment/motor/running",
+      "onLabel": "Running",
+      "offLabel": "Stopped",
+      "alarmOnHigh": false,
+      "alarmOnLow": false
+    },
+    {
+      "name": "Emergency Stop",
+      "path": "safety/estop",
+      "onLabel": "ACTIVE",
+      "offLabel": "Normal",
+      "alarmOnHigh": true,
+      "alarmOnLow": false
+    },
+    {
+      "name": "High Level Switch",
+      "path": "tank/level/high",
+      "onLabel": "High",
+      "offLabel": "Normal",
+      "alarmOnHigh": true,
+      "alarmOnLow": false
+    }
+  ]
+}

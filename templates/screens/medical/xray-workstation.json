@@ -1,0 +1,103 @@
+{
+  "uuid": "med-screen-xray-001",
+  "type": "screen",
+  "category": "medical",
+  "metadata": {
+    "name": "X-Ray Workstation",
+    "description": "Digital radiography workstation for X-ray image review",
+    "version": "1.0.0",
+    "author": "Medical Imaging SCADA",
+    "created": "2025-11-17T00:00:00Z",
+    "modified": "2025-11-17T00:00:00Z",
+    "tags": ["medical", "xray", "radiography", "imaging"]
+  },
+  "layout": {
+    "grid": {
+      "columns": 3,
+      "rows": 3,
+      "gap": 10
+    },
+    "theme": "dark",
+    "colorScheme": "medical-cyan"
+  },
+  "components": [
+    {
+      "uuid": "xray-main-viewer",
+      "type": "dicom-viewport",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "width": 2,
+        "height": 3
+      },
+      "config": {
+        "title": "X-Ray Viewer",
+        "modality": "CR",
+        "tools": ["invert", "zoom", "pan", "measure", "annotate"],
+        "defaultInvert": true,
+        "smoothing": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.xray.currentImage",
+          "medical.xray.brightness",
+          "medical.xray.contrast"
+        ]
+      }
+    },
+    {
+      "uuid": "xray-comparison-viewer",
+      "type": "comparison-viewer",
+      "position": {
+        "x": 2,
+        "y": 0,
+        "width": 1,
+        "height": 2
+      },
+      "config": {
+        "title": "Comparison/Prior Studies",
+        "syncTools": true,
+        "sideBySide": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.xray.priorStudy"
+        ]
+      }
+    },
+    {
+      "uuid": "xray-tools",
+      "type": "xray-tools-panel",
+      "position": {
+        "x": 2,
+        "y": 2,
+        "width": 1,
+        "height": 1
+      },
+      "config": {
+        "tools": [
+          "auto-contrast",
+          "edge-enhancement",
+          "bone-suppression",
+          "cad-lung-nodules",
+          "alf-screening"
+        ]
+      },
+      "bindings": {
+        "tags": [
+          "medical.xray.processingMode"
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "trigger": "onLoad",
+      "action": "loadXRayStudy",
+      "params": {
+        "autoInvert": true,
+        "loadPriors": true
+      }
+    }
+  ]
+}

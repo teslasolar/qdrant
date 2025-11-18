@@ -1,0 +1,110 @@
+/* Frontend Medical Portal Styles - extends ISA-101 theme */
+
+.portal-header {
+  background: var(--bg-secondary);
+  border-bottom: 3px solid var(--purple-accent);
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.portal-header h1 {
+  font-size: 2.5em;
+  margin: 0 0 10px 0;
+  color: var(--cream);
+  text-shadow: 0 0 20px var(--purple-glow);
+}
+
+.portal-header .subtitle {
+  color: var(--purple-accent);
+  font-size: 1.1em;
+}
+
+.main-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+}
+
+.tool-card {
+  background: var(--bg-secondary);
+  border: 2px solid var(--purple-accent);
+  border-radius: 12px;
+  padding: 25px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--cream);
+}
+
+.tool-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+  border-color: var(--purple-glow);
+}
+
+.tool-icon {
+  font-size: 3em;
+  margin-bottom: 15px;
+}
+
+.tool-title {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--cream);
+}
+
+.tool-description {
+  color: #d4cdb4;
+  line-height: 1.5;
+}
+
+.welcome-banner {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, #4a3560 100%);
+  border: 2px solid var(--purple-accent);
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.welcome-banner h2 {
+  color: var(--cream);
+  margin-bottom: 15px;
+}
+
+.welcome-banner p {
+  color: #d4cdb4;
+  font-size: 1.1em;
+}
+
+.quick-stats {
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 2em;
+  font-weight: bold;
+  color: var(--purple-accent);
+}
+
+.stat-label {
+  color: #d4cdb4;
+  margin-top: 5px;
+}

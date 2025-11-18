@@ -1,0 +1,57 @@
+{
+  "UUID": "90ebfdd0-5cde-4be5-9176-6b5524fb14cf",
+  "ISA_Level": "L4_Business",
+  "Directory_Path": "/templates/components/indicators/",
+  "Directory_Name": "Indicators",
+  "Title": "Indicators",
+  "Description": "ISA-95 L4_Business - indicators subsystem",
+  "Icon": "\ud83d\udcc1",
+  "Color_Scheme": "green",
+  "Parent_Path": "/templates/components/",
+  "Child_Directories": [],
+  "Sibling_Directories": [],
+  "README_Path": null,
+  "Controls_Path": null,
+  "Status_Path": null,
+  "has_plc": false,
+  "has_hmi": false,
+  "has_scada": false,
+  "plc_path": null,
+  "hmi_path": null,
+  "scada_path": null,
+  "Features": [
+    {
+      "title": "Core Functionality",
+      "description": "Primary system features",
+      "icon": "\u2699\ufe0f"
+    },
+    {
+      "title": "Data Management",
+      "description": "Structured data handling",
+      "icon": "\ud83d\udcca"
+    },
+    {
+      "title": "Monitoring",
+      "description": "Real-time monitoring",
+      "icon": "\ud83d\udc41\ufe0f"
+    }
+  ],
+  "Quick_Actions": [
+    {
+      "label": "View Status",
+      "path": "status.md",
+      "type": "primary"
+    },
+    {
+      "label": "Controls",
+      "path": "controls.md",
+      "type": "secondary"
+    },
+    {
+      "label": "Documentation",
+      "path": "README.md",
+      "type": "secondary"
+    }
+  ],
+  "Related_Files": []
+}

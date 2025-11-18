@@ -1,0 +1,556 @@
+{
+  "standardId": "isa-95-functional-v1.0",
+  "type": "functional-hierarchy",
+  "metadata": {
+    "name": "ISA-95 Purdue Model - Functional Hierarchy",
+    "description": "Enterprise-Control System Integration - Functional levels from Business to Process",
+    "version": "1.0.0",
+    "standard": "ANSI/ISA-95.00.01",
+    "created": "2025-11-17",
+    "tags": ["isa-95", "purdue-model", "functional-hierarchy", "mes", "erp"]
+  },
+  "specification": {
+    "description": "Five-level functional hierarchy for enterprise-manufacturing integration",
+    "purpose": "Define clear boundaries and interfaces between business and manufacturing systems",
+    "application": "ERP/MES/SCADA integration, cybersecurity zones, system architecture"
+  },
+  "levels": {
+    "level4": {
+      "level": 4,
+      "name": "Business Planning & Logistics",
+      "description": "Enterprise resource planning and business operations",
+      "purdueName": "Enterprise Network",
+      "timeframe": "Months to years",
+      "responsibilities": [
+        "Business planning",
+        "Strategic decision making",
+        "Resource procurement",
+        "Financial management",
+        "Order management",
+        "Supply chain coordination"
+      ],
+      "systems": [
+        "ERP (Enterprise Resource Planning)",
+        "SCM (Supply Chain Management)",
+        "PLM (Product Lifecycle Management)",
+        "CRM (Customer Relationship Management)",
+        "Financial systems"
+      ],
+      "dataFlows": {
+        "downward": [
+          "Production schedules",
+          "Product definitions",
+          "Resource allocations",
+          "Quality standards",
+          "Material requirements"
+        ],
+        "upward": [
+          "Production results",
+          "Inventory levels",
+          "Equipment status",
+          "Quality reports",
+          "Maintenance records"
+        ]
+      },
+      "tagStructure": {
+        "path": "Enterprise/L4",
+        "tags": {
+          "orderCount": "Orders.TotalCount",
+          "productionPlan": "Planning.CurrentSchedule",
+          "inventoryStatus": "Inventory.Status",
+          "financials": "Metrics.FinancialKPIs"
+        }
+      },
+      "connectivity": {
+        "connectsTo": ["Level 3"],
+        "protocol": "HTTPS/REST, SOAP, Database",
+        "securityZone": "Enterprise DMZ",
+        "updateFrequency": "Minutes to hours"
+      },
+      "examples": [
+        "SAP ERP",
+        "Oracle EBS",
+        "Microsoft Dynamics",
+        "Custom business applications"
+      ]
+    },
+    "level3": {
+      "level": 3,
+      "name": "Manufacturing Operations Management",
+      "description": "MES - Manufacturing execution and workflow management",
+      "purdueName": "Site Operations / DMZ",
+      "timeframe": "Hours to days",
+      "responsibilities": [
+        "Production scheduling",
+        "Recipe/batch management",
+        "Production tracking",
+        "Material tracking",
+        "Quality management",
+        "Performance analysis",
+        "Maintenance management"
+      ],
+      "systems": [
+        "MES (Manufacturing Execution System)",
+        "LIMS (Laboratory Information Management)",
+        "QMS (Quality Management System)",
+        "Batch management",
+        "Production tracking",
+        "OEE analysis"
+      ],
+      "functionalities": {
+        "resourceAllocation": "Assign resources to production",
+        "dispatchProduction": "Release production orders to floor",
+        "executionManagement": "Monitor and control production",
+        "dataCollection": "Gather production data",
+        "tracking": "Track materials, WIP, products",
+        "performanceAnalysis": "Analyze OEE, KPIs",
+        "qualityManagement": "Manage quality processes"
+      },
+      "dataFlows": {
+        "downward": [
+          "Work orders",
+          "Recipes",
+          "Process parameters",
+          "Quality specifications",
+          "Maintenance schedules"
+        ],
+        "upward": [
+          "Production counts",
+          "Equipment efficiency",
+          "Material consumption",
+          "Quality results",
+          "Alarm history",
+          "Batch reports"
+        ]
+      },
+      "tagStructure": {
+        "path": "Site/{{siteName}}/L3",
+        "tags": {
+          "activeWorkOrders": "Production.ActiveOrders",
+          "oee": "KPI.OEE",
+          "availability": "KPI.Availability",
+          "performance": "KPI.Performance",
+          "quality": "KPI.Quality",
+          "activeBatches": "Batch.ActiveCount",
+          "alarms": "Alarms.TotalCount"
+        }
+      },
+      "connectivity": {
+        "connectsTo": ["Level 4", "Level 2"],
+        "protocol": "HTTPS/REST, OPC-UA, Database",
+        "securityZone": "Manufacturing DMZ",
+        "updateFrequency": "Seconds to minutes"
+      },
+      "examples": [
+        "Siemens SIMATIC IT",
+        "Rockwell FactoryTalk",
+        "GE Proficy",
+        "Ignition MES modules",
+        "Custom MES applications"
+      ]
+    },
+    "level2": {
+      "level": 2,
+      "name": "Supervisory Control",
+      "description": "SCADA/HMI - Human-machine interface and supervisory monitoring",
+      "purdueName": "Control System Network",
+      "timeframe": "Seconds to minutes",
+      "responsibilities": [
+        "Process visualization",
+        "Operator interface",
+        "Alarm management",
+        "Trending and logging",
+        "Recipe execution",
+        "Batch supervision",
+        "Reporting"
+      ],
+      "systems": [
+        "SCADA (Supervisory Control and Data Acquisition)",
+        "HMI (Human-Machine Interface)",
+        "Historian",
+        "Alarm management systems",
+        "Trending systems",
+        "Reporting tools"
+      ],
+      "functionalities": {
+        "visualization": "Real-time process graphics",
+        "trending": "Historical and real-time trends",
+        "alarming": "Alarm detection and notification",
+        "logging": "Event and data logging",
+        "reporting": "Shift reports, batch reports",
+        "recipeManagement": "Load and execute recipes"
+      },
+      "dataFlows": {
+        "downward": [
+          "Setpoints",
+          "Commands",
+          "Recipe parameters",
+          "Mode changes",
+          "Acknowledgements"
+        ],
+        "upward": [
+          "Process values",
+          "Equipment status",
+          "Alarms and events",
+          "Production counts",
+          "Quality data"
+        ]
+      },
+      "tagStructure": {
+        "path": "Site/{{siteName}}/Area/{{areaName}}/L2",
+        "tags": {
+          "processValues": "Process.*",
+          "equipment Status": "Equipment.*.Status",
+          "activeAlarms": "Alarms.Active",
+          "trends": "Trends.*",
+          "operatorActions": "Operator.Actions"
+        }
+      },
+      "connectivity": {
+        "connectsTo": ["Level 3", "Level 1"],
+        "protocol": "OPC-UA, OPC-DA, Modbus TCP, Ethernet/IP",
+        "securityZone": "Control System LAN",
+        "updateFrequency": "100ms to seconds",
+        "redundancy": "Hot standby recommended"
+      },
+      "userInterface": {
+        "screens": [
+          "Overview screens (ISA-101)",
+          "Detail screens",
+          "Trend displays",
+          "Alarm summaries",
+          "Batch status"
+        ],
+        "interactions": [
+          "Setpoint adjustment",
+          "Start/stop equipment",
+          "Acknowledge alarms",
+          "View trends",
+          "Generate reports"
+        ]
+      },
+      "examples": [
+        "Ignition SCADA",
+        "Wonderware System Platform",
+        "Rockwell FactoryTalk View",
+        "Siemens WinCC",
+        "GE iFIX"
+      ]
+    },
+    "level1": {
+      "level": 1,
+      "name": "Basic Control",
+      "description": "PLC/DCS - Real-time process control and automation",
+      "purdueName": "Control Network",
+      "timeframe": "Milliseconds to seconds",
+      "responsibilities": [
+        "Real-time control",
+        "Regulatory control (PID loops)",
+        "Sequential control",
+        "Interlocking and safety",
+        "Equipment control",
+        "Data acquisition",
+        "Local alarming"
+      ],
+      "systems": [
+        "PLC (Programmable Logic Controller)",
+        "DCS (Distributed Control System)",
+        "PAC (Programmable Automation Controller)",
+        "Process controllers",
+        "Motion controllers"
+      ],
+      "functionalities": {
+        "discreteControl": "On/off, start/stop logic",
+        "analogControl": "PID loops, process regulation",
+        "sequencing": "Step-by-step procedures",
+        "interlocking": "Safety and operational interlocks",
+        "motionControl": "Servo and motion systems",
+        "dataAcquisition": "Scan I/O, process data"
+      },
+      "dataFlows": {
+        "downward": [
+          "Control commands",
+          "Setpoints",
+          "Mode selections",
+          "Recipe parameters"
+        ],
+        "upward": [
+          "Process measurements",
+          "Equipment status",
+          "Alarms",
+          "Diagnostic data"
+        ]
+      },
+      "tagStructure": {
+        "path": "Site/{{siteName}}/Area/{{areaName}}/Cell/{{cellName}}/L1",
+        "tags": {
+          "controlLoops": "Loops.*",
+          "interlocks": "Interlocks.*",
+          "sequences": "Sequences.*",
+          "ioPoints": "IO.*",
+          "diagnostics": "Diagnostics.*"
+        }
+      },
+      "connectivity": {
+        "connectsTo": ["Level 2", "Level 0"],
+        "protocol": "Ethernet/IP, Profinet, Modbus TCP/RTU, DeviceNet",
+        "securityZone": "Control Network",
+        "updateFrequency": "1ms to 100ms",
+        "deterministic": true,
+        "redundancy": "Hot standby or fault-tolerant"
+      },
+      "programming": {
+        "languages": ["Ladder Logic", "Structured Text", "Function Block", "Sequential Function Chart"],
+        "standards": "IEC 61131-3"
+      },
+      "examples": [
+        "Allen-Bradley ControlLogix",
+        "Siemens S7-1500",
+        "Schneider Modicon",
+        "Beckhoff TwinCAT",
+        "Emerson DeltaV"
+      ]
+    },
+    "level0": {
+      "level": 0,
+      "name": "Physical Process",
+      "description": "Field devices - Sensors, actuators, and physical equipment",
+      "purdueName": "Process Network / Field Devices",
+      "timeframe": "Microseconds to milliseconds",
+      "responsibilities": [
+        "Sensing physical variables",
+        "Actuating control elements",
+        "Signal conditioning",
+        "Field diagnostics",
+        "Local indication"
+      ],
+      "systems": [
+        "Sensors and transmitters",
+        "Actuators and final control elements",
+        "Field instruments",
+        "Smart devices",
+        "I/O modules",
+        "Safety devices"
+      ],
+      "deviceTypes": {
+        "sensors": [
+          "Temperature transmitters",
+          "Pressure transmitters",
+          "Flow meters",
+          "Level sensors",
+          "Analyzers",
+          "Proximity switches",
+          "Photo eyes"
+        ],
+        "actuators": [
+          "Control valves",
+          "Motor starters",
+          "Variable frequency drives",
+          "Solenoid valves",
+          "Pneumatic actuators"
+        ],
+        "indicators": [
+          "Local pressure gauges",
+          "Temperature indicators",
+          "Status lights"
+        ]
+      },
+      "dataFlows": {
+        "downward": [
+          "Valve positions",
+          "Motor commands",
+          "Output signals"
+        ],
+        "upward": [
+          "Temperature readings",
+          "Pressure readings",
+          "Flow rates",
+          "Position feedback",
+          "Device status"
+        ]
+      },
+      "tagStructure": {
+        "path": "Site/{{siteName}}/Area/{{areaName}}/Cell/{{cellName}}/Unit/{{unitName}}/L0",
+        "tags": {
+          "sensors": "Sensors.*",
+          "actuators": "Actuators.*",
+          "status": "Status.*",
+          "diagnostics": "Diagnostics.*"
+        }
+      },
+      "connectivity": {
+        "connectsTo": ["Level 1"],
+        "protocol": "HART, Profibus PA, Foundation Fieldbus, IO-Link, 4-20mA, Digital I/O",
+        "securityZone": "Field Device Network",
+        "updateFrequency": "Microseconds to milliseconds",
+        "wiring": "Hardwired or fieldbus"
+      },
+      "smartDevices": {
+        "capabilities": [
+          "Digital communication",
+          "Self-diagnostics",
+          "Calibration data",
+          "Asset management",
+          "Predictive maintenance"
+        ],
+        "protocols": ["HART", "Profibus", "Foundation Fieldbus", "IO-Link"]
+      },
+      "examples": [
+        "Rosemount temperature transmitters",
+        "Endress+Hauser flow meters",
+        "Fisher control valves",
+        "Allen-Bradley VFDs",
+        "Turck proximity sensors"
+      ]
+    }
+  },
+  "integrationModel": {
+    "informationFlows": {
+      "L4toL3": {
+        "data": ["Production orders", "Product definitions", "Material allocations"],
+        "frequency": "Minutes to hours",
+        "protocol": "REST API, Database, Message Queue"
+      },
+      "L3toL2": {
+        "data": ["Work orders", "Recipes", "Quality specs"],
+        "frequency": "Seconds to minutes",
+        "protocol": "OPC-UA, Database, MQTT"
+      },
+      "L2toL1": {
+        "data": ["Setpoints", "Commands", "Modes"],
+        "frequency": "100ms to seconds",
+        "protocol": "OPC-UA, Modbus TCP, Ethernet/IP"
+      },
+      "L1toL0": {
+        "data": ["Control outputs", "Valve positions"],
+        "frequency": "1ms to 100ms",
+        "protocol": "Fieldbus, I/O signals, Ethernet"
+      }
+    },
+    "dataAggregation": {
+      "L0toL1": "Raw sensor data aggregated to process variables",
+      "L1toL2": "Process variables aggregated to trends and KPIs",
+      "L2toL3": "Trends aggregated to shift/batch reports",
+      "L3toL4": "Reports aggregated to business metrics"
+    }
+  },
+  "securityZones": {
+    "zone4": {
+      "level": 4,
+      "name": "Enterprise Zone",
+      "security": "Standard IT security",
+      "access": "Internet connected",
+      "protocols": "HTTPS, SMTP, FTP"
+    },
+    "zone3": {
+      "level": 3,
+      "name": "Manufacturing DMZ",
+      "security": "Controlled access between enterprise and control",
+      "access": "Restricted, firewalled",
+      "protocols": "HTTPS, OPC-UA, Database replication"
+    },
+    "zone2": {
+      "level": 2,
+      "name": "Control System LAN",
+      "security": "Isolated from enterprise, application whitelisting",
+      "access": "No direct internet",
+      "protocols": "OPC-UA, Modbus TCP, Ethernet/IP"
+    },
+    "zone1": {
+      "level": 1,
+      "name": "Control Network",
+      "security": "Highly restricted, dedicated network",
+      "access": "No external access",
+      "protocols": "Proprietary control protocols, Fieldbus"
+    },
+    "zone0": {
+      "level": 0,
+      "name": "Field Device Network",
+      "security": "Physical security, isolated",
+      "access": "Direct wiring only",
+      "protocols": "Analog signals, Fieldbus"
+    }
+  },
+  "parameters": [
+    {
+      "name": "enterpriseName",
+      "type": "string",
+      "required": true,
+      "description": "Name of the enterprise"
+    },
+    {
+      "name": "includeSecurityZones",
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Generate security zone definitions"
+    },
+    {
+      "name": "includeCommunicationPaths",
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Define communication paths between levels"
+    },
+    {
+      "name": "levels",
+      "type": "array",
+      "required": false,
+      "default": [0, 1, 2, 3, 4],
+      "description": "Which functional levels to instantiate"
+    }
+  ],
+  "mappingToISA88": {
+    "description": "How ISA-95 functional levels map to ISA-88 equipment hierarchy",
+    "mappings": {
+      "L4": "Enterprise level",
+      "L3": "Site and Area coordination",
+      "L2": "Process Cell supervision",
+      "L1": "Unit and Equipment Module control",
+      "L0": "Control Module physical I/O"
+    }
+  },
+  "tagGeneration": {
+    "hierarchyPath": "{{enterprise}}/L{{level}}/{{function}}",
+    "templates": {
+      "kpi": "{{levelPath}}/KPI/{{kpiName}}",
+      "communication": "{{levelPath}}/Comms/{{protocol}}",
+      "security": "{{levelPath}}/Security/{{metric}}"
+    }
+  },
+  "instantiation": {
+    "template": "isa95-functional-hierarchy",
+    "generates": [
+      "Functional level definitions",
+      "Communication interfaces",
+      "Security zone boundaries",
+      "Data flow definitions",
+      "System architecture"
+    ],
+    "integrations": [
+      "ISA-88 Equipment Hierarchy (maps to physical)",
+      "Network architecture",
+      "Cybersecurity frameworks",
+      "MES/ERP systems"
+    ]
+  },
+  "validation": {
+    "rules": [
+      {
+        "rule": "noDirectL4toL1",
+        "description": "Level 4 should not communicate directly with Level 1",
+        "severity": "warning"
+      },
+      {
+        "rule": "securityZoneSeparation",
+        "description": "Each level should be in appropriate security zone",
+        "severity": "error"
+      },
+      {
+        "rule": "appropriateTimescales",
+        "description": "Data flow frequency should match level timescales",
+        "severity": "warning"
+      }
+    ]
+  }
+}

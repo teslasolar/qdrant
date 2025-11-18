@@ -1,5 +1,5 @@
 {
-  "UUID": "d989c3fd-abb0-4f8e-b07d-0a65d0e27050",
+  "UUID": "17f4067e-25c7-4bcd-877d-bbb322f13bb8",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/equipment/",
   "Directory_Name": "Equipment",
@@ -13,174 +13,52 @@
       "path": "/os/equipment/areas/",
       "title": "Areas",
       "description": "areas subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 5
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/os/equipment/control-modules/",
       "title": "Control Modules",
       "description": "control-modules subsystem",
-      "icon": "\ud83d\udce6",
-      "page_count": 4
+      "icon": "\ud83d\udce6"
     },
     {
       "path": "/os/equipment/controls/",
       "title": "Controls",
       "description": "controls subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 2
+      "icon": "\ud83c\udf9b\ufe0f"
     },
     {
       "path": "/os/equipment/enterprise/",
       "title": "Enterprise",
       "description": "enterprise subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 4
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/os/equipment/equipment-modules/",
       "title": "Equipment Modules",
       "description": "equipment-modules subsystem",
-      "icon": "\ud83d\udce6",
-      "page_count": 4
+      "icon": "\ud83d\udce6"
     },
     {
       "path": "/os/equipment/process-cells/",
       "title": "Process Cells",
       "description": "process-cells subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 4
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/os/equipment/site/",
       "title": "Site",
       "description": "site subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 4
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/os/equipment/units/",
       "title": "Units",
       "description": "units subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 4
+      "icon": "\ud83d\udcc1"
     }
   ],
-  "Sibling_Directories": [
-    {
-      "path": "/os/backend/",
-      "title": "Backend",
-      "description": "backend area",
-      "icon": "\u2699\ufe0f"
-    },
-    {
-      "path": "/os/boot/",
-      "title": "Boot",
-      "description": "boot area",
-      "icon": "\ud83d\ude80"
-    },
-    {
-      "path": "/os/config/",
-      "title": "Config",
-      "description": "config area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/controls/",
-      "title": "Controls",
-      "description": "controls area",
-      "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/data/",
-      "title": "Data",
-      "description": "data area",
-      "icon": "\ud83d\udcca"
-    },
-    {
-      "path": "/os/debug/",
-      "title": "Debug",
-      "description": "debug area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/frontend/",
-      "title": "Frontend",
-      "description": "frontend area",
-      "icon": "\ud83d\udda5\ufe0f"
-    },
-    {
-      "path": "/os/language/",
-      "title": "Language",
-      "description": "language area",
-      "icon": "\ud83c\udf10"
-    },
-    {
-      "path": "/os/logs/",
-      "title": "Logs",
-      "description": "logs area",
-      "icon": "\ud83d\udcdd"
-    },
-    {
-      "path": "/os/medical/",
-      "title": "Medical",
-      "description": "medical area",
-      "icon": "\ud83c\udfe5"
-    },
-    {
-      "path": "/os/models/",
-      "title": "Models",
-      "description": "models area",
-      "icon": "\ud83e\udd16"
-    },
-    {
-      "path": "/os/modules/",
-      "title": "Modules",
-      "description": "modules area",
-      "icon": "\ud83d\udce6"
-    },
-    {
-      "path": "/os/sandbox/",
-      "title": "Sandbox",
-      "description": "sandbox area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/scripts/",
-      "title": "Scripts",
-      "description": "scripts area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/templates/",
-      "title": "Templates",
-      "description": "templates area",
-      "icon": "\ud83d\udcc4"
-    },
-    {
-      "path": "/os/test-modules/",
-      "title": "Test Modules",
-      "description": "test-modules area",
-      "icon": "\ud83d\udce6"
-    }
-  ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/equipment/",
-      "title": "Equipment",
-      "icon": "\ud83c\udfed"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
@@ -244,29 +122,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 14461
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4556
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3617
     }
   ]
 }

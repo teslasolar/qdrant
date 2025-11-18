@@ -1,0 +1,503 @@
+# Medical Image Embedding Generation Workflow
+# Generate BiomedCLIP embeddings and store in Qdrant for similarity search
+
+workflow:
+  id: embedding-generation-001
+  name: Medical Image Embedding Generation
+  version: "1.0.0"
+  isa_level: L3_MES
+  category: analysis
+  priority: medium
+
+metadata:
+  description: Generate BiomedCLIP embeddings for DICOM images and index in Qdrant vector database
+  author: Medical Imaging Team
+  created: 2025-11-17
+  updated: 2025-11-17
+  model_info:
+    name: BiomedCLIP
+    version: "1.0.0"
+    framework: pytorch
+    embedding_dimension: 512
+  tags:
+    - embeddings
+    - biomedclip
+    - qdrant
+    - similarity-search
+    - vector-database
+
+# Input Configuration
+input:
+  source: study
+  required_status: [ENHANCED, NORMALIZED, AI_ANALYZED]
+  supported_modalities: [CT, MR, CR, DX, MG, US, PT, NM]
+  process_key_frames: true
+  max_instances_per_series: 50
+
+# Model Configuration
+model:
+  name: BiomedCLIP
+  path: /models/biomedclip/v1.0.0/
+  config_file: biomedclip_config.yaml
+  weights_file: biomedclip_weights.pth
+
+  # Model specifications
+  architecture: vision_transformer
+  embedding_dimension: 512
+  vision_encoder: vit_base_patch16_224
+  text_encoder: bert_base_uncased
+
+  # GPU Configuration
+  device:
+    type: cuda
+    gpu_ids: [0]
+    mixed_precision: true
+    batch_processing: true
+
+  # Inference Settings
+  inference:
+    batch_size: 32
+    num_workers: 4
+    prefetch_factor: 2
+    pin_memory: true
+
+  # Input Requirements
+  input_requirements:
+    image_size: [224, 224]
+    channels: 3  # Will convert grayscale to RGB
+    normalization: imagenet_stats
+
+# Qdrant Configuration
+qdrant:
+  host: ${QDRANT_HOST:localhost}
+  port: ${QDRANT_PORT:6333}
+  grpc_port: ${QDRANT_GRPC_PORT:6334}
+  api_key: ${QDRANT_API_KEY}
+  prefer_grpc: true
+  timeout: 60
+
+  # Collection Configuration
+  collection:
+    name: medical_image_embeddings
+    vector_size: 512
+    distance: Cosine
+    on_disk_payload: true
+
+  # Indexing Configuration
+  indexing:
+    hnsw_config:
+      m: 16
+      ef_construct: 100
+      full_scan_threshold: 10000
+
+  # Optimization
+  optimization:
+    indexing_threshold: 20000
+    memmap_threshold: 10000
+
+# Workflow Steps
+steps:
+  - id: validate-input
+    name: Validate Study for Embedding
+    type: validation
+    action: validate_embedding_ready
+    config:
+      check_pixel_data: true
+      check_image_quality: true
+      min_image_size: [64, 64]
+    on_success: select-key-frames
+    on_failure: log-error
+
+  - id: select-key-frames
+    name: Select Key Frames
+    type: frame_selection
+    action: select_representative_frames
+    config:
+      strategy: intelligent  # uniform, intelligent, all
+      max_frames_per_series: 50
+      min_frames_per_series: 1
+
+      # Intelligent selection
+      diversity_threshold: 0.8
+      anatomical_coverage: true
+      quality_threshold: 0.6
+
+      # Series handling
+      multi_frame_handling: extract_frames
+      cine_handling: sample_phases
+
+    on_success: preprocess-images
+    on_failure: log-error
+
+  - id: preprocess-images
+    name: Preprocess for BiomedCLIP
+    type: preprocessing
+    action: preprocess_for_embedding
+    config:
+      # Resize
+      resize:
+        enabled: true
+        size: [224, 224]
+        interpolation: bilinear
+        maintain_aspect_ratio: false
+
+      # Convert to RGB
+      convert_to_rgb:
+        enabled: true
+        grayscale_to_rgb: replicate  # replicate or colorize
+
+      # Normalization
+      normalize:
+        enabled: true
+        mean: [0.485, 0.456, 0.406]  # ImageNet stats
+        std: [0.229, 0.224, 0.225]
+
+      # Windowing for CT/MR
+      windowing:
+        CT:
+          enabled: true
+          window_presets:
+            - brain
+            - lung
+            - soft_tissue
+          create_multiple: true
+        MR:
+          enabled: true
+          intensity_scaling: percentile
+          percentile_range: [1, 99]
+
+      # Augmentation (optional)
+      augmentation:
+        enabled: false
+
+    on_success: load-model
+    on_failure: log-error
+
+  - id: load-model
+    name: Load BiomedCLIP Model
+    type: model_loading
+    action: load_embedding_model
+    config:
+      model_path: /models/biomedclip/v1.0.0/
+      device: cuda
+      load_to_gpu: true
+      compile_model: true
+      cache_model: true
+    on_success: generate-embeddings
+    on_failure: fallback-cpu
+
+  - id: generate-embeddings
+    name: Generate Image Embeddings
+    type: embedding_generation
+    action: generate_biomedclip_embeddings
+    config:
+      batch_processing: true
+      batch_size: 32
+
+      # Embedding options
+      normalize_embeddings: true
+      pooling_strategy: cls_token  # cls_token, mean_pool
+      extract_intermediate: false
+
+      # Multi-window handling (for CT)
+      aggregate_windows:
+        enabled: true
+        method: concatenate  # concatenate, average, max
+
+      # Progress tracking
+      show_progress: true
+      log_frequency: 100
+
+    on_success: generate-text-embeddings
+    on_failure: log-error
+
+  - id: generate-text-embeddings
+    name: Generate Text Description Embeddings
+    type: text_embedding
+    action: generate_text_embeddings
+    config:
+      # Extract text from DICOM
+      text_sources:
+        - StudyDescription
+        - SeriesDescription
+        - ImageComments
+        - ProtocolName
+
+      # Generate synthetic descriptions
+      generate_captions:
+        enabled: true
+        caption_model: blip2
+        max_length: 50
+
+      # Clinical context
+      add_clinical_context:
+        modality: true
+        body_part: true
+        view_position: true
+        technique: true
+
+      # Generate embeddings
+      embed_text: true
+      normalize_embeddings: true
+
+    on_success: prepare-qdrant-payload
+    on_failure: log-error
+
+  - id: prepare-qdrant-payload
+    name: Prepare Qdrant Payload
+    type: data_preparation
+    action: prepare_vector_payload
+    config:
+      payload_fields:
+        # Study metadata
+        - study_instance_uid
+        - study_date
+        - study_description
+        - accession_number
+
+        # Series metadata
+        - series_instance_uid
+        - series_number
+        - series_description
+        - modality
+        - body_part_examined
+
+        # Instance metadata
+        - sop_instance_uid
+        - instance_number
+        - image_type
+
+        # Clinical metadata
+        - patient_age
+        - patient_sex
+        - manufacturer
+        - protocol_name
+
+        # Processing metadata
+        - processing_timestamp
+        - embedding_model
+        - embedding_version
+        - key_frame_index
+
+        # AI Results (if available)
+        - ai_findings
+        - risk_scores
+        - biomarkers
+
+      # File references
+      include_file_paths: true
+      include_thumbnails: true
+
+    on_success: check-qdrant-collection
+    on_failure: log-error
+
+  - id: check-qdrant-collection
+    name: Check/Create Qdrant Collection
+    type: database_operation
+    action: ensure_qdrant_collection
+    config:
+      collection_name: medical_image_embeddings
+      recreate_if_exists: false
+
+      # Collection configuration
+      vectors_config:
+        size: 512
+        distance: Cosine
+        on_disk: false
+
+      # Payload schema
+      payload_schema:
+        modality:
+          type: keyword
+          index: true
+        study_date:
+          type: integer
+          index: true
+        body_part_examined:
+          type: keyword
+          index: true
+
+      # Optimization
+      optimizer_config:
+        deleted_threshold: 0.2
+        vacuum_min_vector_number: 1000
+        default_segment_number: 5
+
+    on_success: upsert-embeddings
+    on_failure: log-error
+
+  - id: upsert-embeddings
+    name: Upsert Embeddings to Qdrant
+    type: database_operation
+    action: upsert_vectors
+    config:
+      collection_name: medical_image_embeddings
+      batch_size: 100
+      parallel: true
+      wait: true
+
+      # Conflict handling
+      on_conflict: replace  # replace, skip, error
+
+      # Performance
+      compression: true
+      timeout: 300
+
+    on_success: create-indices
+    on_failure: retry-upload
+
+  - id: create-indices
+    name: Create Payload Indices
+    type: database_operation
+    action: create_payload_indices
+    config:
+      collection_name: medical_image_embeddings
+      indices:
+        - field: modality
+          type: keyword
+        - field: study_date
+          type: integer
+        - field: body_part_examined
+          type: keyword
+        - field: study_instance_uid
+          type: keyword
+        - field: ai_findings.alzheimers_risk
+          type: float
+        - field: ai_findings.autism_risk
+          type: float
+
+    on_success: verify-upload
+    on_failure: log-error
+
+  - id: verify-upload
+    name: Verify Embeddings Uploaded
+    type: validation
+    action: verify_qdrant_upload
+    config:
+      collection_name: medical_image_embeddings
+      verify_count: true
+      verify_searchable: true
+      sample_queries: 3
+      min_similarity: 0.8
+
+    on_success: update-cache-stats
+    on_failure: log-error
+
+  - id: update-cache-stats
+    name: Update Cache Statistics
+    type: tracking
+    action: update_embedding_cache
+    config:
+      database: qdrant
+      update_metrics:
+        - total_embeddings
+        - last_update_time
+        - cache_size_bytes
+        - collection_count
+
+      # Tag updates
+      update_tags:
+        - imagesProcessed
+        - embedModel: BiomedCLIP
+        - cacheSize
+
+    on_success: update-tracking
+    on_failure: log-error
+
+  - id: update-tracking
+    name: Update Study Tracking
+    type: tracking
+    action: update_study_status
+    config:
+      database: qdrant
+      collection: medical_studies
+      status: EMBEDDED
+      add_embedding_metadata:
+        embedding_model: BiomedCLIP
+        embedding_count: auto
+        qdrant_collection: medical_image_embeddings
+        embedding_timestamp: auto
+      timestamp: true
+
+    on_success: route-to-storage
+    on_failure: log-error
+
+  - id: route-to-storage
+    name: Route to Storage
+    type: routing
+    action: route_to_workflow
+    config:
+      next_workflow: storage-archival
+      routing_rules: /workflows/routing/study-routing-rules.yaml
+      pass_embedding_metadata: true
+    on_success: complete
+    on_failure: log-error
+
+# Error Handling
+error_handling:
+  fallback-cpu:
+    action: use_cpu_inference
+    log_level: WARNING
+    notify_admin: true
+
+  retry-upload:
+    max_attempts: 3
+    backoff_strategy: exponential
+    base_delay: 5
+    max_delay: 60
+
+# Similarity Search Configuration
+similarity_search:
+  enabled: true
+  default_limit: 10
+  score_threshold: 0.7
+  use_filters: true
+
+  # Search optimization
+  hnsw_ef: 128
+  exact_search_threshold: 100
+
+# Performance Configuration
+performance:
+  max_concurrent_studies: 5
+  gpu_memory_limit: 8GB
+  timeout_per_study: 300
+  model_caching: true
+  batch_optimization: true
+
+# Monitoring and Metrics
+monitoring:
+  tags:
+    - EMBEDDINGS_GENERATED
+    - EMBEDDINGS_UPLOADED
+    - SIMILARITY_SEARCHES
+    - EMBED_MODEL  # BiomedCLIP
+    - AVG_PROCESS_TIME
+    - CACHE_SIZE
+    - QDRANT_COLLECTION_SIZE
+
+  mqtt:
+    publish_events: true
+    topics:
+      - chazon/os/medical/embeddings/generated
+      - chazon/os/medical/embeddings/uploaded
+      - chazon/os/medical/qdrant/updated
+
+  modbus:
+    holding_registers:
+      - address: 40310
+        name: EMBEDDINGS_GENERATED
+      - address: 40311
+        name: SIMILARITY_SEARCHES
+      - address: 40312
+        name: AVG_EMBEDDING_TIME
+      - address: 40313
+        name: QDRANT_COLLECTION_SIZE
+
+# Logging
+logging:
+  level: INFO
+  path: /var/log/medical/workflows/embedding-generation.log
+  rotation: daily
+  retention_days: 90
+  include_performance_metrics: true

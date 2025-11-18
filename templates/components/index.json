@@ -1,0 +1,42 @@
+{
+  "version": "1.0.0",
+  "description": "HMI Component Templates Index",
+  "components": [
+    {
+      "uuid": "btn-start-001",
+      "name": "Start Button",
+      "description": "Standard start button for equipment control",
+      "category": "button",
+      "path": "components/buttons/start-button.json",
+      "tags": ["button", "control", "start"],
+      "thumbnail": "components/buttons/start-button.png"
+    },
+    {
+      "uuid": "btn-stop-001",
+      "name": "Stop Button",
+      "description": "Standard stop button for equipment control",
+      "category": "button",
+      "path": "components/buttons/stop-button.json",
+      "tags": ["button", "control", "stop"],
+      "thumbnail": "components/buttons/stop-button.png"
+    },
+    {
+      "uuid": "gauge-analog-001",
+      "name": "Analog Gauge",
+      "description": "Circular analog gauge with alarm zones",
+      "category": "gauge",
+      "path": "components/gauges/analog-gauge.json",
+      "tags": ["gauge", "analog", "meter"],
+      "thumbnail": "components/gauges/analog-gauge.png"
+    },
+    {
+      "uuid": "ind-status-001",
+      "name": "Status Indicator",
+      "description": "LED-style status indicator with labels",
+      "category": "indicator",
+      "path": "components/indicators/status-indicator.json",
+      "tags": ["indicator", "status", "led"],
+      "thumbnail": "components/indicators/status-indicator.png"
+    }
+  ]
+}

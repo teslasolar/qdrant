@@ -1,5 +1,5 @@
 {
-  "UUID": "6f3fdc43-4a33-47ad-ba48-34535af68224",
+  "UUID": "cdfd783d-adfc-42e0-b02d-3bafa5f3f4ca",
   "ISA_Level": "L4_Business",
   "Directory_Path": "/docs/standards/protocols/mqtt/",
   "Directory_Name": "Mqtt",
@@ -9,47 +9,7 @@
   "Color_Scheme": "green",
   "Parent_Path": "/docs/standards/protocols/",
   "Child_Directories": [],
-  "Sibling_Directories": [
-    {
-      "path": "/docs/standards/protocols/modbus/",
-      "title": "Modbus",
-      "description": "modbus area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/docs/standards/protocols/opc-ua/",
-      "title": "Opc Ua",
-      "description": "opc-ua area",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/docs/",
-      "title": "Docs",
-      "icon": "\ud83d\udcda"
-    },
-    {
-      "path": "/docs/standards/",
-      "title": "Standards",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/docs/standards/protocols/",
-      "title": "Protocols",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/docs/standards/protocols/mqtt/",
-      "title": "Mqtt",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
@@ -113,29 +73,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3465
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4657
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3616
     }
   ]
 }

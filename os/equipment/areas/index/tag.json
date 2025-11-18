@@ -1,5 +1,5 @@
 {
-  "UUID": "404e6fc7-0f2d-4473-a45e-9285651290bd",
+  "UUID": "cabbc0d1-c00f-4cee-9e37-9afcb3207ab1",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/equipment/areas/",
   "Directory_Name": "Areas",
@@ -13,76 +13,10 @@
       "path": "/os/equipment/areas/controls/",
       "title": "Controls",
       "description": "controls subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 2
-    }
-  ],
-  "Sibling_Directories": [
-    {
-      "path": "/os/equipment/control-modules/",
-      "title": "Control Modules",
-      "description": "control-modules area",
-      "icon": "\ud83d\udce6"
-    },
-    {
-      "path": "/os/equipment/controls/",
-      "title": "Controls",
-      "description": "controls area",
       "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/equipment/enterprise/",
-      "title": "Enterprise",
-      "description": "enterprise area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/equipment/equipment-modules/",
-      "title": "Equipment Modules",
-      "description": "equipment-modules area",
-      "icon": "\ud83d\udce6"
-    },
-    {
-      "path": "/os/equipment/process-cells/",
-      "title": "Process Cells",
-      "description": "process-cells area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/equipment/site/",
-      "title": "Site",
-      "description": "site area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/equipment/units/",
-      "title": "Units",
-      "description": "units area",
-      "icon": "\ud83d\udcc1"
     }
   ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/equipment/",
-      "title": "Equipment",
-      "icon": "\ud83c\udfed"
-    },
-    {
-      "path": "/os/equipment/areas/",
-      "title": "Areas",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": null,
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
@@ -141,36 +75,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "backend-area.md",
-      "name": "Backend Area",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 6541
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4588
-    },
-    {
-      "path": "medical-area.md",
-      "name": "Medical Area",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 10473
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3615
     }
   ]
 }

@@ -1,0 +1,91 @@
+{
+  "UUID": "tests-001-infrastructure",
+  "ISA_Level": "L4_Business",
+  "Directory_Path": "/tests/",
+  "Directory_Name": "Tests",
+  "Title": "Test Infrastructure",
+  "Description": "Pytest framework with unit, integration, and e2e tests - fixtures for standards, medical workflows, and system validation",
+  "Icon": "🧪",
+  "Color_Scheme": "green",
+  "Parent_Path": "/",
+  "Child_Directories": [
+    {
+      "path": "/tests/unit/",
+      "title": "Unit Tests",
+      "description": "Individual component and function tests",
+      "icon": "🔬"
+    },
+    {
+      "path": "/tests/integration/",
+      "title": "Integration Tests",
+      "description": "Multi-component interaction tests",
+      "icon": "🔗"
+    },
+    {
+      "path": "/tests/e2e/",
+      "title": "End-to-End Tests",
+      "description": "Full workflow and system tests",
+      "icon": "🎯"
+    }
+  ],
+  "Features": [
+    {
+      "title": "Pytest Framework",
+      "description": "Professional test runner with fixtures and markers",
+      "icon": "🧪"
+    },
+    {
+      "title": "Test Fixtures",
+      "description": "Reusable fixtures for PackML, ISA-88, medical studies",
+      "icon": "🔧"
+    },
+    {
+      "title": "Coverage Reports",
+      "description": "Code coverage tracking and reporting",
+      "icon": "📊"
+    }
+  ],
+  "Test_Categories": [
+    {
+      "marker": "unit",
+      "description": "Unit tests for individual components"
+    },
+    {
+      "marker": "integration",
+      "description": "Integration tests for multi-component systems"
+    },
+    {
+      "marker": "e2e",
+      "description": "End-to-end workflow tests"
+    },
+    {
+      "marker": "medical",
+      "description": "Medical imaging and workflow tests"
+    },
+    {
+      "marker": "standards",
+      "description": "Standards framework tests"
+    },
+    {
+      "marker": "cli",
+      "description": "CLI tool tests"
+    }
+  ],
+  "Quick_Actions": [
+    {
+      "label": "Run All Tests",
+      "path": "pytest",
+      "type": "primary"
+    },
+    {
+      "label": "Test Configuration",
+      "path": "pytest.ini",
+      "type": "secondary"
+    },
+    {
+      "label": "Fixtures",
+      "path": "conftest.py",
+      "type": "secondary"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "uuid": "med-comp-queue-001",
+  "type": "component",
+  "category": "medical",
+  "metadata": {
+    "name": "Study Queue Panel",
+    "description": "Displays patient study queue with filtering and sorting",
+    "version": "1.0.0",
+    "tags": ["medical", "queue", "worklist", "pacs"]
+  },
+  "template": {
+    "html": "<div class=\"study-queue-panel\">\n  <div class=\"queue-header\">\n    <div class=\"queue-title\">{{title}}</div>\n    <div class=\"queue-filters\">\n      <select class=\"filter-dropdown\" id=\"{{id}}-modality\">\n        <option value=\"all\">All Modalities</option>\n        <option value=\"CT\">CT</option>\n        <option value=\"MR\">MRI</option>\n        <option value=\"CR\">X-Ray</option>\n        <option value=\"US\">Ultrasound</option>\n        <option value=\"MG\">Mammography</option>\n      </select>\n      <select class=\"filter-dropdown\" id=\"{{id}}-status\">\n        <option value=\"all\">All Status</option>\n        <option value=\"pending\">Pending</option>\n        <option value=\"processing\">Processing</option>\n        <option value=\"completed\">Completed</option>\n      </select>\n    </div>\n  </div>\n  <div class=\"queue-list\" id=\"{{id}}-list\">\n    <!-- Study items will be inserted here -->\n  </div>\n</div>",
+    "css": ".study-queue-panel {\n  background: #1a1a2e;\n  border: 2px solid #00ff88;\n  border-radius: 12px;\n  overflow: hidden;\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n}\n.queue-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 15px 20px;\n  background: linear-gradient(135deg, #1a1a2e, #16213e);\n  border-bottom: 2px solid #00ff88;\n}\n.queue-title {\n  color: #00ff88;\n  font-size: 1.3em;\n  font-weight: bold;\n}\n.queue-filters {\n  display: flex;\n  gap: 10px;\n}\n.filter-dropdown {\n  padding: 8px 12px;\n  background: #0a0a0a;\n  border: 1px solid #333;\n  border-radius: 4px;\n  color: #00ff88;\n  font-family: inherit;\n  font-size: 0.9em;\n  cursor: pointer;\n}\n.filter-dropdown:focus {\n  outline: none;\n  border-color: #00ff88;\n}\n.queue-list {\n  flex: 1;\n  overflow-y: auto;\n  padding: 10px;\n}\n.study-item {\n  background: #0a0a0a;\n  border: 1px solid #333;\n  border-left: 4px solid #00ccff;\n  border-radius: 6px;\n  padding: 15px;\n  margin-bottom: 10px;\n  display: grid;\n  grid-template-columns: 50px 1fr 120px 100px;\n  gap: 15px;\n  align-items: center;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.study-item:hover {\n  border-left-color: #00ff88;\n  background: rgba(0, 255, 136, 0.05);\n  transform: translateX(5px);\n}\n.study-item.priority-high {\n  border-left-color: #ff0044;\n}\n.study-item.priority-medium {\n  border-left-color: #ffaa00;\n}\n.study-icon {\n  font-size: 2em;\n  text-align: center;\n}\n.study-info {\n  display: flex;\n  flex-direction: column;\n  gap: 5px;\n}\n.study-patient {\n  color: #00ff88;\n  font-weight: bold;\n  font-size: 1.05em;\n}\n.study-description {\n  color: #888;\n  font-size: 0.85em;\n}\n.study-modality {\n  display: inline-block;\n  padding: 4px 8px;\n  background: rgba(0, 204, 255, 0.2);\n  border: 1px solid #00ccff;\n  border-radius: 4px;\n  color: #00ccff;\n  font-size: 0.75em;\n  font-weight: bold;\n}\n.study-status {\n  padding: 6px 12px;\n  border-radius: 4px;\n  font-size: 0.8em;\n  font-weight: bold;\n  text-align: center;\n}\n.study-status.pending {\n  background: rgba(255, 170, 0, 0.2);\n  border: 1px solid #ffaa00;\n  color: #ffaa00;\n}\n.study-status.processing {\n  background: rgba(0, 204, 255, 0.2);\n  border: 1px solid #00ccff;\n  color: #00ccff;\n}\n.study-status.completed {\n  background: rgba(0, 255, 136, 0.2);\n  border: 1px solid #00ff88;\n  color: #00ff88;\n}",
+    "js": "function initStudyQueuePanel(element, config) {\n  const listContainer = element.querySelector('#' + config.id + '-list');\n  const modalityFilter = element.querySelector('#' + config.id + '-modality');\n  const statusFilter = element.querySelector('#' + config.id + '-status');\n  \n  let studies = [];\n  \n  function updateQueue(studyData) {\n    studies = studyData;\n    renderQueue();\n  }\n  \n  function renderQueue() {\n    const modality = modalityFilter.value;\n    const status = statusFilter.value;\n    \n    let filtered = studies;\n    if (modality !== 'all') {\n      filtered = filtered.filter(s => s.modality === modality);\n    }\n    if (status !== 'all') {\n      filtered = filtered.filter(s => s.status === status);\n    }\n    \n    listContainer.innerHTML = '';\n    filtered.forEach(study => {\n      const item = createStudyItem(study);\n      listContainer.appendChild(item);\n    });\n  }\n  \n  function createStudyItem(study) {\n    const div = document.createElement('div');\n    div.className = 'study-item';\n    if (study.priority) {\n      div.classList.add('priority-' + study.priority);\n    }\n    \n    const icon = study.priority === 'high' ? '🔴' : study.priority === 'medium' ? '🟡' : '🟢';\n    \n    div.innerHTML = `\n      <div class=\"study-icon\">${icon}</div>\n      <div class=\"study-info\">\n        <div class=\"study-patient\">${study.patientName}</div>\n        <div class=\"study-description\">${study.description}</div>\n        <div><span class=\"study-modality\">${study.modality}</span></div>\n      </div>\n      <div style=\"font-size: 0.85em; color: #888;\">\n        <div>${study.time}</div>\n        <div>Series: ${study.seriesCount || 0}</div>\n      </div>\n      <div class=\"study-status ${study.status}\">${study.status.toUpperCase()}</div>\n    `;\n    \n    div.addEventListener('click', () => {\n      if (config.onStudyClick) {\n        config.onStudyClick(study);\n      }\n    });\n    \n    return div;\n  }\n  \n  modalityFilter.addEventListener('change', renderQueue);\n  statusFilter.addEventListener('change', renderQueue);\n  \n  return { updateQueue };\n}"
+  },
+  "properties": [
+    {
+      "name": "title",
+      "type": "string",
+      "default": "Study Queue"
+    },
+    {
+      "name": "maxItems",
+      "type": "number",
+      "default": 20
+    }
+  ],
+  "bindings": {
+    "tags": [
+      {
+        "name": "queueTag",
+        "property": "studies",
+        "callback": "updateQueue"
+      }
+    ]
+  }
+}

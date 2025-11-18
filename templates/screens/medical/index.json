@@ -1,0 +1,67 @@
+{
+  "uuid": "med-screens-index",
+  "type": "index",
+  "category": "medical",
+  "metadata": {
+    "name": "Medical Imaging Screens Index",
+    "description": "Index of all medical imaging screen templates",
+    "version": "1.0.0",
+    "created": "2025-11-17T00:00:00Z"
+  },
+  "screens": [
+    {
+      "id": "pacs-dashboard",
+      "name": "PACS Dashboard",
+      "description": "Main PACS system dashboard",
+      "file": "pacs-dashboard.json",
+      "icon": "🏥",
+      "category": "overview"
+    },
+    {
+      "id": "ct-workstation",
+      "name": "CT Workstation",
+      "description": "Computed Tomography imaging workstation",
+      "file": "ct-workstation.json",
+      "icon": "🔲",
+      "category": "modality"
+    },
+    {
+      "id": "mri-workstation",
+      "name": "MRI Workstation",
+      "description": "Magnetic Resonance Imaging workstation",
+      "file": "mri-workstation.json",
+      "icon": "🧲",
+      "category": "modality"
+    },
+    {
+      "id": "xray-workstation",
+      "name": "X-Ray Workstation",
+      "description": "Digital radiography workstation",
+      "file": "xray-workstation.json",
+      "icon": "📷",
+      "category": "modality"
+    },
+    {
+      "id": "alf-screening",
+      "name": "AlF-DETECT Screening",
+      "description": "Alzheimer's/Autism AI screening system",
+      "file": "alf-screening.json",
+      "icon": "🧠",
+      "category": "ai-analysis"
+    }
+  ],
+  "categories": {
+    "overview": {
+      "name": "Overview Screens",
+      "description": "System overview and dashboard screens"
+    },
+    "modality": {
+      "name": "Modality Workstations",
+      "description": "Imaging modality-specific workstations"
+    },
+    "ai-analysis": {
+      "name": "AI Analysis",
+      "description": "AI-powered analysis and screening tools"
+    }
+  }
+}

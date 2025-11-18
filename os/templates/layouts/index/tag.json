@@ -1,5 +1,5 @@
 {
-  "UUID": "5a70b77f-ff10-4413-8e6b-57d8e73fc1c3",
+  "UUID": "471a38b2-8c0f-42a6-8f7a-ecd215e66889",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/templates/layouts/",
   "Directory_Name": "Layouts",
@@ -13,73 +13,19 @@
       "path": "/os/templates/layouts/controls/",
       "title": "Controls",
       "description": "controls subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 2
-    }
-  ],
-  "Sibling_Directories": [
-    {
-      "path": "/os/templates/components/",
-      "title": "Components",
-      "description": "components area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/templates/controls/",
-      "title": "Controls",
-      "description": "controls area",
       "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/templates/medical/",
-      "title": "Medical",
-      "description": "medical area",
-      "icon": "\ud83c\udfe5"
-    },
-    {
-      "path": "/os/templates/p-and-id/",
-      "title": "P And Id",
-      "description": "p-and-id area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/templates/views/",
-      "title": "Views",
-      "description": "views area",
-      "icon": "\ud83d\udcc1"
     }
   ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/templates/",
-      "title": "Templates",
-      "icon": "\ud83d\udcc4"
-    },
-    {
-      "path": "/os/templates/layouts/",
-      "title": "Layouts",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": null,
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
   "has_plc": true,
   "has_hmi": true,
   "has_scada": true,
-  "plc_path": "plc.html",
-  "hmi_path": "hmi.html",
-  "scada_path": "scada.html",
+  "plc_path": "/os/templates/layouts/plc.html",
+  "hmi_path": "/os/templates/layouts/hmi.html",
+  "scada_path": "/os/templates/layouts/scada.html",
   "Features": [
     {
       "title": "Core Functionality",
@@ -144,50 +90,6 @@
       "path": "scada.html",
       "name": "SCADA",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "hmi.html",
-      "name": "Hmi",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3661
-    },
-    {
-      "path": "plc.html",
-      "name": "Plc",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3603
-    },
-    {
-      "path": "scada.html",
-      "name": "Scada",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 5917
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4612
-    },
-    {
-      "path": "default.md",
-      "name": "Default",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 2286
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3623
     }
   ]
 }

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>X-Ray Workstation</title>
+<meta name="description" content="Digital radiography workstation for X-ray image review">
+<meta name="generator" content="Template Generator v1.0.0">
+<meta name="template-uuid" content="med-screen-xray-001">
+
+<!-- Load theme and config -->
+<script src="/scripts/theme-loader.js"></script>
+<script src="/scripts/config-loader.js"></script>
+
+<style>
+/* ISA-101 Theme Variables */
+:root {
+  --primary-color: #b794f4;
+  --secondary-color: #f5f2e8;
+  --background-color: #2a1a3a;
+  --text-color: #f5f2e8;
+  --accent-color: #00bfff;
+  --danger-color: #ff6b6b;
+  --warning-color: #ffd700;
+  --success-color: #90ee90;
+}
+
+/* Base Styles */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Courier New', monospace;
+  background: var(--background-color);
+  color: var(--text-color);
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Header */
+.screen-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--background-color);
+  border-bottom: 3px solid var(--text-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 1000;
+}
+
+.screen-title {
+  color: var(--text-color);
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.screen-nav {
+  display: flex;
+  gap: 15px;
+}
+
+.nav-btn {
+  padding: 8px 15px;
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid var(--text-color);
+  border-radius: 4px;
+  color: var(--text-color);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.nav-btn:hover {
+  background: rgba(0, 255, 136, 0.2);
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+}
+
+/* Grid Container */
+.screen-container {
+  margin-top: 60px;
+  height: calc(100vh - 60px);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 10px;
+  padding: 20px;
+}
+
+/* Component Base Styles */
+.component {
+  background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+  border: 2px solid var(--text-color);
+  border-radius: 12px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.component-header {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: var(--accent-color);
+  border-bottom: 1px solid var(--text-color);
+  padding-bottom: 8px;
+}
+
+.component-content {
+  flex: 1;
+  overflow: auto;
+}
+
+/* Utility Classes */
+.btn {
+  padding: 10px 20px;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  opacity: 0.8;
+  box-shadow: 0 0 15px rgba(139, 71, 137, 0.5);
+}
+
+.btn-danger { background: var(--danger-color); }
+.btn-warning { background: var(--warning-color); }
+.btn-success { background: var(--success-color); }
+
+/* Loading Indicator */
+.loading {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--text-color);
+  font-size: 1.5em;
+}
+
+.loading.active {
+  display: block;
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="screen-header">
+  <div class="screen-title">
+    X-Ray Workstation
+  </div>
+  <div class="screen-nav">
+    <a href="/index.html" class="nav-btn">🏠 Home</a>
+    <a href="/screens/frontend/index.html" class="nav-btn">📊 Dashboard</a>
+    <span id="current-time" style="color: var(--accent-color);"></span>
+  </div>
+</div>
+
+<!-- Screen Container -->
+<div class="screen-container" id="screen-container">
+
+  <!-- Component: X-Ray Viewer -->
+  <div class="component component-dicom-viewport"
+       style="grid-column: 1 / span 2; grid-row: 1 / span 3;"
+       data-uuid="xray-main-viewer"
+       data-type="dicom-viewport">
+    <div class="component-header">X-Ray Viewer</div>
+    <div class="component-content">
+
+      <div class="dicom-viewport-placeholder" style="width: 100%; height: 100%; background: #000; border: 1px solid #333; display: flex; align-items: center; justify-content: center; color: #666;">
+        <div style="text-align: center;">
+          <div style="font-size: 3em;">🖼️</div>
+          <div>DICOM Viewer</div>
+          <div style="font-size: 0.8em; margin-top: 10px;">CR Imaging</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Component: Comparison/Prior Studies -->
+  <div class="component component-comparison-viewer"
+       style="grid-column: 3 / span 1; grid-row: 1 / span 2;"
+       data-uuid="xray-comparison-viewer"
+       data-type="comparison-viewer">
+    <div class="component-header">Comparison/Prior Studies</div>
+    <div class="component-content">
+
+      <div style="padding: 20px; text-align: center; color: #666;">
+        <div>comparison-viewer</div>
+        <div style="font-size: 0.8em; margin-top: 10px;">Component placeholder</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Component: Xray Tools Panel -->
+  <div class="component component-xray-tools-panel"
+       style="grid-column: 3 / span 1; grid-row: 3 / span 1;"
+       data-uuid="xray-tools"
+       data-type="xray-tools-panel">
+    <div class="component-header">Xray Tools Panel</div>
+    <div class="component-content">
+
+      <div style="padding: 20px; text-align: center; color: #666;">
+        <div>xray-tools-panel</div>
+        <div style="font-size: 0.8em; margin-top: 10px;">Component placeholder</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Indicator -->
+<div class="loading" id="loading">
+  ⌛ Loading...
+</div>
+
+<!-- Scripts -->
+<script>
+// Screen metadata
+const screenMetadata = {
+  "name": "X-Ray Workstation",
+  "description": "Digital radiography workstation for X-ray image review",
+  "version": "1.0.0",
+  "author": "Medical Imaging SCADA",
+  "created": "2025-11-17T00:00:00Z",
+  "modified": "2025-11-17T00:00:00Z",
+  "tags": [
+    "medical",
+    "xray",
+    "radiography",
+    "imaging"
+  ]
+};
+
+// Update time
+function updateTime() {
+  const now = new Date();
+  const timeEl = document.getElementById('current-time');
+  if (timeEl) {
+    timeEl.textContent = now.toLocaleTimeString();
+  }
+}
+setInterval(updateTime, 1000);
+updateTime();
+
+// Initialize screen
+async function initScreen() {
+  console.log('Screen loaded:', screenMetadata.name);
+  console.log('Generated from template:', 'med-screen-xray-001');
+
+  // Wait for config to load
+  if (window.chazonConfig) {
+    await window.chazonConfig.load();
+    console.log('Environment:', window.chazonConfig.environment);
+  }
+
+  // Execute onLoad actions
+
+  console.log('Action: loadXRayStudy', {"autoInvert": true, "loadPriors": true});
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initScreen);
+} else {
+  initScreen();
+}
+</script>
+
+</body>
+</html>

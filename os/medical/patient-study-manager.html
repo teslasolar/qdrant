@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Study Manager - Medical Imaging SCADA</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Roboto', monospace;
+    background: #0a0a0a;
+    color: #00ff88;
+  }
+
+  .container {
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 3px solid #00ff88;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 20px;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  h1 {
+    color: #00ff88;
+    font-size: 2.5em;
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #00ff88, #00ccff);
+    color: #000;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.4);
+  }
+
+  .btn-secondary {
+    background: rgba(0, 204, 255, 0.2);
+    border: 2px solid #00ccff;
+    color: #00ccff;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(0, 204, 255, 0.3);
+  }
+
+  /* Layout */
+  .main-layout {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 20px;
+  }
+
+  /* Search Panel */
+  .search-panel {
+    background: #1a1a2e;
+    border: 2px solid #00ff88;
+    border-radius: 12px;
+    padding: 20px;
+    height: fit-content;
+  }
+
+  .panel-title {
+    color: #00ff88;
+    font-size: 1.3em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #00ff88;
+  }
+
+  .search-group {
+    margin-bottom: 20px;
+  }
+
+  .search-label {
+    display: block;
+    color: #888;
+    font-size: 0.85em;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .search-input,
+  .search-select,
+  .search-date {
+    width: 100%;
+    padding: 12px;
+    background: #0a0a0a;
+    border: 2px solid #333;
+    border-radius: 6px;
+    color: #00ff88;
+    font-family: inherit;
+    font-size: 0.95em;
+  }
+
+  .search-input:focus,
+  .search-select:focus,
+  .search-date:focus {
+    outline: none;
+    border-color: #00ff88;
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+  }
+
+  .quick-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 15px;
+  }
+
+  .filter-chip {
+    padding: 8px 15px;
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 20px;
+    color: #00ccff;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-chip:hover,
+  .filter-chip.active {
+    border-color: #00ccff;
+    background: rgba(0, 204, 255, 0.2);
+  }
+
+  /* Study List */
+  .study-list-panel {
+    background: #1a1a2e;
+    border: 2px solid #00ccff;
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #00ccff;
+  }
+
+  .list-title {
+    color: #00ccff;
+    font-size: 1.3em;
+    font-weight: bold;
+  }
+
+  .list-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .sort-select {
+    padding: 8px 12px;
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #00ff88;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .view-toggle {
+    display: flex;
+    gap: 5px;
+  }
+
+  .view-btn {
+    padding: 8px 12px;
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #888;
+    cursor: pointer;
+    font-size: 1.2em;
+  }
+
+  .view-btn.active {
+    border-color: #00ccff;
+    color: #00ccff;
+    background: rgba(0, 204, 255, 0.1);
+  }
+
+  /* Study Cards */
+  .study-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 15px;
+  }
+
+  .study-card {
+    background: #0a0a0a;
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .study-card:hover {
+    border-color: #00ff88;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(0, 255, 136, 0.2);
+  }
+
+  .study-card.priority-high {
+    border-left: 5px solid #ff0044;
+  }
+
+  .study-card.priority-medium {
+    border-left: 5px solid #ffaa00;
+  }
+
+  .study-card.priority-low {
+    border-left: 5px solid #00ccff;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 15px;
+  }
+
+  .patient-info {
+    flex: 1;
+  }
+
+  .patient-name {
+    color: #00ff88;
+    font-size: 1.3em;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .patient-id {
+    color: #888;
+    font-size: 0.85em;
+  }
+
+  .study-badge {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .badge-pending {
+    background: rgba(255, 170, 0, 0.2);
+    border: 1px solid #ffaa00;
+    color: #ffaa00;
+  }
+
+  .badge-processing {
+    background: rgba(0, 204, 255, 0.2);
+    border: 1px solid #00ccff;
+    color: #00ccff;
+  }
+
+  .badge-completed {
+    background: rgba(0, 255, 136, 0.2);
+    border: 1px solid #00ff88;
+    color: #00ff88;
+  }
+
+  .card-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .info-label {
+    color: #666;
+    font-size: 0.75em;
+    text-transform: uppercase;
+  }
+
+  .info-value {
+    color: #00ccff;
+    font-weight: bold;
+    font-size: 0.95em;
+  }
+
+  .card-footer {
+    display: flex;
+    gap: 10px;
+    padding-top: 15px;
+    border-top: 1px solid #333;
+  }
+
+  .action-btn {
+    flex: 1;
+    padding: 8px 12px;
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #00ccff;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .action-btn:hover {
+    border-color: #00ccff;
+    background: rgba(0, 204, 255, 0.1);
+  }
+
+  /* Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    padding: 20px;
+    overflow-y: auto;
+  }
+
+  .modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-content {
+    background: #1a1a2e;
+    border: 3px solid #00ff88;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 800px;
+    width: 100%;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #00ff88;
+  }
+
+  .modal-title {
+    color: #00ff88;
+    font-size: 1.8em;
+    font-weight: bold;
+  }
+
+  .close-btn {
+    font-size: 2em;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .close-btn:hover {
+    color: #ff0044;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 25px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-group.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .form-label {
+    color: #888;
+    font-size: 0.9em;
+    font-weight: bold;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    padding: 12px;
+    background: #0a0a0a;
+    border: 2px solid #333;
+    border-radius: 6px;
+    color: #00ff88;
+    font-family: inherit;
+    font-size: 1em;
+  }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus {
+    outline: none;
+    border-color: #00ff88;
+  }
+
+  .modal-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 20px;
+    border-top: 1px solid #333;
+  }
+
+  /* Back Button */
+  .back-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #00ff88, #00ccff);
+    color: #000;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: all 0.2s;
+    margin-bottom: 20px;
+  }
+
+  .back-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.4);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <a href="./dashboard.html" class="back-btn">← Back to Dashboard</a>
+
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <h1>Patient Study Manager</h1>
+        <div style="color: #00ccff; margin-top: 10px;">Manage medical imaging studies and patient records</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" onclick="exportStudies()">📤 Export</button>
+        <button class="btn btn-primary" onclick="openNewStudyModal()">➕ New Study</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <!-- Search Panel -->
+    <div class="search-panel">
+      <div class="panel-title">Search & Filter</div>
+
+      <div class="search-group">
+        <label class="search-label">Patient Name or ID</label>
+        <input type="text" class="search-input" id="search-patient" placeholder="Search patients...">
+      </div>
+
+      <div class="search-group">
+        <label class="search-label">Modality</label>
+        <select class="search-select" id="filter-modality">
+          <option value="all">All Modalities</option>
+          <option value="CT">CT Scan</option>
+          <option value="MR">MRI</option>
+          <option value="CR">X-Ray</option>
+          <option value="US">Ultrasound</option>
+          <option value="MG">Mammography</option>
+        </select>
+      </div>
+
+      <div class="search-group">
+        <label class="search-label">Status</label>
+        <select class="search-select" id="filter-status">
+          <option value="all">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="processing">Processing</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+
+      <div class="search-group">
+        <label class="search-label">Date Range</label>
+        <input type="date" class="search-date" id="date-from">
+        <input type="date" class="search-date" id="date-to" style="margin-top: 8px;">
+      </div>
+
+      <div class="search-group">
+        <label class="search-label">Quick Filters</label>
+        <div class="quick-filters">
+          <div class="filter-chip active" data-filter="today">Today</div>
+          <div class="filter-chip" data-filter="week">This Week</div>
+          <div class="filter-chip" data-filter="month">This Month</div>
+          <div class="filter-chip" data-filter="priority">High Priority</div>
+          <div class="filter-chip" data-filter="alf">AlF-DETECT</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="applyFilters()">
+        🔍 Apply Filters
+      </button>
+
+      <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;" onclick="clearFilters()">
+        Clear All
+      </button>
+    </div>
+
+    <!-- Study List -->
+    <div class="study-list-panel">
+      <div class="list-header">
+        <div class="list-title">Studies (24 results)</div>
+        <div class="list-controls">
+          <select class="sort-select" id="sort-by">
+            <option value="date-desc">Newest First</option>
+            <option value="date-asc">Oldest First</option>
+            <option value="patient">Patient Name</option>
+            <option value="priority">Priority</option>
+            <option value="status">Status</option>
+          </select>
+          <div class="view-toggle">
+            <button class="view-btn active" onclick="setView('grid')">⊞</button>
+            <button class="view-btn" onclick="setView('list')">☰</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="study-grid" id="study-grid">
+        <!-- Study Card 1 -->
+        <div class="study-card priority-high">
+          <div class="card-header">
+            <div class="patient-info">
+              <div class="patient-name">ADAMS, John</div>
+              <div class="patient-id">MRN: 12345678</div>
+            </div>
+            <div class="study-badge badge-processing">PROCESSING</div>
+          </div>
+          <div class="card-body">
+            <div class="info-item">
+              <div class="info-label">Age/Sex</div>
+              <div class="info-value">67/M</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Modality</div>
+              <div class="info-value">CT</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Study Date</div>
+              <div class="info-value">2025-11-17 14:23</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Series</div>
+              <div class="info-value">4 series</div>
+            </div>
+            <div class="info-item" style="grid-column: 1/-1;">
+              <div class="info-label">Description</div>
+              <div class="info-value">Brain CT - Suspected Stroke</div>
+            </div>
+            <div class="info-item" style="grid-column: 1/-1;">
+              <div class="info-label">AI Analysis</div>
+              <div class="info-value" style="color: #ff88ff;">AlF-DETECT Screening ⚡</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button class="action-btn" onclick="viewStudy('S001')">🖥️ View</button>
+            <button class="action-btn" onclick="editStudy('S001')">✏️ Edit</button>
+            <button class="action-btn" onclick="shareStudy('S001')">📤 Share</button>
+          </div>
+        </div>
+
+        <!-- Study Card 2 -->
+        <div class="study-card priority-medium">
+          <div class="card-header">
+            <div class="patient-info">
+              <div class="patient-name">CHEN, Maria</div>
+              <div class="patient-id">MRN: 23456789</div>
+            </div>
+            <div class="study-badge badge-pending">PENDING</div>
+          </div>
+          <div class="card-body">
+            <div class="info-item">
+              <div class="info-label">Age/Sex</div>
+              <div class="info-value">54/F</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Modality</div>
+              <div class="info-value">X-Ray</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Study Date</div>
+              <div class="info-value">2025-11-17 14:18</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Series</div>
+              <div class="info-value">2 series</div>
+            </div>
+            <div class="info-item" style="grid-column: 1/-1;">
+              <div class="info-label">Description</div>
+              <div class="info-value">Chest X-Ray - Routine Checkup</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button class="action-btn" onclick="viewStudy('S002')">🖥️ View</button>
+            <button class="action-btn" onclick="editStudy('S002')">✏️ Edit</button>
+            <button class="action-btn" onclick="shareStudy('S002')">📤 Share</button>
+          </div>
+        </div>
+
+        <!-- Study Card 3 -->
+        <div class="study-card priority-low">
+          <div class="card-header">
+            <div class="patient-info">
+              <div class="patient-name">GARCIA, Robert</div>
+              <div class="patient-id">MRN: 34567890</div>
+            </div>
+            <div class="study-badge badge-completed">COMPLETED</div>
+          </div>
+          <div class="card-body">
+            <div class="info-item">
+              <div class="info-label">Age/Sex</div>
+              <div class="info-value">42/M</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Modality</div>
+              <div class="info-value">MRI</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Study Date</div>
+              <div class="info-value">2025-11-17 13:45</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Series</div>
+              <div class="info-value">6 series</div>
+            </div>
+            <div class="info-item" style="grid-column: 1/-1;">
+              <div class="info-label">Description</div>
+              <div class="info-value">Knee MRI - Sports Injury Follow-up</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button class="action-btn" onclick="viewStudy('S003')">🖥️ View</button>
+            <button class="action-btn" onclick="editStudy('S003')">✏️ Edit</button>
+            <button class="action-btn" onclick="shareStudy('S003')">📤 Share</button>
+          </div>
+        </div>
+
+        <!-- Study Card 4 -->
+        <div class="study-card priority-high">
+          <div class="card-header">
+            <div class="patient-info">
+              <div class="patient-name">WILSON, Sarah</div>
+              <div class="patient-id">MRN: 45678901</div>
+            </div>
+            <div class="study-badge badge-processing">PROCESSING</div>
+          </div>
+          <div class="card-body">
+            <div class="info-item">
+              <div class="info-label">Age/Sex</div>
+              <div class="info-value">71/F</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Modality</div>
+              <div class="info-value">X-Ray</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Study Date</div>
+              <div class="info-value">2025-11-17 13:30</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Series</div>
+              <div class="info-value">3 series</div>
+            </div>
+            <div class="info-item" style="grid-column: 1/-1;">
+              <div class="info-label">Description</div>
+              <div class="info-value">Brain X-Ray - Alzheimer's Screening</div>
+            </div>
+            <div class="info-item" style="grid-column: 1/-1;">
+              <div class="info-label">AI Analysis</div>
+              <div class="info-value" style="color: #ff88ff;">AlF-DETECT Screening 🧠</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button class="action-btn" onclick="viewStudy('S004')">🖥️ View</button>
+            <button class="action-btn" onclick="editStudy('S004')">✏️ Edit</button>
+            <button class="action-btn" onclick="shareStudy('S004')">📤 Share</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- New Study Modal -->
+<div class="modal" id="new-study-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Create New Study</div>
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+    </div>
+
+    <form id="new-study-form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Patient Name *</label>
+          <input type="text" class="form-input" required placeholder="LASTNAME, Firstname">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Patient ID (MRN) *</label>
+          <input type="text" class="form-input" required placeholder="12345678">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Age</label>
+          <input type="number" class="form-input" placeholder="0">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Sex</label>
+          <select class="form-select">
+            <option value="">Select...</option>
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+            <option value="O">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Modality *</label>
+          <select class="form-select" required>
+            <option value="">Select modality...</option>
+            <option value="CT">CT Scan</option>
+            <option value="MR">MRI</option>
+            <option value="CR">X-Ray</option>
+            <option value="US">Ultrasound</option>
+            <option value="MG">Mammography</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Priority</label>
+          <select class="form-select">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="urgent">Urgent</option>
+          </select>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">Study Description *</label>
+          <input type="text" class="form-input" required placeholder="e.g., Brain CT - Suspected Stroke">
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">Clinical Notes</label>
+          <textarea class="form-textarea" placeholder="Enter clinical history, symptoms, or special instructions..."></textarea>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label" style="display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" style="width: auto;">
+            Enable AlF-DETECT Screening (for brain imaging)
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Create Study</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// Modal handling
+function openNewStudyModal() {
+  document.getElementById('new-study-modal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('new-study-modal').classList.remove('active');
+}
+
+// Filter chips
+document.querySelectorAll('.filter-chip').forEach(chip => {
+  chip.addEventListener('click', function() {
+    this.classList.toggle('active');
+  });
+});
+
+// View toggle
+function setView(view) {
+  document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+
+  const grid = document.getElementById('study-grid');
+  if (view === 'list') {
+    grid.style.gridTemplateColumns = '1fr';
+  } else {
+    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(400px, 1fr))';
+  }
+}
+
+// Actions
+function applyFilters() {
+  console.log('Applying filters...');
+  alert('Filters applied! In production, this would filter the study list.');
+}
+
+function clearFilters() {
+  document.getElementById('search-patient').value = '';
+  document.getElementById('filter-modality').value = 'all';
+  document.getElementById('filter-status').value = 'all';
+  document.getElementById('date-from').value = '';
+  document.getElementById('date-to').value = '';
+  document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
+}
+
+function viewStudy(studyId) {
+  window.location.href = `../frontend/?study=${studyId}`;
+}
+
+function editStudy(studyId) {
+  alert(`Opening edit dialog for study: ${studyId}`);
+}
+
+function shareStudy(studyId) {
+  alert(`Opening share dialog for study: ${studyId}`);
+}
+
+function exportStudies() {
+  alert('Exporting studies...\n\nThis would generate a CSV or PDF export of the filtered studies.');
+}
+
+// Form submission
+document.getElementById('new-study-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  alert('New study created!\n\nIn production, this would create a new study record and open the DICOM upload interface.');
+  closeModal();
+});
+
+// Close modal on outside click
+document.getElementById('new-study-modal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeModal();
+  }
+});
+</script>
+
+</body>
+</html>

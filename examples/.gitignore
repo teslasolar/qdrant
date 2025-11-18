@@ -1,0 +1,44 @@
+# Ignore large dataset files
+*.dcm
+*.nii
+*.nii.gz
+*.h5
+*.hdf5
+*.zip
+*.tar
+*.tar.gz
+*.rar
+
+# Keep only small example files under 1MB
+# Add specific exceptions as needed with !filename
+
+# Ignore downloaded dataset directories
+datasets/*
+!datasets/.gitkeep
+
+# Ignore actual imaging files, keep directory structure
+xray/*.jpg
+xray/*.jpeg
+xray/*.png
+xray/*.dcm
+!xray/.gitkeep
+
+ct/*.jpg
+ct/*.jpeg
+ct/*.png
+ct/*.dcm
+!ct/.gitkeep
+
+mri/*.jpg
+mri/*.jpeg
+mri/*.png
+mri/*.nii
+mri/*.nii.gz
+!mri/.gitkeep
+
+dicom/*.dcm
+!dicom/.gitkeep
+
+# Keep documentation
+!README.md
+!*.py

@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configuration - Medical Imaging Factory</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    color: #e0e0e0;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border-bottom: 3px solid #00ff88;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header h1 {
+    color: #00ff88;
+    font-size: 2em;
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #2a2a3e;
+    border: 2px solid #00ff88;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #00ff88;
+  }
+
+  .breadcrumb {
+    background: #1a1a2e;
+    border-bottom: 2px solid #333;
+    padding: 15px 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #888;
+  }
+
+  .breadcrumb a {
+    color: #00ccff;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .breadcrumb a:hover { color: #00ff88; }
+  .breadcrumb-current { color: #00ff88; font-weight: 600; }
+
+  .container {
+    padding: 40px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  .section {
+    background: #1a1a2e;
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #333;
+  }
+
+  .section h2 {
+    color: #00ff88;
+    font-size: 1.8em;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  /* Form Styles */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    color: #00ff88;
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    padding: 12px;
+    background: #0a0a0a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    color: #e0e0e0;
+    font-size: 1em;
+    font-family: inherit;
+    transition: border-color 0.3s;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    outline: none;
+    border-color: #00ff88;
+  }
+
+  .form-textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  .form-hint {
+    color: #888;
+    font-size: 0.85em;
+    margin-top: 5px;
+  }
+
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+  }
+
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #333;
+    transition: 0.4s;
+    border-radius: 30px;
+  }
+
+  .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background-color: #888;
+    transition: 0.4s;
+    border-radius: 50%;
+  }
+
+  input:checked + .toggle-slider {
+    background-color: #00ff88;
+  }
+
+  input:checked + .toggle-slider:before {
+    transform: translateX(30px);
+    background-color: #000;
+  }
+
+  .toggle-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #333;
+  }
+
+  .toggle-item:last-child {
+    border-bottom: none;
+  }
+
+  .toggle-label {
+    flex: 1;
+  }
+
+  .toggle-title {
+    color: #e0e0e0;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+
+  .toggle-description {
+    color: #888;
+    font-size: 0.9em;
+  }
+
+  /* User Management */
+  .users-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  .users-table th {
+    background: #2a2a3e;
+    color: #00ff88;
+    padding: 15px;
+    text-align: left;
+    border-bottom: 2px solid #00ff88;
+  }
+
+  .users-table td {
+    padding: 15px;
+    border-bottom: 1px solid #333;
+    color: #e0e0e0;
+  }
+
+  .users-table tr:hover {
+    background: #2a2a3e;
+  }
+
+  .role-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 600;
+  }
+
+  .role-badge.admin {
+    background: rgba(255, 102, 102, 0.2);
+    color: #ff6666;
+  }
+
+  .role-badge.manager {
+    background: rgba(0, 204, 255, 0.2);
+    color: #00ccff;
+  }
+
+  .role-badge.operator {
+    background: rgba(0, 255, 136, 0.2);
+    color: #00ff88;
+  }
+
+  .role-badge.viewer {
+    background: rgba(136, 136, 136, 0.2);
+    color: #888;
+  }
+
+  /* Audit Log */
+  .audit-log {
+    background: #0a0a0a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .audit-entry {
+    padding: 12px;
+    border-left: 3px solid #333;
+    margin-bottom: 10px;
+    background: #1a1a2e;
+    border-radius: 4px;
+  }
+
+  .audit-entry.critical {
+    border-left-color: #ff6666;
+  }
+
+  .audit-entry.warning {
+    border-left-color: #ffaa00;
+  }
+
+  .audit-entry.info {
+    border-left-color: #00ccff;
+  }
+
+  .audit-timestamp {
+    color: #888;
+    font-size: 0.85em;
+    margin-bottom: 5px;
+  }
+
+  .audit-user {
+    color: #00ccff;
+    font-weight: 600;
+  }
+
+  .audit-action {
+    color: #e0e0e0;
+    margin-top: 5px;
+  }
+
+  /* Integration Cards */
+  .integration-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .integration-card {
+    background: #2a2a3e;
+    border: 2px solid #444;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .integration-icon {
+    font-size: 3em;
+  }
+
+  .integration-info {
+    flex: 1;
+  }
+
+  .integration-name {
+    color: #00ccff;
+    font-weight: 600;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+  }
+
+  .integration-status {
+    font-size: 0.9em;
+  }
+
+  .status-connected {
+    color: #00ff88;
+  }
+
+  .status-disconnected {
+    color: #ff6666;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #00ff88, #00cc66);
+    color: #000;
+  }
+
+  .btn-secondary {
+    background: #2a2a3e;
+    color: #00ccff;
+    border: 2px solid #00ccff;
+  }
+
+  .btn-danger {
+    background: linear-gradient(135deg, #ff6666, #ff4444);
+    color: #fff;
+  }
+
+  .btn-small {
+    padding: 8px 16px;
+    font-size: 0.9em;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3);
+  }
+
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: #666;
+    border-top: 2px solid #333;
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>⚙️ System Configuration</h1>
+  <div>
+    <span class="badge">L4 - Business</span>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <a href="index.html">🏭 ISA-95 Level 4</a>
+  <span>›</span>
+  <a href="enterprise-portal.html">Enterprise Portal</a>
+  <span>›</span>
+  <span class="breadcrumb-current">Configuration</span>
+</div>
+
+<div class="container">
+
+  <!-- System Settings -->
+  <div class="section">
+    <div class="section-header">
+      <h2>🔧 System Settings</h2>
+      <button class="btn btn-primary" onclick="alert('Saving settings...')">Save Changes</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">System Name</label>
+        <input type="text" class="form-input" value="Medical Imaging Factory - ISA-95">
+        <div class="form-hint">Display name for the system</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Timezone</label>
+        <select class="form-select">
+          <option>UTC</option>
+          <option selected>America/New_York (EST)</option>
+          <option>America/Los_Angeles (PST)</option>
+          <option>Europe/London (GMT)</option>
+        </select>
+        <div class="form-hint">System timezone for timestamps</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Default Language</label>
+        <select class="form-select">
+          <option selected>English (US)</option>
+          <option>Spanish</option>
+          <option>French</option>
+          <option>German</option>
+        </select>
+        <div class="form-hint">Default language for new users</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Session Timeout</label>
+        <select class="form-select">
+          <option>15 minutes</option>
+          <option selected>30 minutes</option>
+          <option>1 hour</option>
+          <option>4 hours</option>
+        </select>
+        <div class="form-hint">Idle time before auto-logout</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Data Retention Period</label>
+        <select class="form-select">
+          <option>30 days</option>
+          <option>90 days</option>
+          <option selected>1 year</option>
+          <option>2 years</option>
+          <option>5 years</option>
+        </select>
+        <div class="form-hint">How long to keep historical data</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Backup Schedule</label>
+        <select class="form-select">
+          <option selected>Daily at 2:00 AM</option>
+          <option>Every 12 hours</option>
+          <option>Every 6 hours</option>
+          <option>Hourly</option>
+        </select>
+        <div class="form-hint">Automatic backup frequency</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature Toggles -->
+  <div class="section">
+    <div class="section-header">
+      <h2>🎛️ Feature Settings</h2>
+    </div>
+
+    <div class="toggle-item">
+      <div class="toggle-label">
+        <div class="toggle-title">Predictive Analytics</div>
+        <div class="toggle-description">Enable AI-powered forecasting and predictions</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-item">
+      <div class="toggle-label">
+        <div class="toggle-title">Real-Time Notifications</div>
+        <div class="toggle-description">Push notifications for alarms and alerts</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-item">
+      <div class="toggle-label">
+        <div class="toggle-title">Automatic Reports</div>
+        <div class="toggle-description">Generate and email scheduled reports</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-item">
+      <div class="toggle-label">
+        <div class="toggle-title">Quality Control Automation</div>
+        <div class="toggle-description">Automated quality checks and validations</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-item">
+      <div class="toggle-label">
+        <div class="toggle-title">Maintenance Reminders</div>
+        <div class="toggle-description">Automated maintenance scheduling and reminders</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-item">
+      <div class="toggle-label">
+        <div class="toggle-title">DICOM Store & Forward</div>
+        <div class="toggle-description">Enable automatic DICOM image routing</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- User Management -->
+  <div class="section">
+    <div class="section-header">
+      <h2>👥 User Management</h2>
+      <button class="btn btn-secondary" onclick="alert('Add new user')">+ Add User</button>
+    </div>
+
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Last Login</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>admin</strong></td>
+          <td>System Administrator</td>
+          <td>admin@medicalimaging.com</td>
+          <td><span class="role-badge admin">Admin</span></td>
+          <td style="color: #00ff88;">Active</td>
+          <td>2025-11-17 14:23</td>
+          <td><button class="btn btn-secondary btn-small">Edit</button></td>
+        </tr>
+        <tr>
+          <td><strong>jsmith</strong></td>
+          <td>John Smith</td>
+          <td>jsmith@medicalimaging.com</td>
+          <td><span class="role-badge manager">Manager</span></td>
+          <td style="color: #00ff88;">Active</td>
+          <td>2025-11-17 13:45</td>
+          <td><button class="btn btn-secondary btn-small">Edit</button></td>
+        </tr>
+        <tr>
+          <td><strong>sjohnson</strong></td>
+          <td>Sarah Johnson</td>
+          <td>sjohnson@medicalimaging.com</td>
+          <td><span class="role-badge operator">Operator</span></td>
+          <td style="color: #00ff88;">Active</td>
+          <td>2025-11-17 12:10</td>
+          <td><button class="btn btn-secondary btn-small">Edit</button></td>
+        </tr>
+        <tr>
+          <td><strong>mchen</strong></td>
+          <td>Mike Chen</td>
+          <td>mchen@medicalimaging.com</td>
+          <td><span class="role-badge operator">Operator</span></td>
+          <td style="color: #00ff88;">Active</td>
+          <td>2025-11-17 11:30</td>
+          <td><button class="btn btn-secondary btn-small">Edit</button></td>
+        </tr>
+        <tr>
+          <td><strong>lbrown</strong></td>
+          <td>Lisa Brown</td>
+          <td>lbrown@medicalimaging.com</td>
+          <td><span class="role-badge viewer">Viewer</span></td>
+          <td style="color: #888;">Inactive</td>
+          <td>2025-11-10 09:15</td>
+          <td><button class="btn btn-secondary btn-small">Edit</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Integration Configuration -->
+  <div class="section">
+    <div class="section-header">
+      <h2>🔗 Integration Configuration</h2>
+    </div>
+
+    <div class="integration-grid">
+      <div class="integration-card">
+        <div class="integration-icon">🏥</div>
+        <div class="integration-info">
+          <div class="integration-name">PACS Server</div>
+          <div class="integration-status status-connected">✓ Connected</div>
+        </div>
+        <button class="btn btn-secondary btn-small">Configure</button>
+      </div>
+
+      <div class="integration-card">
+        <div class="integration-icon">📡</div>
+        <div class="integration-info">
+          <div class="integration-name">DICOM Router</div>
+          <div class="integration-status status-connected">✓ Connected</div>
+        </div>
+        <button class="btn btn-secondary btn-small">Configure</button>
+      </div>
+
+      <div class="integration-card">
+        <div class="integration-icon">🔍</div>
+        <div class="integration-info">
+          <div class="integration-name">HL7 Interface</div>
+          <div class="integration-status status-connected">✓ Connected</div>
+        </div>
+        <button class="btn btn-secondary btn-small">Configure</button>
+      </div>
+
+      <div class="integration-card">
+        <div class="integration-icon">💾</div>
+        <div class="integration-info">
+          <div class="integration-name">Qdrant Vector DB</div>
+          <div class="integration-status status-connected">✓ Connected (Port 6333)</div>
+        </div>
+        <button class="btn btn-secondary btn-small">Configure</button>
+      </div>
+
+      <div class="integration-card">
+        <div class="integration-icon">🤖</div>
+        <div class="integration-info">
+          <div class="integration-name">AI Detection Service</div>
+          <div class="integration-status status-connected">✓ Connected</div>
+        </div>
+        <button class="btn btn-secondary btn-small">Configure</button>
+      </div>
+
+      <div class="integration-card">
+        <div class="integration-icon">📊</div>
+        <div class="integration-info">
+          <div class="integration-name">SCADA Gateway</div>
+          <div class="integration-status status-connected">✓ Connected</div>
+        </div>
+        <button class="btn btn-secondary btn-small">Configure</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backup & Restore -->
+  <div class="section">
+    <div class="section-header">
+      <h2>💾 Backup & Restore</h2>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+      <div>
+        <h3 style="color: #00ccff; margin-bottom: 15px;">Backup</h3>
+        <p style="color: #888; margin-bottom: 20px;">
+          Create a full system backup including configuration, data, and user settings.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Backup Name</label>
+          <input type="text" class="form-input" placeholder="backup-2025-11-17" value="backup-2025-11-17">
+        </div>
+        <button class="btn btn-primary">Create Backup</button>
+      </div>
+
+      <div>
+        <h3 style="color: #00ccff; margin-bottom: 15px;">Restore</h3>
+        <p style="color: #888; margin-bottom: 20px;">
+          Restore system from a previous backup. This will overwrite current data.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Select Backup</label>
+          <select class="form-select">
+            <option>backup-2025-11-17 (Latest)</option>
+            <option>backup-2025-11-16</option>
+            <option>backup-2025-11-15</option>
+            <option>backup-2025-11-14</option>
+          </select>
+        </div>
+        <button class="btn btn-danger">Restore from Backup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audit Log -->
+  <div class="section">
+    <div class="section-header">
+      <h2>📝 Audit Log</h2>
+      <button class="btn btn-secondary" onclick="alert('Export audit log')">Export Log</button>
+    </div>
+
+    <div class="audit-log">
+      <div class="audit-entry info">
+        <div class="audit-timestamp">2025-11-17 14:23:15</div>
+        <div>
+          <span class="audit-user">admin</span> logged into the system
+        </div>
+      </div>
+
+      <div class="audit-entry info">
+        <div class="audit-timestamp">2025-11-17 13:45:32</div>
+        <div>
+          <span class="audit-user">jsmith</span> generated quality report
+        </div>
+      </div>
+
+      <div class="audit-entry warning">
+        <div class="audit-timestamp">2025-11-17 12:18:45</div>
+        <div>
+          <span class="audit-user">sjohnson</span> modified work order WO-2025-1146
+        </div>
+      </div>
+
+      <div class="audit-entry info">
+        <div class="audit-timestamp">2025-11-17 11:30:22</div>
+        <div>
+          <span class="audit-user">mchen</span> completed maintenance task on CT-001
+        </div>
+      </div>
+
+      <div class="audit-entry critical">
+        <div class="audit-timestamp">2025-11-17 10:15:08</div>
+        <div>
+          <span class="audit-user">admin</span> changed system configuration settings
+        </div>
+      </div>
+
+      <div class="audit-entry info">
+        <div class="audit-timestamp">2025-11-17 09:42:17</div>
+        <div>
+          <span class="audit-user">jsmith</span> created new CAPA record CAPA-2025-023
+        </div>
+      </div>
+
+      <div class="audit-entry info">
+        <div class="audit-timestamp">2025-11-16 16:55:33</div>
+        <div>
+          <span class="audit-user">sjohnson</span> exported production planning report
+        </div>
+      </div>
+
+      <div class="audit-entry warning">
+        <div class="audit-timestamp">2025-11-16 15:20:44</div>
+        <div>
+          <span class="audit-user">admin</span> added new user account: lbrown
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="section">
+    <div class="section-header">
+      <h2>⚡ Quick Actions</h2>
+    </div>
+
+    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+      <button class="btn btn-primary" onclick="alert('Testing system integrations...')">
+        Test Integrations
+      </button>
+      <button class="btn btn-secondary" onclick="alert('Clearing cache...')">
+        Clear Cache
+      </button>
+      <button class="btn btn-secondary" onclick="alert('Restarting services...')">
+        Restart Services
+      </button>
+      <button class="btn btn-secondary" onclick="alert('Opening system diagnostics...')">
+        System Diagnostics
+      </button>
+      <button class="btn btn-secondary" onclick="window.location.href='enterprise-portal.html'">
+        Back to Portal
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p><strong>ISA-95 Level 4 - Business Planning & Logistics</strong></p>
+  <p>System Configuration - Medical Imaging Virtual Factory</p>
+</div>
+
+</body>
+</html>

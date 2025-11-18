@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Batch Processing</title>
+<link rel="stylesheet" href="../styles/isa101-theme.css">
+<link rel="stylesheet" href="../styles/widgets.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>Batch Image Processing</h1>
+
+  <div class="card">
+    <div class="widget-title">Select Images</div>
+    <input type="file" id="batch-upload" multiple accept="image/*">
+  </div>
+
+  <div class="card">
+    <div class="widget-title">Processing Pipeline</div>
+    <label><input type="checkbox" id="denoise"> Denoise</label>
+    <label><input type="checkbox" id="enhance"> Enhance</label>
+    <label><input type="checkbox" id="segment"> Segment</label>
+    <label><input type="checkbox" id="classify"> Classify</label>
+  </div>
+
+  <button id="process-btn" class="btn btn-primary">Process Batch</button>
+
+  <div class="metric-grid">
+    <div class="widget">
+      <div class="widget-title">Progress</div>
+      <div class="progress-bar">
+        <div id="progress" class="progress-fill" style="width: 0%"></div>
+      </div>
+      <div id="progress-text">0/0</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const processBtn = document.getElementById('process-btn');
+const progress = document.getElementById('progress');
+
+processBtn.addEventListener('click', () => {
+  console.log('Starting batch processing...');
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+{
+  "uuid": "med-comp-workflow-001",
+  "type": "component",
+  "category": "medical",
+  "metadata": {
+    "name": "Workflow Diagram",
+    "description": "Visual workflow diagram showing DICOM processing pipeline stages",
+    "version": "1.0.0",
+    "tags": ["medical", "workflow", "pipeline", "visualization"]
+  },
+  "template": {
+    "html": "<div class=\"workflow-diagram\">\n  <div class=\"workflow-header\">\n    <div class=\"workflow-title\">{{title}}</div>\n  </div>\n  <div class=\"workflow-stages\" id=\"{{id}}-stages\">\n    <!-- Stages will be inserted here -->\n  </div>\n</div>",
+    "css": ".workflow-diagram {\n  background: #1a1a2e;\n  border: 2px solid #00ccff;\n  border-radius: 12px;\n  padding: 20px;\n}\n.workflow-header {\n  margin-bottom: 20px;\n  padding-bottom: 15px;\n  border-bottom: 2px solid #00ccff;\n}\n.workflow-title {\n  color: #00ccff;\n  font-size: 1.3em;\n  font-weight: bold;\n}\n.workflow-stages {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 20px;\n  background: #0a0a0a;\n  border-radius: 8px;\n}\n.workflow-stage {\n  text-align: center;\n  flex: 1;\n  position: relative;\n  padding: 15px;\n  transition: all 0.3s;\n}\n.workflow-stage::after {\n  content: '→';\n  position: absolute;\n  right: -20px;\n  top: 50%;\n  transform: translateY(-50%);\n  color: #00ff88;\n  font-size: 2em;\n  font-weight: bold;\n}\n.workflow-stage:last-child::after {\n  content: '';\n}\n.workflow-stage:hover {\n  background: rgba(0, 255, 136, 0.05);\n  border-radius: 8px;\n}\n.workflow-icon {\n  font-size: 3em;\n  margin-bottom: 10px;\n  transition: transform 0.3s;\n}\n.workflow-stage:hover .workflow-icon {\n  transform: scale(1.2);\n}\n.workflow-label {\n  font-size: 0.9em;\n  color: #888;\n  margin-bottom: 8px;\n  font-weight: bold;\n  text-transform: uppercase;\n  letter-spacing: 1px;\n}\n.workflow-count {\n  font-size: 1.8em;\n  font-weight: bold;\n  color: #00ff88;\n  margin-top: 5px;\n}\n.workflow-count.alert {\n  color: #ff0044;\n  animation: pulse 2s infinite;\n}\n.workflow-count.warning {\n  color: #ffaa00;\n}",
+    "js": "function initWorkflowDiagram(element, config) {\n  const stagesContainer = element.querySelector('#' + config.id + '-stages');\n  \n  const defaultStages = [\n    { icon: '📥', label: 'Received', count: 0 },\n    { icon: '🔍', label: 'Analyzing', count: 0 },\n    { icon: '🧬', label: 'AI Processing', count: 0 },\n    { icon: '✅', label: 'Complete', count: 0 }\n  ];\n  \n  const stages = config.stages || defaultStages;\n  \n  function initStages() {\n    stagesContainer.innerHTML = '';\n    stages.forEach((stage, index) => {\n      const stageEl = document.createElement('div');\n      stageEl.className = 'workflow-stage';\n      stageEl.innerHTML = `\n        <div class=\"workflow-icon\">${stage.icon}</div>\n        <div class=\"workflow-label\">${stage.label}</div>\n        <div class=\"workflow-count\" id=\"${config.id}-count-${index}\">${stage.count || 0}</div>\n      `;\n      stagesContainer.appendChild(stageEl);\n    });\n  }\n  \n  function updateCounts(counts) {\n    if (Array.isArray(counts)) {\n      counts.forEach((count, index) => {\n        const countEl = element.querySelector('#' + config.id + '-count-' + index);\n        if (countEl) {\n          countEl.textContent = count;\n          \n          // Apply alert class if count is high\n          countEl.classList.remove('alert', 'warning');\n          if (count > 50) {\n            countEl.classList.add('alert');\n          } else if (count > 20) {\n            countEl.classList.add('warning');\n          }\n        }\n      });\n    }\n  }\n  \n  initStages();\n  \n  return { updateCounts };\n}"
+  },
+  "properties": [
+    {
+      "name": "title",
+      "type": "string",
+      "default": "Processing Pipeline"
+    },
+    {
+      "name": "stages",
+      "type": "array",
+      "default": null
+    }
+  ],
+  "bindings": {
+    "tags": [
+      {
+        "name": "countsTag",
+        "property": "counts",
+        "callback": "updateCounts"
+      }
+    ]
+  }
+}

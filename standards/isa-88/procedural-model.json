@@ -1,0 +1,428 @@
+{
+  "standardId": "isa-88-procedural-v1.0",
+  "type": "procedural-model",
+  "metadata": {
+    "name": "ISA-88 Procedural Model",
+    "description": "Recipe and procedural control hierarchy for batch processes",
+    "version": "1.0.0",
+    "standard": "ANSI/ISA-88.01",
+    "created": "2025-11-17",
+    "tags": ["isa-88", "recipe", "procedure", "batch-control"]
+  },
+  "specification": {
+    "description": "Defines how to execute batch processes through recipes and procedures",
+    "purpose": "Standardize batch process execution and recipe management",
+    "application": "Batch manufacturing, medical imaging workflows, multi-step processes"
+  },
+  "proceduralLevels": {
+    "procedure": {
+      "level": 1,
+      "name": "Procedure",
+      "description": "Complete manufacturing strategy to produce a batch",
+      "parent": null,
+      "children": ["unitProcedure"],
+      "scope": "Entire batch or order",
+      "executionContext": "Process Cell",
+      "responsibilities": [
+        "Overall batch coordination",
+        "Material allocation",
+        "Resource scheduling",
+        "Exception handling"
+      ],
+      "attributes": {
+        "name": "{{procedureName}}",
+        "id": "{{procedureId}}",
+        "version": "{{version}}",
+        "batchSize": "{{batchSize}}",
+        "duration": "{{estimatedDuration}}"
+      },
+      "states": ["Idle", "Running", "Complete", "Holding", "Held", "Stopping", "Stopped", "Aborting", "Aborted"],
+      "tagStructure": {
+        "path": "{{recipePath}}/Procedure",
+        "tags": {
+          "status": "Status.State",
+          "progress": "Status.Progress",
+          "currentStep": "Status.CurrentUnitProcedure",
+          "startTime": "Timing.StartTime",
+          "estimatedCompletion": "Timing.EstimatedCompletion"
+        }
+      },
+      "examples": [
+        "Analyze Chest X-Ray",
+        "Manufacture Drug Batch XYZ",
+        "Process CT Study",
+        "Fill and Package Product A"
+      ]
+    },
+    "unitProcedure": {
+      "level": 2,
+      "name": "Unit Procedure",
+      "description": "Major processing phase within a procedure",
+      "parent": "procedure",
+      "children": ["operation"],
+      "scope": "Major phase of batch",
+      "executionContext": "Unit",
+      "responsibilities": [
+        "Coordinate operations on specific unit",
+        "Unit resource management",
+        "Phase synchronization",
+        "Unit-level quality checks"
+      ],
+      "attributes": {
+        "name": "{{unitProcedureName}}",
+        "id": "{{unitProcedureId}}",
+        "unit": "{{assignedUnit}}",
+        "sequence": "{{executionSequence}}"
+      },
+      "states": ["Idle", "Running", "Complete", "Holding", "Held", "Stopping", "Stopped", "Aborting", "Aborted"],
+      "tagStructure": {
+        "path": "{{recipePath}}/Procedure/{{unitProcedureName}}",
+        "tags": {
+          "status": "Status.State",
+          "assignedUnit": "Config.AssignedUnit",
+          "currentOperation": "Status.CurrentOperation",
+          "operationCount": "Metrics.OperationCount"
+        }
+      },
+      "examples": [
+        "Image Acquisition",
+        "Preprocess Image",
+        "AI Analysis",
+        "Generate Report",
+        "Charge Materials",
+        "React",
+        "Separate"
+      ]
+    },
+    "operation": {
+      "level": 3,
+      "name": "Operation",
+      "description": "Specific task within a unit procedure",
+      "parent": "unitProcedure",
+      "children": ["phase"],
+      "scope": "Specific task",
+      "executionContext": "Equipment Module",
+      "responsibilities": [
+        "Execute specific processing task",
+        "Coordinate phases",
+        "Monitor process parameters",
+        "Report task completion"
+      ],
+      "attributes": {
+        "name": "{{operationName}}",
+        "id": "{{operationId}}",
+        "type": "{{operationType}}",
+        "parameters": "{{processParameters}}"
+      },
+      "states": ["Idle", "Running", "Complete", "Paused", "Aborted"],
+      "tagStructure": {
+        "path": "{{recipePath}}/Procedure/{{unitProcedureName}}/{{operationName}}",
+        "tags": {
+          "status": "Status.State",
+          "currentPhase": "Status.CurrentPhase",
+          "phaseCount": "Metrics.PhaseCount",
+          "parameters": "Config.Parameters"
+        }
+      },
+      "examples": [
+        "Load DICOM",
+        "Enhance Contrast",
+        "Run Inference",
+        "Heat to Setpoint",
+        "Add Reagent",
+        "Mix for Duration",
+        "Filter Product"
+      ]
+    },
+    "phase": {
+      "level": 4,
+      "name": "Phase",
+      "description": "Elementary procedural action",
+      "parent": "operation",
+      "children": null,
+      "scope": "Single action",
+      "executionContext": "Control Module",
+      "responsibilities": [
+        "Execute single control action",
+        "Monitor completion criteria",
+        "Report status",
+        "Handle phase-level errors"
+      ],
+      "attributes": {
+        "name": "{{phaseName}}",
+        "id": "{{phaseId}}",
+        "type": "{{phaseType}}",
+        "duration": "{{duration}}",
+        "parameters": "{{phaseParameters}}"
+      },
+      "states": ["Idle", "Running", "Complete", "Failed"],
+      "phaseTypes": {
+        "sequential": "Execute in sequence",
+        "parallel": "Execute simultaneously",
+        "conditional": "Execute based on condition",
+        "loop": "Repeat until condition met"
+      },
+      "tagStructure": {
+        "path": "{{recipePath}}/Procedure/{{unitProcedureName}}/{{operationName}}/{{phaseName}}",
+        "tags": {
+          "status": "Status.State",
+          "elapsed": "Timing.Elapsed",
+          "target": "Config.Target",
+          "actual": "Process.Actual"
+        }
+      },
+      "examples": [
+        "Parse DICOM Metadata",
+        "Decode Pixel Data",
+        "Apply CLAHE Filter",
+        "Normalize Intensity",
+        "Open Valve V-101",
+        "Start Agitator M-201",
+        "Wait for Temperature"
+      ]
+    }
+  },
+  "recipeModel": {
+    "masterRecipe": {
+      "description": "Template recipe for a product or process",
+      "content": {
+        "header": {
+          "recipeName": "{{recipeName}}",
+          "recipeId": "{{recipeId}}",
+          "version": "{{version}}",
+          "author": "{{author}}",
+          "created": "{{createdDate}}",
+          "product": "{{productName}}",
+          "description": "{{description}}"
+        },
+        "formula": {
+          "processInputs": [
+            {
+              "name": "{{inputName}}",
+              "type": "{{inputType}}",
+              "required": true,
+              "validation": "{{validationRule}}"
+            }
+          ],
+          "processParameters": [
+            {
+              "name": "{{paramName}}",
+              "value": "{{paramValue}}",
+              "unit": "{{unit}}",
+              "min": "{{minValue}}",
+              "max": "{{maxValue}}"
+            }
+          ],
+          "processOutputs": [
+            {
+              "name": "{{outputName}}",
+              "type": "{{outputType}}",
+              "specification": "{{qualitySpec}}"
+            }
+          ]
+        },
+        "equipmentRequirements": {
+          "requiredUnits": ["{{unitType}}"],
+          "requiredModules": ["{{moduleType}}"],
+          "capabilities": ["{{capability}}"]
+        },
+        "procedure": {
+          "description": "Reference to procedural model",
+          "unitProcedures": []
+        }
+      },
+      "examples": {
+        "medicalImaging": {
+          "header": {
+            "recipeName": "CT_Head_Analysis",
+            "recipeId": "MRI-001",
+            "version": "2.1.0",
+            "product": "CT Head Analysis Report",
+            "description": "Complete CT head scan analysis with AI detection"
+          },
+          "formula": {
+            "processInputs": [
+              {"name": "DICOM_Study", "type": "DicomStudy", "required": true},
+              {"name": "Patient_Info", "type": "PatientData", "required": true}
+            ],
+            "processParameters": [
+              {"name": "Window_Center", "value": 40, "unit": "HU", "min": 0, "max": 100},
+              {"name": "Window_Width", "value": 80, "unit": "HU", "min": 1, "max": 400},
+              {"name": "AI_Confidence_Threshold", "value": 0.85, "unit": "ratio", "min": 0.5, "max": 1.0}
+            ],
+            "processOutputs": [
+              {"name": "Analysis_Report", "type": "StructuredReport", "specification": "DICOM SR"},
+              {"name": "Findings", "type": "FindingsList", "specification": "JSON"}
+            ]
+          }
+        }
+      }
+    },
+    "controlRecipe": {
+      "description": "Runtime instance of master recipe bound to equipment",
+      "content": {
+        "header": {
+          "controlRecipeId": "{{controlRecipeId}}",
+          "masterRecipeRef": "{{masterRecipeId}}",
+          "batchId": "{{batchId}}",
+          "created": "{{timestamp}}"
+        },
+        "equipmentBindings": {
+          "assignedUnits": ["{{unitPath}}"],
+          "assignedModules": ["{{modulePath}}"]
+        },
+        "runtimeParameters": {
+          "actualInputs": [],
+          "actualParameters": [],
+          "expectedOutputs": []
+        },
+        "executionHistory": {
+          "startTime": "{{startTime}}",
+          "currentStep": "{{currentStep}}",
+          "completedSteps": [],
+          "events": []
+        }
+      }
+    }
+  },
+  "executionModel": {
+    "sequencing": {
+      "sequential": {
+        "description": "Execute steps in order",
+        "logic": "Step 2 starts after Step 1 completes"
+      },
+      "parallel": {
+        "description": "Execute steps simultaneously",
+        "logic": "Multiple steps run concurrently"
+      },
+      "conditional": {
+        "description": "Execute based on condition",
+        "logic": "if (condition) then execute stepA else execute stepB"
+      },
+      "loop": {
+        "description": "Repeat until condition",
+        "logic": "while (condition) repeat step"
+      }
+    },
+    "synchronization": {
+      "waitFor": "Pause until external event",
+      "notify": "Signal completion to other procedures",
+      "barrier": "Wait for multiple procedures to reach point"
+    },
+    "exceptionHandling": {
+      "onError": "Action to take on phase/operation error",
+      "onHold": "Behavior when procedure is held",
+      "onAbort": "Cleanup actions on abort",
+      "recovery": "Recovery procedure reference"
+    }
+  },
+  "stateManagement": {
+    "proceduralStates": {
+      "idle": "Ready to execute",
+      "running": "Actively executing",
+      "complete": "Successfully finished",
+      "holding": "Transitioning to held",
+      "held": "Paused, can resume",
+      "stopped": "Stopped, cannot resume without reset",
+      "aborting": "Emergency shutdown in progress",
+      "aborted": "Emergency stopped"
+    },
+    "transitions": {
+      "start": "Idle → Running",
+      "complete": "Running → Complete",
+      "hold": "Running → Holding → Held",
+      "resume": "Held → Running",
+      "stop": "Running → Stopped",
+      "abort": "Any → Aborting → Aborted"
+    }
+  },
+  "parameters": [
+    {
+      "name": "recipeName",
+      "type": "string",
+      "required": true,
+      "description": "Name of the recipe/procedure"
+    },
+    {
+      "name": "recipeType",
+      "type": "string",
+      "required": true,
+      "enum": ["master", "control"],
+      "description": "Type of recipe to instantiate"
+    },
+    {
+      "name": "targetEquipment",
+      "type": "string",
+      "required": false,
+      "description": "Equipment path to bind recipe (for control recipes)"
+    },
+    {
+      "name": "includeStateManagement",
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Generate state machine tags for each procedural level"
+    }
+  ],
+  "tagGeneration": {
+    "recipeStructure": {
+      "path": "Recipes/{{recipeName}}",
+      "sections": {
+        "header": "Header metadata tags",
+        "formula": "Process parameter tags",
+        "procedure": "Procedural element tags",
+        "status": "Execution status tags"
+      }
+    },
+    "executionInstance": {
+      "path": "Execution/{{batchId}}",
+      "tags": {
+        "status": "Status.CurrentState",
+        "progress": "Status.ProgressPercent",
+        "currentStep": "Status.CurrentStep",
+        "startTime": "Timing.StartTime",
+        "elapsedTime": "Timing.Elapsed"
+      }
+    }
+  },
+  "instantiation": {
+    "template": "isa88-procedural-model",
+    "generates": [
+      "Recipe structure",
+      "Procedural hierarchy",
+      "Execution state machines",
+      "Parameter sets",
+      "Event logging structure"
+    ],
+    "integrations": [
+      "ISA-88 Equipment Hierarchy (binds to Units)",
+      "PackML state machines (execution control)",
+      "MES systems (recipe management)",
+      "Batch historians"
+    ]
+  },
+  "validation": {
+    "rules": [
+      {
+        "rule": "validEquipmentBinding",
+        "description": "Control recipe must bind to valid equipment from hierarchy",
+        "severity": "error"
+      },
+      {
+        "rule": "parameterRanges",
+        "description": "All parameters must be within specified min/max ranges",
+        "severity": "error"
+      },
+      {
+        "rule": "requiredInputs",
+        "description": "All required inputs must be provided",
+        "severity": "error"
+      },
+      {
+        "rule": "procedureCompleteness",
+        "description": "Procedure must have at least one unit procedure",
+        "severity": "warning"
+      }
+    ]
+  }
+}

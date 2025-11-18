@@ -1,5 +1,5 @@
 {
-  "UUID": "a85edf02-76a7-46eb-95a5-7627168364db",
+  "UUID": "f4796f9b-3ceb-41dd-a523-3f3136fd46ef",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/equipment/process-cells/controls/",
   "Directory_Name": "Controls",
@@ -10,78 +10,40 @@
   "Parent_Path": "/os/equipment/process-cells/",
   "Child_Directories": [
     {
-      "path": "/os/equipment/process-cells/controls/controls/",
-      "title": "Controls",
-      "description": "controls subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 2
-    },
-    {
       "path": "/os/equipment/process-cells/controls/hmi/",
       "title": "Hmi",
       "description": "hmi subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 2
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/os/equipment/process-cells/controls/plc/",
       "title": "Plc",
       "description": "plc subsystem",
-      "icon": "\u2699\ufe0f",
-      "page_count": 2
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/os/equipment/process-cells/controls/scada/",
       "title": "Scada",
       "description": "scada subsystem",
-      "icon": "\ud83d\udcca",
-      "page_count": 2
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/os/equipment/process-cells/controls/tags/",
       "title": "Tags",
       "description": "tags subsystem",
-      "icon": "\ud83c\udff7\ufe0f",
-      "page_count": 2
+      "icon": "\ud83d\udcc1"
     }
   ],
   "Sibling_Directories": [],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/equipment/",
-      "title": "Equipment",
-      "icon": "\ud83c\udfed"
-    },
-    {
-      "path": "/os/equipment/process-cells/",
-      "title": "Process Cells",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/equipment/process-cells/controls/",
-      "title": "Controls",
-      "icon": "\ud83c\udf9b\ufe0f"
-    }
-  ],
   "README_Path": "README.md",
   "Controls_Path": null,
   "Status_Path": null,
-  "has_plc": true,
-  "has_hmi": true,
-  "has_scada": true,
-  "plc_path": "plc/",
-  "hmi_path": "hmi/",
-  "scada_path": "scada/",
+  "has_plc": false,
+  "has_hmi": false,
+  "has_scada": false,
+  "plc_path": null,
+  "hmi_path": null,
+  "scada_path": null,
   "Features": [
     {
       "title": "SCADA System",
@@ -126,15 +88,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 1003
     }
   ]
 }

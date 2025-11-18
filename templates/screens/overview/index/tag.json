@@ -1,0 +1,57 @@
+{
+  "UUID": "df3bed58-d57d-473d-b51b-2579b25553a5",
+  "ISA_Level": "L4_Business",
+  "Directory_Path": "/templates/screens/overview/",
+  "Directory_Name": "Overview",
+  "Title": "Overview",
+  "Description": "ISA-95 L4_Business - overview subsystem",
+  "Icon": "\ud83d\udcc1",
+  "Color_Scheme": "green",
+  "Parent_Path": "/templates/screens/",
+  "Child_Directories": [],
+  "Sibling_Directories": [],
+  "README_Path": null,
+  "Controls_Path": null,
+  "Status_Path": null,
+  "has_plc": false,
+  "has_hmi": false,
+  "has_scada": false,
+  "plc_path": null,
+  "hmi_path": null,
+  "scada_path": null,
+  "Features": [
+    {
+      "title": "Core Functionality",
+      "description": "Primary system features",
+      "icon": "\u2699\ufe0f"
+    },
+    {
+      "title": "Data Management",
+      "description": "Structured data handling",
+      "icon": "\ud83d\udcca"
+    },
+    {
+      "title": "Monitoring",
+      "description": "Real-time monitoring",
+      "icon": "\ud83d\udc41\ufe0f"
+    }
+  ],
+  "Quick_Actions": [
+    {
+      "label": "View Status",
+      "path": "status.md",
+      "type": "primary"
+    },
+    {
+      "label": "Controls",
+      "path": "controls.md",
+      "type": "secondary"
+    },
+    {
+      "label": "Documentation",
+      "path": "README.md",
+      "type": "secondary"
+    }
+  ],
+  "Related_Files": []
+}

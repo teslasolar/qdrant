@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Vector Search</title>
+<link rel="stylesheet" href="../styles/isa101-theme.css">
+<link rel="stylesheet" href="../styles/widgets.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>Medical Image Search</h1>
+
+  <div class="card">
+    <input type="file" id="upload" accept="image/*">
+    <button id="search-btn" class="btn btn-primary">Find Similar</button>
+  </div>
+
+  <div class="card">
+    <div class="widget-title">Filter by Modality</div>
+    <select id="modality" class="btn">
+      <option value="">All</option>
+      <option>CT</option>
+      <option>MRI</option>
+      <option>X-Ray</option>
+    </select>
+  </div>
+
+  <div id="results" class="metric-grid"></div>
+</div>
+
+<script type="module">
+import VectorSearch from '../ai/vector-search.js';
+import MedicalClassification from '../ai/classification.js';
+
+const vectorSearch = new VectorSearch();
+const classifier = new MedicalClassification();
+const searchBtn = document.getElementById('search-btn');
+
+searchBtn.addEventListener('click', async () => {
+  const embedding = await classifier.biomedclipEmbed(null);
+  const results = await vectorSearch.searchSimilar(embedding.embedding, 10);
+  console.log('Search results:', results);
+});
+</script>
+
+</body>
+</html>

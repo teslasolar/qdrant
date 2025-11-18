@@ -1,5 +1,5 @@
 {
-  "UUID": "4059f1a1-a349-4602-b435-7913b40c5385",
+  "UUID": "4599a1b4-46ea-48f6-a999-945bb75e64c4",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/controls/tag-providers/",
   "Directory_Name": "Tag Providers",
@@ -13,42 +13,19 @@
       "path": "/os/controls/tag-providers/controls/",
       "title": "Controls",
       "description": "controls subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 2
+      "icon": "\ud83c\udf9b\ufe0f"
     }
   ],
   "Sibling_Directories": [],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/controls/",
-      "title": "Controls",
-      "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/controls/tag-providers/",
-      "title": "Tag Providers",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
   "has_plc": true,
   "has_hmi": true,
   "has_scada": true,
-  "plc_path": "plc.html",
-  "hmi_path": "hmi.html",
-  "scada_path": "scada.html",
+  "plc_path": "/os/controls/tag-providers/plc.html",
+  "hmi_path": "/os/controls/tag-providers/hmi.html",
+  "scada_path": "/os/controls/tag-providers/scada.html",
   "Features": [
     {
       "title": "Core Functionality",
@@ -118,64 +95,6 @@
       "path": "scada.html",
       "name": "SCADA",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "example-usage.html",
-      "name": "Example Usage",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 4315
-    },
-    {
-      "path": "hmi.html",
-      "name": "Hmi",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3929
-    },
-    {
-      "path": "plc.html",
-      "name": "Plc",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3715
-    },
-    {
-      "path": "scada.html",
-      "name": "Scada",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 6065
-    },
-    {
-      "path": "tag-browser.html",
-      "name": "Tag Browser",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 8116
-    },
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4121
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4676
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3646
     }
   ]
 }

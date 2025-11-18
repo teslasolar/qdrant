@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HMI Screen Generator</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Courier New', monospace;
+    background: #0a0a0a;
+    color: #00ff88;
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    color: #00ff88;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #00ff88;
+  }
+
+  .section {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border: 2px solid #00ff88;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .section h2 {
+    color: #00ff88;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    background: #00ff88;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+
+  .btn:hover { background: #00cc66; }
+  .btn.secondary { background: #333; color: #00ff88; }
+
+  .screen-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+  }
+
+  .screen-card {
+    background: #0a0a0a;
+    border: 2px solid #00ff88;
+    border-radius: 8px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .screen-card:hover {
+    border-color: #00ccff;
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .screen-card.selected {
+    border-color: #00ff88;
+    background: rgba(0, 255, 136, 0.1);
+  }
+
+  .screen-name {
+    color: #00ff88;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .screen-desc {
+    color: #888;
+    font-size: 0.9em;
+    margin-bottom: 8px;
+  }
+
+  .screen-tags {
+    color: #00ccff;
+    font-size: 0.85em;
+  }
+
+  .output {
+    background: #000;
+    border: 2px solid #00ff88;
+    border-radius: 8px;
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    font-size: 0.9em;
+    margin-top: 15px;
+  }
+
+  .log-success { color: #00ff88; }
+  .log-error { color: #ff0044; }
+  .log-info { color: #00ccff; }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    background: #0a0a0a;
+    color: #00ff88;
+    border: 2px solid #00ff88;
+    border-radius: 4px;
+    font-family: inherit;
+    margin-bottom: 10px;
+  }
+
+  select {
+    padding: 10px;
+    background: #0a0a0a;
+    color: #00ff88;
+    border: 2px solid #00ff88;
+    border-radius: 4px;
+    font-family: inherit;
+    margin-right: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🛠️ HMI Screen Generator</h1>
+
+  <!-- Quick Actions -->
+  <div class="section">
+    <h2>Quick Actions</h2>
+    <button class="btn" onclick="generateAll()">Generate All Screens</button>
+    <button class="btn secondary" onclick="generateSelected()">Generate Selected</button>
+    <button class="btn secondary" onclick="previewSelected()">Preview Selected</button>
+    <button class="btn secondary" onclick="clearOutput()">Clear Output</button>
+  </div>
+
+  <!-- Filter by Tag -->
+  <div class="section">
+    <h2>Filter Screens</h2>
+    <input type="text" id="tag-filter" placeholder="Filter by tag (e.g., overview, alarm, detail)">
+    <select id="category-filter">
+      <option value="">All Categories</option>
+      <option value="overview">Overview</option>
+      <option value="detail">Detail</option>
+      <option value="alarm">Alarm</option>
+      <option value="trend">Trend</option>
+      <option value="process">Process</option>
+    </select>
+    <button class="btn secondary" onclick="applyFilters()">Apply Filters</button>
+  </div>
+
+  <!-- Available Screens -->
+  <div class="section">
+    <h2>Available Screens</h2>
+    <div id="screen-list" class="screen-list">
+      <p style="color: #888;">Loading screens...</p>
+    </div>
+  </div>
+
+  <!-- Generation Output -->
+  <div class="section">
+    <h2>Generation Output</h2>
+    <div id="output" class="output">
+      <p class="log-info">Ready to generate screens...</p>
+    </div>
+  </div>
+</div>
+
+<script src="template-loader.js"></script>
+<script>
+let allScreens = [];
+let selectedScreens = new Set();
+
+// Load screens on page load
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadScreens();
+});
+
+// Load available screens
+async function loadScreens() {
+  try {
+    await window.templateLoader.loadIndexes();
+    allScreens = window.templateLoader.indexes.screens.screens;
+    renderScreenList(allScreens);
+    log('Loaded ' + allScreens.length + ' screens', 'success');
+  } catch (error) {
+    log('Error loading screens: ' + error.message, 'error');
+  }
+}
+
+// Render screen list
+function renderScreenList(screens) {
+  const container = document.getElementById('screen-list');
+
+  if (screens.length === 0) {
+    container.innerHTML = '<p style="color: #888;">No screens match the filter</p>';
+    return;
+  }
+
+  let html = '';
+  screens.forEach(screen => {
+    const isSelected = selectedScreens.has(screen.uuid);
+    html += `
+      <div class="screen-card ${isSelected ? 'selected' : ''}"
+           onclick="toggleScreen('${screen.uuid}')">
+        <div class="screen-name">${screen.name}</div>
+        <div class="screen-desc">${screen.description}</div>
+        <div class="screen-tags">
+          ${screen.category} | ${screen.tags.join(', ')}
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+// Toggle screen selection
+function toggleScreen(uuid) {
+  if (selectedScreens.has(uuid)) {
+    selectedScreens.delete(uuid);
+  } else {
+    selectedScreens.add(uuid);
+  }
+  renderScreenList(allScreens);
+}
+
+// Apply filters
+function applyFilters() {
+  const tagFilter = document.getElementById('tag-filter').value.toLowerCase();
+  const categoryFilter = document.getElementById('category-filter').value;
+
+  let filtered = allScreens;
+
+  if (tagFilter) {
+    filtered = filtered.filter(s =>
+      s.tags.some(t => t.toLowerCase().includes(tagFilter)) ||
+      s.name.toLowerCase().includes(tagFilter) ||
+      s.description.toLowerCase().includes(tagFilter)
+    );
+  }
+
+  if (categoryFilter) {
+    filtered = filtered.filter(s => s.category === categoryFilter);
+  }
+
+  renderScreenList(filtered);
+  log(`Filtered to ${filtered.length} screens`, 'info');
+}
+
+// Generate all screens
+async function generateAll() {
+  log('Generating all screens...', 'info');
+  selectedScreens = new Set(allScreens.map(s => s.uuid));
+  renderScreenList(allScreens);
+  await generateSelected();
+}
+
+// Generate selected screens
+async function generateSelected() {
+  if (selectedScreens.size === 0) {
+    log('No screens selected', 'error');
+    return;
+  }
+
+  log(`Generating ${selectedScreens.size} screens...`, 'info');
+
+  for (const uuid of selectedScreens) {
+    try {
+      const screen = allScreens.find(s => s.uuid === uuid);
+      const screenData = await window.templateLoader.loadScreenByUUID(uuid);
+
+      // In browser environment, we'll create a blob and download
+      const html = await generateHTML(screenData, screen);
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${screen.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}.html`;
+      a.click();
+
+      URL.revokeObjectURL(url);
+
+      log(`✓ Generated: ${screen.name}`, 'success');
+    } catch (error) {
+      log(`✗ Failed to generate ${uuid}: ${error.message}`, 'error');
+    }
+  }
+
+  log('Generation complete!', 'success');
+}
+
+// Preview selected screen
+async function previewSelected() {
+  if (selectedScreens.size === 0) {
+    log('No screens selected', 'error');
+    return;
+  }
+
+  const uuid = Array.from(selectedScreens)[0];
+  const screen = allScreens.find(s => s.uuid === uuid);
+
+  try {
+    log(`Previewing: ${screen.name}`, 'info');
+    window.open(`example-hmi.html?uuid=${uuid}`, '_blank');
+  } catch (error) {
+    log(`Preview failed: ${error.message}`, 'error');
+  }
+}
+
+// Generate HTML from screen data
+async function generateHTML(screenData, screenMeta) {
+  const { metadata, layout, components } = screenData;
+
+  // Build component HTML
+  let componentsHTML = '';
+  let componentStyles = '';
+
+  for (const comp of components) {
+    try {
+      const componentTemplate = await window.templateLoader.loadComponentByUUID(comp.uuid);
+
+      // Replace config placeholders
+      let html = componentTemplate.template.html;
+      for (const [key, value] of Object.entries(comp.config)) {
+        html = html.replace(new RegExp(`{{${key}}}`, 'g'), value);
+      }
+
+      componentsHTML += `
+<div class="component" style="grid-column: ${comp.position.x + 1} / span ${comp.position.width}; grid-row: ${comp.position.y + 1} / span ${comp.position.height};">
+  ${html}
+</div>
+`;
+
+      if (componentTemplate.template.css) {
+        componentStyles += componentTemplate.template.css + '\n';
+      }
+    } catch (error) {
+      console.error('Error loading component:', comp.uuid, error);
+    }
+  }
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${metadata.name}</title>
+<meta name="description" content="${metadata.description}">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Courier New', monospace;
+  background: ${layout.theme === 'dark' ? '#0a0a0a' : '#ffffff'};
+  color: ${layout.theme === 'dark' ? '#00ff88' : '#000000'};
+  height: 100vh;
+  overflow: hidden;
+}
+
+#screen-container {
+  display: grid;
+  grid-template-columns: repeat(${layout.grid.columns}, 1fr);
+  grid-template-rows: repeat(${layout.grid.rows}, 1fr);
+  gap: ${layout.grid.gap}px;
+  height: calc(100vh - 60px);
+  padding: 20px;
+  margin-top: 60px;
+}
+
+.component {
+  background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+  border: 2px solid #00ff88;
+  border-radius: 12px;
+  padding: 15px;
+}
+
+${componentStyles}
+</style>
+</head>
+<body>
+
+<div style="position: fixed; top: 0; left: 0; right: 0; height: 60px; background: #1a1a2e; border-bottom: 3px solid #00ff88; display: flex; align-items: center; padding: 0 20px; z-index: 1000;">
+  <h1 style="color: #00ff88; font-size: 1.5em;">${metadata.name}</h1>
+  <div style="margin-left: auto; color: #00ccff;" id="current-time">00:00:00</div>
+</div>
+
+<div id="screen-container">
+  ${componentsHTML}
+</div>
+
+<script>
+function updateTime() {
+  document.getElementById('current-time').textContent = new Date().toLocaleTimeString();
+}
+setInterval(updateTime, 1000);
+updateTime();
+
+console.log('Screen: ${metadata.name}');
+console.log('UUID: ${screenData.uuid}');
+</script>
+
+</body>
+</html>`;
+}
+
+// Log message
+function log(message, type = 'info') {
+  const output = document.getElementById('output');
+  const line = document.createElement('div');
+  line.className = `log-${type}`;
+  line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+  output.appendChild(line);
+  output.scrollTop = output.scrollHeight;
+}
+
+// Clear output
+function clearOutput() {
+  document.getElementById('output').innerHTML = '<p class="log-info">Output cleared</p>';
+}
+</script>
+
+</body>
+</html>

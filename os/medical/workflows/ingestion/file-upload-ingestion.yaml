@@ -1,0 +1,283 @@
+# File Upload Ingestion Workflow
+# Handles manual DICOM file uploads via web interface or file drop
+
+workflow:
+  id: file-upload-ingestion-001
+  name: File Upload Ingestion
+  version: "1.0.0"
+  isa_level: L3_MES
+  category: ingestion
+  priority: medium
+
+metadata:
+  description: Process DICOM files uploaded through web interface or watched folders
+  author: Medical Imaging Team
+  created: 2025-11-17
+  updated: 2025-11-17
+  tags:
+    - upload
+    - ingestion
+    - dicom
+    - file-drop
+    - manual
+
+# Source Configuration
+source:
+  type: FILE_SYSTEM
+  watch_folders:
+    - path: /data/medical/upload/incoming/
+      recursive: true
+      file_patterns:
+        - "*.dcm"
+        - "*.DCM"
+        - "*.dicom"
+      exclude_patterns:
+        - "*.tmp"
+        - "*.part"
+    - path: /data/medical/upload/dropzone/
+      recursive: false
+      file_patterns: ["*"]
+
+  web_upload:
+    enabled: true
+    endpoint: /api/medical/upload
+    max_file_size: 2147483648  # 2GB
+    allowed_extensions: [".dcm", ".DCM", ".dicom"]
+    max_files_per_batch: 1000
+    temp_path: /data/medical/upload/temp/
+
+  monitoring:
+    poll_interval: 5  # seconds
+    process_on_complete: true
+    stable_time: 3  # seconds before considering file complete
+
+# Workflow Steps
+steps:
+  - id: detect-upload
+    name: Detect New Files
+    type: file_detection
+    action: scan_upload_folders
+    config:
+      scan_mode: incremental
+      track_processed: true
+      state_file: /var/lib/medical/upload-state.json
+    on_success: validate-format
+    on_failure: log-error
+
+  - id: validate-format
+    name: Validate DICOM Format
+    type: validation
+    action: validate_dicom_file
+    config:
+      check_magic_bytes: true
+      check_header: true
+      check_transfer_syntax: true
+      max_validation_time: 10  # seconds
+      reject_non_dicom: true
+    on_success: extract-metadata
+    on_failure: quarantine
+
+  - id: extract-metadata
+    name: Extract DICOM Metadata
+    type: extraction
+    action: extract_dicom_tags
+    config:
+      tags_to_extract:
+        - SOPInstanceUID
+        - StudyInstanceUID
+        - SeriesInstanceUID
+        - PatientID
+        - PatientName
+        - StudyDate
+        - Modality
+        - StudyDescription
+        - SeriesDescription
+        - Manufacturer
+        - ManufacturerModelName
+        - PhotometricInterpretation
+        - Rows
+        - Columns
+        - BitsAllocated
+      parse_private_tags: false
+    on_success: organize-by-study
+    on_failure: quarantine
+
+  - id: organize-by-study
+    name: Group Files by Study
+    type: organization
+    action: group_by_study_uid
+    config:
+      timeout: 60  # seconds to wait for complete study
+      min_instances: 1
+      create_study_folder: true
+      folder_pattern: "{PatientID}_{StudyDate}_{StudyInstanceUID}"
+    on_success: check-duplicate
+    on_failure: log-error
+
+  - id: check-duplicate
+    name: Check for Duplicates
+    type: deduplication
+    action: check_existing_instances
+    config:
+      check_by:
+        - SOPInstanceUID
+        - StudyInstanceUID
+      database: qdrant
+      collection: medical_instances
+      action_on_duplicate: skip
+    on_success: validate-study-completeness
+    on_duplicate: skip-instance
+    on_failure: log-error
+
+  - id: validate-study-completeness
+    name: Validate Study Completeness
+    type: validation
+    action: validate_study_complete
+    config:
+      check_series_integrity: true
+      allow_incomplete: true
+      wait_time: 30  # seconds
+      required_fields:
+        - StudyInstanceUID
+        - PatientID
+        - Modality
+    on_success: calculate-checksum
+    on_failure: flag-incomplete
+
+  - id: calculate-checksum
+    name: Calculate File Checksums
+    type: integrity
+    action: calculate_checksums
+    config:
+      algorithm: SHA256
+      verify_on_move: true
+      store_checksums: true
+    on_success: move-to-staging
+    on_failure: log-error
+
+  - id: move-to-staging
+    name: Move to Staging Area
+    type: file_operation
+    action: move_files
+    config:
+      destination: /data/medical/staging/
+      organize_by: study
+      preserve_structure: false
+      delete_source: true
+      verify_after_move: true
+    on_success: register-study
+    on_failure: quarantine
+
+  - id: register-study
+    name: Register Study in MES
+    type: registration
+    action: register_study
+    config:
+      database: qdrant
+      collection: medical_studies
+      generate_uuid: true
+      initial_status: UPLOADED
+      timestamp: true
+      user_info: true
+      source_type: FILE_UPLOAD
+    on_success: route-study
+    on_failure: log-error
+
+  - id: route-study
+    name: Route to Processing
+    type: routing
+    action: route_to_workflow
+    config:
+      next_workflow: processing-pipeline
+      routing_rules: /workflows/routing/study-routing-rules.yaml
+      notify_mqtt: true
+      mqtt_topic: chazon/os/medical/workflow/study-uploaded
+    on_success: complete
+    on_failure: log-error
+
+# Error Handling
+error_handling:
+  quarantine:
+    enabled: true
+    path: /data/medical/quarantine/upload/
+    retention_days: 30
+    categorize_by_error: true
+    notify: true
+
+  skip-instance:
+    action: log_and_continue
+    log_level: INFO
+    message: "Duplicate instance detected, skipping"
+
+  flag-incomplete:
+    action: flag_and_continue
+    status: INCOMPLETE
+    notify: true
+    allow_processing: true
+
+# File Size Management
+file_management:
+  max_upload_size: 2147483648  # 2GB per file
+  max_study_size: 10737418240  # 10GB per study
+  compression:
+    enabled: true
+    algorithm: gzip
+    level: 6
+  cleanup:
+    temp_files_after: 3600  # seconds
+    failed_uploads_after: 86400  # seconds
+
+# Monitoring and Metrics
+monitoring:
+  tags:
+    - UPLOAD_FILES_PROCESSED
+    - UPLOAD_STUDIES_REGISTERED
+    - UPLOAD_ERRORS
+    - UPLOAD_AVG_PROCESSING_TIME
+    - UPLOAD_QUEUE_SIZE
+
+  mqtt:
+    publish_events: true
+    topics:
+      - chazon/os/medical/upload/detected
+      - chazon/os/medical/upload/processed
+      - chazon/os/medical/upload/error
+
+  modbus:
+    holding_registers:
+      - address: 40110
+        name: UPLOAD_FILES_PROCESSED
+      - address: 40111
+        name: UPLOAD_QUEUE_SIZE
+      - address: 40112
+        name: UPLOAD_AVG_PROCESSING_TIME
+
+# Security
+security:
+  authentication:
+    required: true
+    method: oauth2
+  authorization:
+    role_required: medical_uploader
+  encryption:
+    at_rest: true
+    in_transit: true
+  audit_logging:
+    enabled: true
+    log_path: /var/log/medical/audit/upload.log
+
+# Performance
+performance:
+  max_concurrent_uploads: 10
+  max_queue_size: 500
+  batch_processing: true
+  batch_size: 50
+  thread_pool_size: 5
+
+# Logging
+logging:
+  level: INFO
+  path: /var/log/medical/workflows/file-upload-ingestion.log
+  rotation: daily
+  retention_days: 90
+  include_file_paths: true

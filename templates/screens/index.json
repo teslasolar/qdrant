@@ -1,0 +1,42 @@
+{
+  "version": "1.0.0",
+  "description": "HMI Screen Templates Index",
+  "screens": [
+    {
+      "uuid": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "System Overview",
+      "description": "Master system overview screen showing all major subsystems",
+      "category": "overview",
+      "path": "screens/overview/system-overview.json",
+      "tags": ["overview", "master", "dashboard"],
+      "thumbnail": "screens/overview/system-overview.png"
+    },
+    {
+      "uuid": "660e8400-e29b-41d4-a716-446655440001",
+      "name": "Equipment Detail",
+      "description": "Detailed equipment control and monitoring screen",
+      "category": "detail",
+      "path": "screens/detail/equipment-detail.json",
+      "tags": ["detail", "equipment", "control"],
+      "thumbnail": "screens/detail/equipment-detail.png"
+    },
+    {
+      "uuid": "770e8400-e29b-41d4-a716-446655440002",
+      "name": "Alarm Management",
+      "description": "Alarm viewing, acknowledgment, and management screen",
+      "category": "alarm",
+      "path": "screens/alarm/alarm-management.json",
+      "tags": ["alarm", "management", "notification"],
+      "thumbnail": "screens/alarm/alarm-management.png"
+    },
+    {
+      "uuid": "880e8400-e29b-41d4-a716-446655440003",
+      "name": "Historical Trend",
+      "description": "Multi-tag historical trending and analysis screen",
+      "category": "trend",
+      "path": "screens/trend/historical-trend.json",
+      "tags": ["trend", "historical", "analysis"],
+      "thumbnail": "screens/trend/historical-trend.png"
+    }
+  ]
+}

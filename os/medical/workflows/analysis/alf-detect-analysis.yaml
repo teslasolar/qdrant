@@ -1,0 +1,505 @@
+# AlF-DETECT AI Analysis Workflow
+# AI screening for Alzheimer's and Autism biomarkers using AlF-DETECT
+
+workflow:
+  id: alf-detect-analysis-001
+  name: AlF-DETECT AI Screening
+  version: "1.0.0"
+  isa_level: L3_MES
+  category: analysis
+  priority: high
+
+metadata:
+  description: AI-powered detection of Alzheimer's and Autism biomarkers in medical images
+  author: Medical Imaging Team
+  created: 2025-11-17
+  updated: 2025-11-17
+  model_info:
+    name: AlF-DETECT
+    version: "2.1.0"
+    framework: pytorch
+    input_modalities: [MR, CT, PET]
+  tags:
+    - ai
+    - alzheimers
+    - autism
+    - screening
+    - alf-detect
+
+# Input Configuration
+input:
+  source: study
+  required_status: [ENHANCED, NORMALIZED]
+  supported_modalities:
+    - MR  # Primary modality
+    - CT  # Secondary
+    - PET  # Secondary
+  required_sequences:
+    MR:
+      - T1
+      - T2
+      - FLAIR
+    CT:
+      - Brain_CT
+    PET:
+      - FDG_PET
+
+# Model Configuration
+model:
+  name: AlF-DETECT
+  path: /models/alf-detect/v2.1.0/
+  config_file: model_config.yaml
+  weights_file: alf_detect_weights.pth
+
+  # GPU Configuration
+  device:
+    type: cuda
+    gpu_ids: [0, 1]
+    mixed_precision: true
+    cudnn_benchmark: true
+
+  # Inference Settings
+  inference:
+    batch_size: 4
+    num_workers: 4
+    prefetch_factor: 2
+    pin_memory: true
+
+  # Model Requirements
+  input_requirements:
+    image_size: [256, 256, 256]
+    voxel_spacing: [1.0, 1.0, 1.0]
+    normalization: z_score
+    orientation: RAS
+
+# Workflow Steps
+steps:
+  - id: validate-input
+    name: Validate Study for AI Analysis
+    type: validation
+    action: validate_ai_ready
+    config:
+      check_modality: true
+      check_sequences: true
+      check_image_quality: true
+      min_quality_score: 0.6
+      required_brain_coverage: 0.95
+    on_success: preprocess-for-ai
+    on_failure: flag-insufficient-quality
+
+  - id: preprocess-for-ai
+    name: Preprocess for AI Model
+    type: preprocessing
+    action: preprocess_for_alf_detect
+    config:
+      # Registration
+      registration:
+        enabled: true
+        template: MNI152
+        interpolation: linear
+
+      # Skull stripping
+      skull_strip:
+        enabled: true
+        method: bet  # Brain Extraction Tool
+        fractional_intensity: 0.5
+
+      # Bias field correction
+      bias_correction:
+        enabled: true
+        method: n4
+
+      # Resampling
+      resample:
+        enabled: true
+        target_spacing: [1.0, 1.0, 1.0]
+        interpolation: linear
+
+      # Intensity normalization
+      normalization:
+        method: z_score
+        clip_outliers: true
+        percentile_range: [1, 99]
+
+      # Cropping
+      crop_to_brain: true
+      padding: 10
+
+    on_success: load-model
+    on_failure: log-error
+
+  - id: load-model
+    name: Load AlF-DETECT Model
+    type: model_loading
+    action: load_ai_model
+    config:
+      model_path: /models/alf-detect/v2.1.0/
+      device: cuda
+      load_to_gpu: true
+      compile_model: true
+      optimization_level: O2
+      cache_model: true
+    on_success: run-alzheimers-detection
+    on_failure: fallback-cpu
+
+  - id: run-alzheimers-detection
+    name: Run Alzheimer's Detection
+    type: ai_inference
+    action: detect_alzheimers
+    config:
+      model_module: alzheimers_detector
+      detection_tasks:
+        - amyloid_plaques
+        - neurofibrillary_tangles
+        - hippocampal_atrophy
+        - cortical_thinning
+        - white_matter_lesions
+
+      # Output configuration
+      generate_heatmaps: true
+      generate_segmentations: true
+      confidence_threshold: 0.7
+      nms_threshold: 0.4
+
+      # Analysis regions
+      roi_analysis:
+        - hippocampus
+        - entorhinal_cortex
+        - amygdala
+        - temporal_lobe
+        - parietal_lobe
+        - frontal_lobe
+
+    on_success: run-autism-detection
+    on_failure: log-error
+
+  - id: run-autism-detection
+    name: Run Autism Spectrum Detection
+    type: ai_inference
+    action: detect_autism
+    config:
+      model_module: autism_detector
+      detection_tasks:
+        - structural_abnormalities
+        - connectivity_patterns
+        - volumetric_differences
+        - cortical_thickness_variations
+
+      # Output configuration
+      generate_connectivity_maps: true
+      generate_volumetric_analysis: true
+      confidence_threshold: 0.7
+
+      # Analysis regions
+      roi_analysis:
+        - amygdala
+        - cerebellum
+        - corpus_callosum
+        - frontal_lobe
+        - temporal_lobe
+        - basal_ganglia
+
+    on_success: calculate-risk-scores
+    on_failure: log-error
+
+  - id: calculate-risk-scores
+    name: Calculate Risk Scores
+    type: analysis
+    action: calculate_risk_scores
+    config:
+      algorithms:
+        alzheimers:
+          method: ensemble
+          models: [cnn, transformer, hybrid]
+          weights: [0.4, 0.3, 0.3]
+          staging: [preclinical, mci, mild, moderate, severe]
+
+        autism:
+          method: ensemble
+          models: [cnn, graph_neural_net]
+          weights: [0.6, 0.4]
+          severity: [low, medium, high]
+
+      confidence_intervals: true
+      statistical_significance: true
+
+    on_success: generate-biomarkers
+    on_failure: log-error
+
+  - id: generate-biomarkers
+    name: Extract Biomarker Measurements
+    type: biomarker_extraction
+    action: extract_biomarkers
+    config:
+      alzheimers_biomarkers:
+        - hippocampal_volume
+        - entorhinal_cortex_thickness
+        - whole_brain_atrophy_rate
+        - csf_space_enlargement
+        - white_matter_hyperintensity_volume
+
+      autism_biomarkers:
+        - amygdala_volume
+        - cerebellum_volume
+        - corpus_callosum_thickness
+        - frontal_lobe_connectivity
+        - brain_asymmetry_index
+
+      quantitative_measurements: true
+      percentile_rankings: true
+      age_normalized: true
+
+    on_success: generate-visualization
+    on_failure: log-error
+
+  - id: generate-visualization
+    name: Generate AI Visualizations
+    type: visualization
+    action: generate_ai_visualizations
+    config:
+      outputs:
+        - detection_overlays
+        - heatmaps
+        - segmentation_masks
+        - roi_highlights
+        - comparative_views
+        - longitudinal_trends
+
+      formats:
+        - png
+        - jpeg
+        - dicom_sc  # Secondary Capture
+
+      resolution: high
+      color_maps:
+        alzheimers: hot
+        autism: viridis
+
+    on_success: generate-report
+    on_failure: log-error
+
+  - id: generate-report
+    name: Generate AI Analysis Report
+    type: reporting
+    action: generate_ai_report
+    config:
+      report_type: comprehensive
+      include_sections:
+        - executive_summary
+        - detection_results
+        - risk_scores
+        - biomarker_measurements
+        - roi_analysis
+        - visualizations
+        - recommendations
+        - methodology
+        - disclaimers
+
+      formats:
+        - pdf
+        - html
+        - json
+
+      language: english
+      technical_level: clinical
+
+    on_success: validate-results
+    on_failure: log-error
+
+  - id: validate-results
+    name: Validate AI Results
+    type: validation
+    action: validate_ai_results
+    config:
+      quality_checks:
+        - confidence_thresholds_met
+        - no_processing_artifacts
+        - results_consistency
+        - biomarker_ranges_valid
+
+      peer_review:
+        enabled: false
+        require_radiologist: false
+
+      flag_uncertain_cases:
+        enabled: true
+        uncertainty_threshold: 0.3
+
+    on_success: save-results
+    on_failure: flag-for-review
+
+  - id: save-results
+    name: Save AI Analysis Results
+    type: storage
+    action: save_ai_results
+    config:
+      destination: /data/medical/ai-results/alf-detect/
+      organize_by: study_uid
+      save_formats:
+        - json  # Structured results
+        - dicom_sr  # Structured Report
+        - pdf  # Human readable report
+
+      database_storage:
+        enabled: true
+        database: qdrant
+        collection: alf_detect_results
+        include_embeddings: true
+
+    on_success: update-tracking
+    on_failure: log-error
+
+  - id: update-tracking
+    name: Update Study Tracking
+    type: tracking
+    action: update_study_status
+    config:
+      database: qdrant
+      collection: medical_studies
+      status: AI_ANALYZED
+      add_ai_results: true
+      update_tags:
+        - ALF_DETECT_COMPLETED
+        - AI_ALZHEIMERS_RISK
+        - AI_AUTISM_RISK
+      timestamp: true
+
+    on_success: route-by-findings
+    on_failure: log-error
+
+  - id: route-by-findings
+    name: Route Based on Findings
+    type: routing
+    action: route_by_ai_findings
+    config:
+      routing_rules:
+        high_risk:
+          alzheimers_risk: ">= 0.7"
+          autism_risk: ">= 0.7"
+          action: flag_for_urgent_review
+
+        medium_risk:
+          alzheimers_risk: ">= 0.4"
+          autism_risk: ">= 0.4"
+          action: schedule_follow_up
+
+        low_risk:
+          alzheimers_risk: "< 0.4"
+          autism_risk: "< 0.4"
+          action: routine_processing
+
+      notifications:
+        high_risk: immediate
+        medium_risk: same_day
+        low_risk: none
+
+    on_success: notify-results
+    on_failure: log-error
+
+  - id: notify-results
+    name: Notify Results Available
+    type: notification
+    action: send_notifications
+    config:
+      channels:
+        - mqtt
+        - email
+        - dashboard
+
+      mqtt_topics:
+        - chazon/os/medical/alf-detect/results-available
+        - chazon/os/medical/alf-detect/high-risk-detected
+
+      include_summary: true
+      include_visualizations: true
+
+    on_success: complete
+    on_failure: log-error
+
+# Error Handling
+error_handling:
+  flag-insufficient-quality:
+    action: skip_ai_analysis
+    status: INSUFFICIENT_QUALITY
+    log_level: WARNING
+    notify: true
+
+  fallback-cpu:
+    action: use_cpu_inference
+    log_level: WARNING
+    notify_admin: true
+
+  flag-for-review:
+    action: flag_for_manual_review
+    status: AI_UNCERTAIN
+    notify: true
+    queue: radiologist_review
+
+# Quality Control
+quality_control:
+  - checkpoint: post-ai-analysis
+    validations:
+      - results_complete
+      - confidence_acceptable
+      - biomarkers_valid
+      - visualizations_generated
+    failure_action: flag-for-review
+    notify_on_failure: true
+
+# Performance Configuration
+performance:
+  max_concurrent_studies: 2
+  gpu_memory_limit: 10GB
+  timeout_per_study: 600  # seconds
+  model_caching: true
+  result_caching: true
+
+# Monitoring and Metrics
+monitoring:
+  tags:
+    - ALF_DETECT_STUDIES_ANALYZED
+    - ALF_DETECT_HIGH_RISK_DETECTED
+    - ALF_DETECT_AVG_INFERENCE_TIME
+    - ALF_DETECT_GPU_UTILIZATION
+    - ALF_DETECT_ALZHEIMERS_DETECTIONS
+    - ALF_DETECT_AUTISM_DETECTIONS
+
+  mqtt:
+    publish_events: true
+    topics:
+      - chazon/os/medical/alf-detect/started
+      - chazon/os/medical/alf-detect/completed
+      - chazon/os/medical/alf-detect/high-risk
+      - chazon/os/medical/alf-detect/error
+
+  modbus:
+    holding_registers:
+      - address: 40300
+        name: ALF_DETECT_STUDIES_ANALYZED
+      - address: 40301
+        name: ALF_DETECT_AVG_INFERENCE_TIME
+      - address: 40302
+        name: ALF_DETECT_HIGH_RISK_COUNT
+
+# Compliance and Ethics
+compliance:
+  medical_device:
+    class: II
+    fda_cleared: false
+    ce_marked: false
+    for_research_only: true
+
+  disclaimers:
+    - "AI analysis is for screening purposes only"
+    - "Not a substitute for professional medical diagnosis"
+    - "Results should be interpreted by qualified healthcare professionals"
+    - "Sensitivity and specificity metrics available in documentation"
+
+# Logging
+logging:
+  level: INFO
+  path: /var/log/medical/workflows/alf-detect-analysis.log
+  rotation: daily
+  retention_days: 2555  # 7 years
+  include_inference_details: true
+  log_predictions: true

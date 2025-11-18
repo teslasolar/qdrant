@@ -1,5 +1,5 @@
 {
-  "UUID": "e127cafa-ef84-40c4-b26b-21eb24808682",
+  "UUID": "97ad9ebb-9ab0-4050-ab31-2a93a0750450",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/language/snt/",
   "Directory_Name": "Snt",
@@ -13,62 +13,25 @@
       "path": "/os/language/snt/controls/",
       "title": "Controls",
       "description": "controls subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 2
+      "icon": "\ud83c\udf9b\ufe0f"
     },
     {
       "path": "/os/language/snt/examples/",
       "title": "Examples",
       "description": "examples subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 9
-    }
-  ],
-  "Sibling_Directories": [
-    {
-      "path": "/os/language/controls/",
-      "title": "Controls",
-      "description": "controls area",
-      "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/language/trinary/",
-      "title": "Trinary",
-      "description": "trinary area",
       "icon": "\ud83d\udcc1"
     }
   ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/language/",
-      "title": "Language",
-      "icon": "\ud83c\udf10"
-    },
-    {
-      "path": "/os/language/snt/",
-      "title": "Snt",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": null,
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
   "has_plc": true,
   "has_hmi": true,
   "has_scada": true,
-  "plc_path": "plc.html",
-  "hmi_path": "hmi.html",
-  "scada_path": "scada.html",
+  "plc_path": "/os/language/snt/plc.html",
+  "hmi_path": "/os/language/snt/hmi.html",
+  "scada_path": "/os/language/snt/scada.html",
   "Features": [
     {
       "title": "Core Functionality",
@@ -133,71 +96,6 @@
       "path": "scada.html",
       "name": "SCADA",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "hmi.html",
-      "name": "Hmi",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3653
-    },
-    {
-      "path": "plc.html",
-      "name": "Plc",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3583
-    },
-    {
-      "path": "scada.html",
-      "name": "Scada",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 5901
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4556
-    },
-    {
-      "path": "emoji-compression.md",
-      "name": "Emoji Compression",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 2995
-    },
-    {
-      "path": "photonic-layer.md",
-      "name": "Photonic Layer",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 2893
-    },
-    {
-      "path": "snt-parser.md",
-      "name": "Snt Parser",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 2999
-    },
-    {
-      "path": "snt-syntax.md",
-      "name": "Snt Syntax",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 2491
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3605
     }
   ]
 }

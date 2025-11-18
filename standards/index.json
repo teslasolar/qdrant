@@ -1,0 +1,215 @@
+{
+  "name": "Standards-as-Tags Framework",
+  "version": "1.0.0",
+  "description": "Executable industrial standards framework - treat standards as instantiable templates",
+  "created": "2025-11-17",
+  "type": "meta-framework",
+  "standards": [
+    {
+      "standardId": "packml-v1.0",
+      "name": "PackML State Machine",
+      "type": "state-machine",
+      "specification": "ISA-TR88.00.02",
+      "path": "packml/packml-state-machine.json",
+      "category": "equipment-control",
+      "description": "Standard state machine for packaging and manufacturing equipment",
+      "keyFeatures": [
+        "18 standard states",
+        "10 standard commands",
+        "State transition logic",
+        "Tag generation"
+      ],
+      "useCase": "Any automated equipment requiring state management"
+    },
+    {
+      "standardId": "isa-88-equipment-v1.0",
+      "name": "ISA-88 Equipment Hierarchy",
+      "type": "hierarchy",
+      "specification": "ANSI/ISA-88.01",
+      "path": "isa-88/equipment-hierarchy.json",
+      "category": "organization",
+      "description": "Physical equipment hierarchy from Enterprise to Control Module",
+      "keyFeatures": [
+        "7-level hierarchy",
+        "Enterprise → Site → Area → Cell → Unit → Module → Control",
+        "Hierarchical tag structure",
+        "Equipment organization"
+      ],
+      "useCase": "Organizing equipment in standardized structure"
+    },
+    {
+      "standardId": "isa-88-procedural-v1.0",
+      "name": "ISA-88 Procedural Model",
+      "type": "procedural-model",
+      "specification": "ANSI/ISA-88.01",
+      "path": "isa-88/procedural-model.json",
+      "category": "batch-control",
+      "description": "Recipe and procedural control hierarchy",
+      "keyFeatures": [
+        "Master and Control recipes",
+        "4-level procedural hierarchy",
+        "Procedure → Unit Procedure → Operation → Phase",
+        "Recipe execution management"
+      ],
+      "useCase": "Batch processes, recipes, multi-step workflows"
+    },
+    {
+      "standardId": "isa-95-functional-v1.0",
+      "name": "ISA-95 Functional Hierarchy (Purdue Model)",
+      "type": "functional-hierarchy",
+      "specification": "ANSI/ISA-95.00.01",
+      "path": "isa-95/functional-hierarchy.json",
+      "category": "system-architecture",
+      "description": "5-level functional hierarchy for enterprise-manufacturing integration",
+      "keyFeatures": [
+        "Level 4 (Business) → Level 0 (Process)",
+        "Communication paths between levels",
+        "Security zones",
+        "Integration points"
+      ],
+      "useCase": "System architecture, ERP/MES/SCADA integration"
+    },
+    {
+      "standardId": "isa-101-hmi-v1.0",
+      "name": "ISA-101 HMI Design Patterns",
+      "type": "design-patterns",
+      "specification": "ANSI/ISA-101.01-2015",
+      "path": "isa-101/hmi-design-patterns.json",
+      "category": "visualization",
+      "description": "High-performance HMI design principles and patterns",
+      "keyFeatures": [
+        "4-level screen hierarchy",
+        "High-performance design principles",
+        "Color schemes and standards",
+        "Component definitions"
+      ],
+      "useCase": "SCADA/HMI screen design"
+    },
+    {
+      "standardId": "mqtt-sparkplug-v1.0",
+      "name": "MQTT Sparkplug B Protocol",
+      "type": "communication-protocol",
+      "specification": "MQTT 3.1.1/5.0 + Sparkplug B v1.0",
+      "path": "protocols/mqtt-sparkplug.json",
+      "category": "communication",
+      "description": "MQTT with Sparkplug B for industrial IoT",
+      "keyFeatures": [
+        "Topic namespace structure",
+        "Birth/Death certificates",
+        "Metric definitions",
+        "State management"
+      ],
+      "useCase": "IIoT, cloud connectivity, edge devices"
+    },
+    {
+      "standardId": "opc-ua-v1.0",
+      "name": "OPC Unified Architecture",
+      "type": "communication-protocol",
+      "specification": "IEC 62541",
+      "path": "protocols/opc-ua.json",
+      "category": "communication",
+      "description": "Platform-independent industrial communication",
+      "keyFeatures": [
+        "Address space organization",
+        "Node definitions",
+        "Security configurations",
+        "Information modeling"
+      ],
+      "useCase": "Interoperability, PLC-SCADA-MES integration"
+    }
+  ],
+  "tools": [
+    {
+      "name": "Standard Instantiation Engine",
+      "path": "engine/standard_instantiation_engine.py",
+      "description": "Core engine for loading and instantiating standards",
+      "language": "Python",
+      "mainClass": "StandardInstantiationEngine"
+    },
+    {
+      "name": "Meta-Standard Language Parser",
+      "path": "meta-standard/msl_parser.py",
+      "description": "DSL for composing standards",
+      "language": "Python",
+      "mainClass": "MSLParser"
+    },
+    {
+      "name": "Template Integration Bridge",
+      "path": "engine/template_integration.py",
+      "description": "Integration with existing template system",
+      "language": "Python",
+      "mainClass": "TemplateIntegrationBridge"
+    }
+  ],
+  "examples": [
+    {
+      "name": "PackML for CT Scanner",
+      "path": "examples/01_packml_ct_scanner.py",
+      "description": "Instantiate PackML state machine for medical imaging equipment",
+      "standards": ["packml-v1.0"]
+    },
+    {
+      "name": "ISA-88 DICOM Recipe",
+      "path": "examples/02_isa88_dicom_recipe.msl",
+      "description": "Create ISA-88 procedural model for DICOM image processing",
+      "standards": ["isa-88-procedural-v1.0", "isa-88-equipment-v1.0"],
+      "language": "MSL"
+    },
+    {
+      "name": "ISA-95 Hierarchy",
+      "path": "examples/03_isa95_hierarchy.py",
+      "description": "Generate complete ISA-95 functional hierarchy",
+      "standards": ["isa-95-functional-v1.0"]
+    },
+    {
+      "name": "Multi-Standard Composition",
+      "path": "examples/04_multi_standard_composition.py",
+      "description": "Compose all standards into complete medical imaging system",
+      "standards": [
+        "isa-88-equipment-v1.0",
+        "packml-v1.0",
+        "isa-95-functional-v1.0",
+        "mqtt-sparkplug-v1.0",
+        "opc-ua-v1.0",
+        "isa-101-hmi-v1.0"
+      ]
+    }
+  ],
+  "documentation": [
+    {
+      "name": "README",
+      "path": "README.md",
+      "description": "Complete framework documentation"
+    },
+    {
+      "name": "Quick Start Guide",
+      "path": "QUICKSTART.md",
+      "description": "5-minute quick start guide"
+    }
+  ],
+  "integrations": {
+    "templateSystem": {
+      "description": "Integration with existing /templates/ system",
+      "adapter": "engine/template_integration.py",
+      "capabilities": [
+        "Convert standards to tag templates",
+        "Generate HMI components",
+        "Export to template format"
+      ]
+    },
+    "existingProject": {
+      "description": "Integration with existing Qdrant project",
+      "touchpoints": [
+        "/templates/ - Tag and component templates",
+        "/index/controls/HMI/ - HMI templates",
+        "/docs/standards/ - Standards documentation"
+      ]
+    }
+  },
+  "metadata": {
+    "author": "Standards-as-Tags Framework",
+    "project": "Qdrant Medical Imaging Virtual Factory",
+    "license": "Project License",
+    "repository": "/home/user/qdrant/standards/"
+  }
+}

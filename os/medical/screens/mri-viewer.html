@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MRI Viewer</title>
+<link rel="stylesheet" href="../styles/isa101-theme.css">
+<link rel="stylesheet" href="../styles/widgets.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>MRI Scan Viewer</h1>
+
+  <div class="card">
+    <canvas id="mri-canvas" width="512" height="512"></canvas>
+  </div>
+
+  <div class="metric-grid">
+    <div class="widget">
+      <div class="widget-title">Sequence</div>
+      <select id="sequence-select" class="btn">
+        <option>T1</option>
+        <option>T2</option>
+        <option>FLAIR</option>
+        <option>DWI</option>
+      </select>
+    </div>
+    <div class="widget">
+      <div class="widget-title">Contrast</div>
+      <div class="widget-value" id="contrast">1.2</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import ImagePreprocessing from '../ai/preprocessing.js';
+
+const preprocessing = new ImagePreprocessing();
+const sequenceSelect = document.getElementById('sequence-select');
+
+sequenceSelect.addEventListener('change', (e) => {
+  console.log('Sequence changed:', e.target.value);
+});
+</script>
+
+</body>
+</html>

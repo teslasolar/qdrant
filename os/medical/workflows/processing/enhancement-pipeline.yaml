@@ -1,0 +1,395 @@
+# DICOM Enhancement Processing Pipeline
+# Applies image enhancement techniques for improved visualization and analysis
+
+workflow:
+  id: enhancement-pipeline-001
+  name: DICOM Image Enhancement
+  version: "1.0.0"
+  isa_level: L3_MES
+  category: processing
+  priority: medium
+
+metadata:
+  description: Enhance DICOM images for improved quality and AI analysis
+  author: Medical Imaging Team
+  created: 2025-11-17
+  updated: 2025-11-17
+  tags:
+    - enhancement
+    - image_processing
+    - quality_improvement
+    - ai_preparation
+
+# Input Configuration
+input:
+  source: study
+  required_status: [NORMALIZED]
+  supported_modalities: [CT, MR, CR, DX, MG, US]
+
+# Enhancement Configuration
+enhancement:
+  # Noise reduction
+  denoising:
+    enabled: true
+    method: adaptive  # gaussian, bilateral, nlm, adaptive
+    strength: medium
+    preserve_edges: true
+
+  # Contrast enhancement
+  contrast:
+    enabled: true
+    method: clahe  # clahe, histogram_eq, adaptive
+    clip_limit: 2.0
+    tile_grid_size: [8, 8]
+
+  # Sharpening
+  sharpening:
+    enabled: true
+    method: unsharp_mask
+    radius: 1.0
+    amount: 0.5
+
+  # Artifact removal
+  artifacts:
+    remove_beam_hardening: true  # CT
+    remove_motion_artifacts: false
+    remove_metal_artifacts: true  # CT
+
+# Workflow Steps
+steps:
+  - id: validate-input
+    name: Validate Normalized Study
+    type: validation
+    action: validate_study_ready
+    config:
+      required_status: NORMALIZED
+      verify_pixel_data: true
+    on_success: assess-quality
+    on_failure: log-error
+
+  - id: assess-quality
+    name: Assess Image Quality
+    type: analysis
+    action: assess_image_quality
+    config:
+      metrics:
+        - snr  # Signal-to-noise ratio
+        - cnr  # Contrast-to-noise ratio
+        - sharpness
+        - artifacts_present
+        - noise_level
+      create_quality_report: true
+      adaptive_enhancement: true
+    on_success: route-by-quality
+    on_failure: log-error
+
+  - id: route-by-quality
+    name: Route Based on Quality
+    type: routing
+    action: route_by_image_quality
+    config:
+      high_quality_threshold: 0.8
+      low_quality_threshold: 0.4
+      routes:
+        high_quality: minimal-enhancement
+        medium_quality: standard-enhancement
+        low_quality: aggressive-enhancement
+    on_success: execute-enhancement
+    on_failure: log-error
+
+  - id: execute-enhancement
+    name: Execute Enhancement
+    type: image_processing
+    action: enhance_images
+    config:
+      parallel_processing: true
+      preserve_original: true
+      instance_by_instance: true
+    on_success: denoise
+    on_failure: log-error
+
+  - id: denoise
+    name: Denoise Images
+    type: image_processing
+    action: apply_denoising
+    config:
+      method_by_modality:
+        CT:
+          method: nlm  # Non-local means
+          patch_size: 5
+          patch_distance: 6
+          h: 0.8
+        MR:
+          method: nlm
+          patch_size: 5
+          patch_distance: 6
+          h: 1.2
+        CR:
+          method: bilateral
+          d: 9
+          sigma_color: 75
+          sigma_space: 75
+        DX:
+          method: bilateral
+          d: 9
+          sigma_color: 75
+          sigma_space: 75
+      preserve_edges: true
+      adaptive_strength: true
+    on_success: enhance-contrast
+    on_failure: log-error
+
+  - id: enhance-contrast
+    name: Enhance Contrast
+    type: image_processing
+    action: enhance_contrast
+    config:
+      method_by_modality:
+        CT:
+          method: clahe
+          clip_limit: 2.0
+          tile_grid_size: [8, 8]
+          apply_per_window: true
+        MR:
+          method: clahe
+          clip_limit: 3.0
+          tile_grid_size: [8, 8]
+        CR:
+          method: clahe
+          clip_limit: 2.5
+          tile_grid_size: [16, 16]
+        DX:
+          method: clahe
+          clip_limit: 2.5
+          tile_grid_size: [16, 16]
+      preserve_histogram_mode: true
+    on_success: sharpen-details
+    on_failure: log-error
+
+  - id: sharpen-details
+    name: Sharpen Image Details
+    type: image_processing
+    action: sharpen_images
+    config:
+      method: unsharp_mask
+      modality_settings:
+        CT:
+          radius: 1.0
+          amount: 0.6
+          threshold: 0.1
+        MR:
+          radius: 1.5
+          amount: 0.5
+          threshold: 0.1
+        CR:
+          radius: 1.2
+          amount: 0.7
+          threshold: 0.1
+        DX:
+          radius: 1.2
+          amount: 0.7
+          threshold: 0.1
+      adaptive_sharpening: true
+    on_success: remove-artifacts
+    on_failure: log-error
+
+  - id: remove-artifacts
+    name: Remove Artifacts
+    type: image_processing
+    action: remove_artifacts
+    config:
+      ct_artifacts:
+        beam_hardening: true
+        metal_artifacts: true
+        ring_artifacts: false
+      mr_artifacts:
+        bias_field: true
+        ghosting: false
+        zipper: false
+      cr_artifacts:
+        grid_lines: true
+        scatter: true
+      preserve_diagnostic_features: true
+    on_success: apply-modality-enhancement
+    on_failure: log-error
+
+  - id: apply-modality-enhancement
+    name: Apply Modality-Specific Enhancement
+    type: routing
+    action: route_to_modality_profile
+    config:
+      profiles_path: /workflows/profiles/
+      modality_map:
+        CT: ct-enhancement-profile.yaml
+        MR: mr-enhancement-profile.yaml
+        CR: xray-enhancement-profile.yaml
+        DX: xray-enhancement-profile.yaml
+      execute_profile: true
+    on_success: generate-thumbnails
+    on_failure: log-error
+
+  - id: generate-thumbnails
+    name: Generate Preview Thumbnails
+    type: image_generation
+    action: generate_thumbnails
+    config:
+      sizes:
+        - name: small
+          dimensions: [128, 128]
+        - name: medium
+          dimensions: [256, 256]
+        - name: large
+          dimensions: [512, 512]
+      key_frames_only: true
+      key_frame_selection: uniform
+      num_key_frames: 5
+      format: JPEG
+      quality: 85
+    on_success: validate-enhancement
+    on_failure: log-error
+
+  - id: validate-enhancement
+    name: Validate Enhanced Images
+    type: validation
+    action: validate_enhancement
+    config:
+      quality_checks:
+        - improved_snr
+        - improved_contrast
+        - no_over_enhancement
+        - preserved_diagnostic_features
+        - no_introduced_artifacts
+      comparison_metrics:
+        - psnr  # Peak signal-to-noise ratio
+        - ssim  # Structural similarity
+        - quality_score_improvement
+      fail_on_degradation: true
+    on_success: save-enhanced
+    on_failure: revert-to-original
+
+  - id: save-enhanced
+    name: Save Enhanced Study
+    type: storage
+    action: save_enhanced_study
+    config:
+      destination: /data/medical/enhanced/
+      organize_by: study_uid
+      preserve_original: true
+      save_comparison_report: true
+      calculate_checksum: true
+      update_database: true
+    on_success: update-tracking
+    on_failure: log-error
+
+  - id: update-tracking
+    name: Update Study Tracking
+    type: tracking
+    action: update_study_status
+    config:
+      database: qdrant
+      collection: medical_studies
+      status: ENHANCED
+      add_enhancement_metadata: true
+      store_quality_metrics: true
+      timestamp: true
+    on_success: route-to-analysis
+    on_failure: log-error
+
+  - id: route-to-analysis
+    name: Route to AI Analysis
+    type: routing
+    action: route_to_workflow
+    config:
+      next_workflow: ai-analysis-pipeline
+      routing_rules: /workflows/routing/study-routing-rules.yaml
+      pass_enhancement_metadata: true
+    on_success: complete
+    on_failure: log-error
+
+# Error Handling
+error_handling:
+  revert-to-original:
+    action: use_normalized_version
+    status: ENHANCEMENT_FAILED
+    allow_processing: true
+    log_level: WARNING
+
+  quarantine:
+    path: /data/medical/quarantine/enhancement/
+    retention_days: 30
+    notify: true
+
+# Quality Control
+quality_control:
+  - checkpoint: post-enhancement
+    validations:
+      - quality_improved
+      - no_over_processing
+      - diagnostic_features_preserved
+      - no_new_artifacts
+    failure_action: revert-to-original
+    notify_on_failure: true
+
+# Modality-Specific Settings
+modality_enhancements:
+  CT:
+    - bone_enhancement
+    - soft_tissue_enhancement
+    - lung_enhancement
+    - vessel_enhancement
+
+  MR:
+    - t1_enhancement
+    - t2_enhancement
+    - flair_enhancement
+    - bias_correction
+
+  CR:
+    - bone_enhancement
+    - soft_tissue_enhancement
+    - lung_enhancement
+
+  DX:
+    - bone_enhancement
+    - soft_tissue_enhancement
+
+# Performance
+performance:
+  max_concurrent_studies: 5
+  thread_pool_size: 10
+  gpu_acceleration: true
+  gpu_devices: [0, 1]
+  memory_limit: 16GB
+  cache_size: 4GB
+
+# Monitoring
+monitoring:
+  tags:
+    - ENHANCEMENT_STUDIES_PROCESSED
+    - ENHANCEMENT_AVG_TIME
+    - ENHANCEMENT_QUALITY_IMPROVEMENT
+    - ENHANCEMENT_FAILURES
+
+  mqtt:
+    publish_events: true
+    topics:
+      - chazon/os/medical/enhancement/started
+      - chazon/os/medical/enhancement/completed
+      - chazon/os/medical/enhancement/quality-report
+
+  modbus:
+    holding_registers:
+      - address: 40220
+        name: ENHANCEMENT_STUDIES_PROCESSED
+      - address: 40221
+        name: ENHANCEMENT_AVG_TIME
+      - address: 40222
+        name: ENHANCEMENT_QUALITY_AVG
+
+# Logging
+logging:
+  level: INFO
+  path: /var/log/medical/workflows/enhancement.log
+  rotation: daily
+  retention_days: 90
+  include_quality_metrics: true

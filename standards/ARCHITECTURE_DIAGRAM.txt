@@ -1,0 +1,315 @@
+================================================================================
+         STANDARDS-AS-TAGS FRAMEWORK - COMPLETE ARCHITECTURE
+================================================================================
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                         META-STANDARD LAYER (MSL)                            │
+│  Domain-Specific Language for Composing Standards                           │
+│                                                                              │
+│  import packml from "packml/packml-state-machine.json"                      │
+│  instantiate packml as equipment with { equipmentPath: "..." }              │
+│  compose system { ... }                                                      │
+│  bind source to target                                                       │
+└────────────────────────────────┬─────────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                      INSTANTIATION ENGINE                                    │
+│  Core engine for loading, validating, and instantiating standards           │
+│                                                                              │
+│  • StandardInstantiationEngine - Main orchestration                         │
+│  • ParameterValidator - Validates against schemas                           │
+│  • TemplateEngine - {{parameter}} substitution                              │
+│  • Composition - Combine multiple standards                                 │
+└────────────────────────────────┬─────────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                         STANDARD DEFINITIONS                                 │
+│  Executable JSON templates for industrial standards                         │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  EQUIPMENT & CONTROL LAYER                                                  │
+│  ┌─────────────────────┐  ┌─────────────────────┐  ┌──────────────────────┐│
+│  │   PackML v1.0       │  │   ISA-88 Equipment  │  │  ISA-88 Procedural   ││
+│  │   State Machine     │  │   Hierarchy         │  │  Model               ││
+│  ├─────────────────────┤  ├─────────────────────┤  ├──────────────────────┤│
+│  │ • 18 States         │  │ • 7 Levels          │  │ • Recipes            ││
+│  │ • 10 Commands       │  │ • Enterprise→       │  │ • Procedures         ││
+│  │ • State Machine     │  │   Control Module    │  │ • Operations         ││
+│  │ • Tag Generation    │  │ • Hierarchical Tags │  │ • Phases             ││
+│  └─────────────────────┘  └─────────────────────┘  └──────────────────────┘│
+│                                                                              │
+│  SYSTEM ARCHITECTURE LAYER                                                  │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │   ISA-95 Functional Hierarchy (Purdue Model)                        │    │
+│  ├─────────────────────────────────────────────────────────────────────┤    │
+│  │ • Level 4: Business Planning (ERP, HIS)                             │    │
+│  │ • Level 3: Manufacturing Operations (MES, PACS, RIS)                │    │
+│  │ • Level 2: Supervisory Control (SCADA, HMI)                         │    │
+│  │ • Level 1: Basic Control (PLC, DCS)                                 │    │
+│  │ • Level 0: Physical Process (Sensors, Actuators)                    │    │
+│  │ • Security Zones                                                     │    │
+│  │ • Communication Paths                                                │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                              │
+│  VISUALIZATION LAYER                                                        │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │   ISA-101 HMI Design Patterns                                       │    │
+│  ├─────────────────────────────────────────────────────────────────────┤    │
+│  │ • Level 1: Overview Display (1-3 sec viewing)                       │    │
+│  │ • Level 2: Group Display (5-15 sec viewing)                         │    │
+│  │ • Level 3: Detail Display (15-60 sec viewing)                       │    │
+│  │ • Level 4: Diagnostic Display (minutes)                             │    │
+│  │ • High-Performance Design Principles                                │    │
+│  │ • Color Schemes, Information Density                                │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                              │
+│  COMMUNICATION LAYER                                                        │
+│  ┌──────────────────────┐           ┌──────────────────────┐               │
+│  │  MQTT/Sparkplug B    │           │     OPC-UA           │               │
+│  ├──────────────────────┤           ├──────────────────────┤               │
+│  │ • Topic Namespace    │           │ • Address Space      │               │
+│  │ • Birth/Death        │           │ • Node Definitions   │               │
+│  │ • Metrics            │           │ • Information Model  │               │
+│  │ • IIoT/Cloud         │           │ • Interoperability   │               │
+│  └──────────────────────┘           └──────────────────────┘               │
+│                                                                              │
+└────────────────────────────────┬─────────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                    TEMPLATE INTEGRATION BRIDGE                               │
+│  Converts standard instances to existing template formats                   │
+│                                                                              │
+│  • standard_to_tag_template() - Generate tag definitions                    │
+│  • standard_to_hmi_component() - Generate HMI components                    │
+│  • export_to_template_system() - Export to /templates/                      │
+└────────────────────────────────┬─────────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                     EXISTING TEMPLATE SYSTEM                                 │
+│  /home/user/qdrant/templates/                                              │
+│                                                                              │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                      │
+│  │     Tags     │  │  Components  │  │   Screens    │                      │
+│  └──────────────┘  └──────────────┘  └──────────────┘                      │
+└────────────────────────────────┬─────────────────────────────────────────────┘
+                                 │
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                   INDUSTRIAL CONTROL SYSTEMS                                 │
+│                                                                              │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │
+│  │   PLC    │  │  SCADA   │  │   HMI    │  │   MES    │  │  Cloud   │    │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘    │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+                         STANDARD COMPOSITION EXAMPLE
+================================================================================
+
+Complete Medical Imaging System (Radiology Department):
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ ISA-95 FUNCTIONAL ARCHITECTURE                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│ L4: Business (HIS/RIS)                                                       │
+│     ├─ Patient Scheduling                                                   │
+│     └─ Billing & Insurance                                                  │
+│                                                                              │
+│ L3: Operations (MES/PACS)                                                    │
+│     ├─ Worklist Management ──────────┐                                      │
+│     ├─ Image Archiving              │                                      │
+│     └─ Equipment Utilization        │                                      │
+│                                     │                                      │
+│ L2: Supervisory (SCADA/HMI)         │                                      │
+│     │                               │                                      │
+│     │   ┌───────────────────────────┼───────────────────────────────┐      │
+│     │   │ ISA-101 HMI SCREENS       ▼                               │      │
+│     │   ├──────────────────────────────────────────────────────────┤      │
+│     │   │                                                           │      │
+│     └───┤ Overview: Radiology Department Status                    │      │
+│         │  ├─ CT Scanner 1: [Execute] (PackML State)               │      │
+│         │  ├─ CT Scanner 2: [Idle]                                 │      │
+│         │  └─ MRI Scanner 1: [Stopped]                             │      │
+│         │                                                           │      │
+│         │ Detail: CT Scanner 1                                      │      │
+│         │  ├─ PackML State Machine Display                         │      │
+│         │  ├─ Process Values (kVP, mA, Rotation Speed)             │      │
+│         │  ├─ Control Panel (Start, Stop, Reset, Abort)            │      │
+│         │  └─ Real-time Trends                                     │      │
+│         └───────────────────────────────────────────────────────────┘      │
+│                                                                              │
+│ L1: Basic Control                                                            │
+│     │                                                                        │
+│     │   ┌────────────────────────────────────────────────────────┐          │
+│     │   │ ISA-88 EQUIPMENT HIERARCHY                             │          │
+│     │   ├────────────────────────────────────────────────────────┤          │
+│     │   │                                                         │          │
+│     │   │ Enterprise: MedTech Healthcare                         │          │
+│     │   │  └─ Site: Hospital Boston                              │          │
+│     │   │      └─ Area: Radiology                                │          │
+│     │   │          ├─ Cell: CT Imaging                           │          │
+│     │   │          │   ├─ Unit: CT Scanner 1 ────────────┐       │          │
+│     │   │          │   │   ├─ Module: Gantry            │       │          │
+│     │   │          │   │   ├─ Module: Table             │       │          │
+│     │   │          │   │   └─ Module: Detector          │       │          │
+│     │   │          │   │                                 │       │          │
+│     │   │          │   └─ Unit: CT Scanner 2            │       │          │
+│     │   │          │                                     │       │          │
+│     │   │          └─ Cell: MRI Suite                    │       │          │
+│     │   │              └─ Unit: MRI Scanner 1            │       │          │
+│     └───┤                                                 │       │          │
+│         │   ┌─────────────────────────────────────────────┘       │          │
+│         │   │ PACKML STATE MACHINES                               │          │
+│         │   ├─────────────────────────────────────────────────────┤          │
+│         │   │                                                     │          │
+│         │   │ CT Scanner 1: Current State = Execute               │          │
+│         │   │  States: Stopped → Idle → Starting → Execute       │          │
+│         │   │  Commands: Start, Stop, Reset, Hold, Abort         │          │
+│         │   │  Tags: .../Status/State, .../Commands/*, ...       │          │
+│         │   │                                                     │          │
+│         │   │ CT Scanner 2: Current State = Idle                  │          │
+│         │   │ MRI Scanner 1: Current State = Stopped              │          │
+│         └───┴─────────────────────────────────────────────────────┘          │
+│                                                                              │
+│ L0: Physical Process                                                         │
+│     ├─ X-Ray Generator, Detector, Motion Control                            │
+│     └─ Temperature Sensors, Position Encoders                               │
+│                                                                              │
+└────────────────────────┬─────────────────────────────────────────────────────┘
+                         │
+                         │ COMMUNICATION LAYER
+                         │
+        ┌────────────────┴────────────────┐
+        │                                 │
+        ▼                                 ▼
+┌───────────────────┐           ┌─────────────────────┐
+│   OPC-UA          │           │  MQTT/Sparkplug B   │
+├───────────────────┤           ├─────────────────────┤
+│                   │           │                     │
+│ Server: CT-1      │           │ Group: Hospital     │
+│ Address Space:    │           │ Edge: Gateway_Rad   │
+│  Objects/         │           │ Device: CT_1        │
+│   Hospital/       │           │                     │
+│    Radiology/     │           │ Topics:             │
+│     CT_Scanner_1/ │           │  NBIRTH, DBIRTH     │
+│      ├─ PackML/   │           │  NDATA, DDATA       │
+│      ├─ Process/  │◄─────────►│                     │
+│      └─ Commands/ │   Data    │ Metrics:            │
+│                   │   Flow    │  PackML.State       │
+│ Subscribed by:    │           │  Process.KVP        │
+│  • SCADA          │           │  Process.mA         │
+│  • MES            │           │                     │
+│  • Historian      │           │ Published to:       │
+│                   │           │  • Cloud Platform   │
+│                   │           │  • Analytics        │
+└───────────────────┘           └─────────────────────┘
+
+
+================================================================================
+                         DATA FLOW EXAMPLE
+================================================================================
+
+Patient Scan Workflow (All Standards Working Together):
+
+1. ORDER (L4 - HIS)
+   → Patient order created in HIS
+   → ISA-95: L4 → L3 communication
+
+2. WORKLIST (L3 - RIS/PACS)
+   → Study appears on modality worklist
+   → Protocol selected
+   → ISA-95: L3 → L2 communication
+
+3. OPERATOR (L2 - HMI)
+   → Opens ISA-101 Overview Screen
+   → Sees CT Scanner 1 PackML state = "Idle"
+   → Clicks to Detail Screen (ISA-101)
+   → ISA-88 hierarchy navigation: Area → Cell → Unit
+
+4. PREPARATION (L1 - Controller)
+   → CT Scanner receives parameters
+   → PackML state: Idle → Starting
+   → Safety checks via ISA-88 phases
+   → ISA-95: L2 → L1 communication
+
+5. EXECUTION (L0-L1)
+   → Operator sends Start command (PackML)
+   → PackML state: Starting → Execute
+   → ISA-88 procedural control:
+       Procedure: CT Head Scan
+         └─ Unit Procedure: Acquire Images
+             └─ Operation: X-Ray Exposure
+                 └─ Phase: Activate Generator
+   → Physical process operates (L0)
+
+6. MONITORING (All Levels)
+   → OPC-UA: State published to all subscribers
+   → MQTT: spBv1.0/.../DDATA/Gateway/CT_1
+      Metrics: {PackML.State: "Execute", Process.KVP: 120, ...}
+   → ISA-101 HMI: Real-time display updates
+   → Historian: Tags logged
+   → Cloud: IoT dashboard shows scanner active
+
+7. COMPLETION (L1 → L3)
+   → Scan completes
+   → PackML state: Execute → Completing → Complete
+   → Images sent to PACS (L3)
+   → ISA-95: L1 → L2 → L3 data flow
+
+8. REPORTING (L3 → L4)
+   → Radiologist reviews (L3)
+   → Report created
+   → Results to HIS (L4)
+   → ISA-95: L3 → L4 communication
+
+9. RESET (L1)
+   → Operator sends Reset command (PackML)
+   → PackML state: Complete → Resetting → Idle
+   → ISA-88 hierarchy ready for next patient
+   → OPC-UA & MQTT publish state change
+
+Throughout: ISA-101 provides consistent, high-performance visualization
+           ISA-88 provides equipment and procedural organization
+           PackML provides standard equipment control
+           ISA-95 defines communication architecture
+           OPC-UA & MQTT enable interoperable data exchange
+
+
+================================================================================
+                    KEY INNOVATION: COMPOSABILITY
+================================================================================
+
+Each standard is independent but designed to compose:
+
+ISA-88 Equipment Hierarchy PROVIDES → Equipment paths
+PackML State Machine      CONSUMES → Equipment paths
+                         PROVIDES → State tags
+
+MQTT/Sparkplug B         CONSUMES → State tags
+                         PROVIDES → IIoT topics
+
+OPC-UA                   CONSUMES → Equipment hierarchy + State tags
+                         PROVIDES → Interoperable interface
+
+ISA-101 HMI              CONSUMES → Equipment hierarchy + PackML states
+                         PROVIDES → Operator interface
+
+ISA-95 Architecture      PROVIDES → System organization
+                         CONSUMES → All other standards
+                         MAPS → Standards to functional levels
+
+Result: Standards compose into complete, integrated systems
+
+
+================================================================================
+Framework Location: /home/user/qdrant/standards/
+Status: ✓ Production Ready
+Standards: 7 | Components: 3 | Examples: 4 | Docs: 4
+================================================================================

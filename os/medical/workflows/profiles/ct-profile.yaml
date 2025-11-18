@@ -1,0 +1,373 @@
+# CT Modality-Specific Processing Profile
+# Specialized processing for CT (Computed Tomography) images
+
+profile:
+  id: ct-processing-profile-001
+  name: CT Processing Profile
+  version: "1.0.0"
+  modality: CT
+  description: CT-specific image processing, windowing, and enhancement
+
+metadata:
+  author: Medical Imaging Team
+  created: 2025-11-17
+  updated: 2025-11-17
+  applicable_to:
+    - Computed Tomography
+    - CBCT (Cone Beam CT)
+  tags:
+    - ct
+    - hounsfield
+    - windowing
+    - bone
+    - soft-tissue
+
+# CT-Specific Parameters
+ct_parameters:
+  # Hounsfield Unit (HU) Processing
+  hounsfield:
+    validate_range: true
+    expected_range: [-1024, 3071]
+    apply_rescale: true
+    use_rescale_intercept: true
+    use_rescale_slope: true
+
+  # Slice Processing
+  slices:
+    sort_by: ImagePositionPatient
+    validate_spacing: true
+    detect_missing: true
+    fill_missing: interpolate  # interpolate, skip, flag
+
+  # Gantry Tilt Correction
+  gantry_tilt:
+    detect: true
+    correct: true
+    interpolation: linear
+
+# CT Window Presets
+window_presets:
+  brain:
+    window_center: 40
+    window_width: 80
+    description: Brain parenchyma
+    priority: 1
+
+  subdural:
+    window_center: 75
+    window_width: 150
+    description: Subdural hematoma
+    priority: 2
+
+  stroke:
+    window_center: 40
+    window_width: 40
+    description: Early stroke detection
+    priority: 2
+
+  bone:
+    window_center: 400
+    window_width: 1800
+    description: Bone detail
+    priority: 1
+
+  soft_tissue:
+    window_center: 50
+    window_width: 350
+    description: Soft tissue
+    priority: 1
+
+  lung:
+    window_center: -600
+    window_width: 1500
+    description: Lung parenchyma
+    priority: 1
+
+  liver:
+    window_center: 60
+    window_width: 150
+    description: Liver detail
+    priority: 2
+
+  mediastinum:
+    window_center: 50
+    window_width: 400
+    description: Mediastinal structures
+    priority: 2
+
+  spine:
+    window_center: 50
+    window_width: 250
+    description: Spine structures
+    priority: 2
+
+  angio:
+    window_center: 300
+    window_width: 600
+    description: CT angiography
+    priority: 2
+
+# CT-Specific Processing Steps
+processing_steps:
+  - id: validate-ct-metadata
+    name: Validate CT Metadata
+    type: validation
+    config:
+      required_tags:
+        - KVP
+        - Exposure
+        - SliceThickness
+        - PixelSpacing
+        - ImageOrientationPatient
+        - ImagePositionPatient
+        - RescaleIntercept
+        - RescaleSlope
+      validate_values: true
+
+  - id: apply-rescale
+    name: Apply Rescale to HU
+    type: pixel_processing
+    config:
+      formula: "pixel_value * RescaleSlope + RescaleIntercept"
+      output_type: float32
+      validate_hu_range: true
+
+  - id: correct-gantry-tilt
+    name: Correct Gantry Tilt
+    type: geometric_correction
+    config:
+      detect_tilt: true
+      tilt_threshold: 0.1  # degrees
+      correction_method: shear_transform
+      interpolation: linear
+
+  - id: generate-windowed-views
+    name: Generate Window Presets
+    type: windowing
+    config:
+      generate_all_applicable: true
+      body_part_detection: true
+      window_mapping:
+        BRAIN:
+          - brain
+          - subdural
+          - stroke
+          - bone
+        CHEST:
+          - lung
+          - mediastinum
+          - bone
+          - soft_tissue
+        ABDOMEN:
+          - soft_tissue
+          - liver
+          - bone
+        SPINE:
+          - bone
+          - soft_tissue
+          - spine
+        EXTREMITY:
+          - bone
+          - soft_tissue
+
+      output_format: 8bit  # For visualization
+      preserve_original_hu: true
+
+  - id: detect-contrast-phase
+    name: Detect Contrast Enhancement Phase
+    type: analysis
+    config:
+      analyze_hu_distribution: true
+      detect_phases:
+        - non_contrast
+        - arterial
+        - venous
+        - delayed
+      label_series: true
+
+  - id: remove-ct-artifacts
+    name: Remove CT Artifacts
+    type: artifact_removal
+    config:
+      beam_hardening:
+        enabled: true
+        method: polynomial_correction
+        order: 2
+
+      metal_artifacts:
+        enabled: true
+        method: mar  # Metal Artifact Reduction
+        threshold: 3000  # HU
+        inpainting: linear
+
+      ring_artifacts:
+        enabled: true
+        method: polar_transform
+
+      motion_artifacts:
+        detect: true
+        correct: false  # Usually can't correct motion
+
+  - id: enhance-ct-structures
+    name: Enhance CT Structures
+    type: enhancement
+    config:
+      bone_enhancement:
+        enabled: true
+        sharpen: true
+        edge_enhancement: true
+
+      vessel_enhancement:
+        enabled: true
+        method: hessian_filter
+        sigma_range: [1.0, 3.0]
+
+      lung_nodule_enhancement:
+        enabled: true
+        method: multi_scale_filter
+
+  - id: generate-mpr
+    name: Generate MPR Views
+    type: reconstruction
+    config:
+      generate_views:
+        - axial
+        - sagittal
+        - coronal
+      slice_thickness: 1.0  # mm
+      interpolation: cubic
+      output_format: DICOM
+
+  - id: calculate-ct-metrics
+    name: Calculate CT Quality Metrics
+    type: metrics
+    config:
+      calculate:
+        - noise_level
+        - contrast_to_noise_ratio
+        - spatial_resolution
+        - dose_estimate  # From DICOM tags
+        - image_quality_score
+
+# CT-Specific Quality Control
+quality_control:
+  hu_calibration:
+    check_water: true
+    expected_water_hu: [-5, 5]
+    check_air: true
+    expected_air_hu: [-1000, -950]
+
+  dose_monitoring:
+    check_dose_tags: true
+    flag_high_dose: true
+    dose_threshold:
+      CTDIvol: 100  # mGy
+      DLP: 2000  # mGy*cm
+
+  slice_consistency:
+    check_spacing: true
+    check_thickness: true
+    max_gap: 1.0  # mm
+    max_overlap: 0.5  # mm
+
+# CT Protocol Detection
+protocol_detection:
+  rules:
+    - name: head_ct
+      conditions:
+        - body_part: HEAD
+        - slice_thickness: "< 5mm"
+      optimizations:
+        - brain_windowing
+        - bone_removal_for_3d
+
+    - name: chest_ct
+      conditions:
+        - body_part: CHEST
+      optimizations:
+        - lung_windowing
+        - mediastinum_windowing
+        - nodule_detection
+
+    - name: ct_angiography
+      conditions:
+        - series_description: "*ANGIO*"
+        - contrast_phase: arterial
+      optimizations:
+        - angio_windowing
+        - vessel_enhancement
+        - mip_generation
+
+    - name: hr_ct_lung
+      conditions:
+        - body_part: CHEST
+        - slice_thickness: "< 2mm"
+        - reconstruction_kernel: "*SHARP*"
+      optimizations:
+        - lung_windowing
+        - high_resolution_processing
+
+# Advanced CT Processing
+advanced_processing:
+  # 3D Reconstruction
+  three_d_reconstruction:
+    enabled: true
+    methods:
+      - volume_rendering
+      - surface_rendering
+      - maximum_intensity_projection
+      - minimum_intensity_projection
+
+  # CT Perfusion
+  perfusion_analysis:
+    enabled: false  # Enable if perfusion series detected
+    calculate:
+      - cerebral_blood_flow
+      - cerebral_blood_volume
+      - mean_transit_time
+      - time_to_peak
+
+  # Automatic Segmentation
+  segmentation:
+    enabled: true
+    organs:
+      - lungs
+      - liver
+      - kidneys
+      - spleen
+      - bones
+    method: deep_learning
+    model: totalsegmentator
+
+# Performance Optimization
+performance:
+  parallel_windowing: true
+  gpu_acceleration: true
+  cache_hu_conversion: true
+  progressive_loading: true
+
+# Output Configuration
+output:
+  preserve_original: true
+  generate_formats:
+    - dicom_secondary_capture  # For windowed views
+    - jpeg  # For quick preview
+    - nifti  # For 3D processing
+
+  compression:
+    dicom: JPEG2000Lossless
+    jpeg_quality: 90
+
+# Monitoring
+monitoring:
+  track_metrics:
+    - ct_studies_processed
+    - average_processing_time
+    - window_presets_generated
+    - artifacts_detected
+    - dose_warnings
+
+  tags:
+    - CT_STUDIES_PROCESSED
+    - CT_AVG_PROCESSING_TIME
+    - CT_HIGH_DOSE_WARNINGS

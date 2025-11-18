@@ -1,0 +1,181 @@
+{
+  "uuid": "550e8400-e29b-41d4-a716-446655440000",
+  "type": "screen",
+  "category": "overview",
+  "metadata": {
+    "name": "System Overview",
+    "description": "Master system overview screen showing all major subsystems",
+    "version": "1.0.0",
+    "author": "Chazon SCADA",
+    "created": "2025-01-17T00:00:00Z",
+    "modified": "2025-01-17T00:00:00Z",
+    "tags": ["overview", "master", "dashboard"]
+  },
+  "layout": {
+    "grid": {
+      "columns": 4,
+      "rows": 3,
+      "gap": 15
+    },
+    "theme": "dark",
+    "colorScheme": "blue"
+  },
+  "components": [
+    {
+      "uuid": "comp-001",
+      "type": "status-card",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      },
+      "config": {
+        "title": "Frontend",
+        "icon": "🖥️",
+        "navigationPath": "/os/frontend/"
+      },
+      "bindings": {
+        "tags": [
+          "frontend.status",
+          "frontend.responseTime"
+        ]
+      }
+    },
+    {
+      "uuid": "comp-002",
+      "type": "status-card",
+      "position": {
+        "x": 1,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      },
+      "config": {
+        "title": "Backend",
+        "icon": "🔧",
+        "navigationPath": "/os/backend/"
+      },
+      "bindings": {
+        "tags": [
+          "backend.status",
+          "backend.responseTime"
+        ]
+      }
+    },
+    {
+      "uuid": "comp-003",
+      "type": "status-card",
+      "position": {
+        "x": 2,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      },
+      "config": {
+        "title": "Modules",
+        "icon": "📦",
+        "navigationPath": "/os/modules/"
+      },
+      "bindings": {
+        "tags": [
+          "modules.loaded",
+          "modules.active"
+        ]
+      }
+    },
+    {
+      "uuid": "comp-004",
+      "type": "status-card",
+      "position": {
+        "x": 3,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      },
+      "config": {
+        "title": "Boot",
+        "icon": "🚀",
+        "navigationPath": "/os/boot/"
+      },
+      "bindings": {
+        "tags": [
+          "boot.status",
+          "boot.phase"
+        ]
+      }
+    },
+    {
+      "uuid": "comp-005",
+      "type": "trend-chart",
+      "position": {
+        "x": 0,
+        "y": 1,
+        "width": 2,
+        "height": 2
+      },
+      "config": {
+        "title": "System Performance",
+        "chartType": "line",
+        "timeRange": 3600
+      },
+      "bindings": {
+        "tags": [
+          "system.cpu",
+          "system.memory",
+          "system.network"
+        ]
+      }
+    },
+    {
+      "uuid": "comp-006",
+      "type": "alarm-summary",
+      "position": {
+        "x": 2,
+        "y": 1,
+        "width": 2,
+        "height": 1
+      },
+      "config": {
+        "title": "Active Alarms",
+        "maxDisplay": 5
+      },
+      "bindings": {
+        "tags": [
+          "alarms.active",
+          "alarms.unacknowledged"
+        ]
+      }
+    },
+    {
+      "uuid": "comp-007",
+      "type": "tag-summary",
+      "position": {
+        "x": 2,
+        "y": 2,
+        "width": 2,
+        "height": 1
+      },
+      "config": {
+        "title": "Tag Statistics",
+        "showQuality": true
+      },
+      "bindings": {
+        "tags": [
+          "tags.total",
+          "tags.goodQuality",
+          "tags.badQuality"
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "trigger": "onLoad",
+      "action": "subscribeToTags",
+      "params": {
+        "updateRate": 1000
+      }
+    }
+  ]
+}

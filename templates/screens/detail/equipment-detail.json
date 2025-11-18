@@ -1,0 +1,153 @@
+{
+  "uuid": "660e8400-e29b-41d4-a716-446655440001",
+  "type": "screen",
+  "category": "detail",
+  "metadata": {
+    "name": "Equipment Detail",
+    "description": "Detailed equipment control and monitoring screen",
+    "version": "1.0.0",
+    "author": "Chazon SCADA",
+    "created": "2025-01-17T00:00:00Z",
+    "modified": "2025-01-17T00:00:00Z",
+    "tags": ["detail", "equipment", "control"]
+  },
+  "layout": {
+    "grid": {
+      "columns": 3,
+      "rows": 4,
+      "gap": 10
+    },
+    "theme": "dark",
+    "colorScheme": "green"
+  },
+  "components": [
+    {
+      "uuid": "comp-d001",
+      "type": "process-diagram",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "width": 2,
+        "height": 3
+      },
+      "config": {
+        "diagramPath": "diagrams/equipment.svg",
+        "interactive": true
+      },
+      "bindings": {
+        "tags": [
+          "equipment.running",
+          "equipment.speed",
+          "equipment.temperature",
+          "equipment.pressure"
+        ]
+      }
+    },
+    {
+      "uuid": "comp-d002",
+      "type": "gauge",
+      "position": {
+        "x": 2,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      },
+      "config": {
+        "title": "Speed",
+        "units": "RPM",
+        "min": 0,
+        "max": 3600,
+        "alarmLow": 100,
+        "alarmHigh": 3400
+      },
+      "bindings": {
+        "tags": ["equipment.speed"]
+      }
+    },
+    {
+      "uuid": "comp-d003",
+      "type": "gauge",
+      "position": {
+        "x": 2,
+        "y": 1,
+        "width": 1,
+        "height": 1
+      },
+      "config": {
+        "title": "Temperature",
+        "units": "°C",
+        "min": 0,
+        "max": 150,
+        "alarmHigh": 120
+      },
+      "bindings": {
+        "tags": ["equipment.temperature"]
+      }
+    },
+    {
+      "uuid": "comp-d004",
+      "type": "gauge",
+      "position": {
+        "x": 2,
+        "y": 2,
+        "width": 1,
+        "height": 1
+      },
+      "config": {
+        "title": "Pressure",
+        "units": "PSI",
+        "min": 0,
+        "max": 100,
+        "alarmLow": 20,
+        "alarmHigh": 90
+      },
+      "bindings": {
+        "tags": ["equipment.pressure"]
+      }
+    },
+    {
+      "uuid": "comp-d005",
+      "type": "control-panel",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "width": 3,
+        "height": 1
+      },
+      "config": {
+        "buttons": [
+          {
+            "label": "Start",
+            "type": "start",
+            "writeTag": "equipment.command",
+            "writeValue": 1
+          },
+          {
+            "label": "Stop",
+            "type": "stop",
+            "writeTag": "equipment.command",
+            "writeValue": 0
+          },
+          {
+            "label": "Reset",
+            "type": "reset",
+            "writeTag": "equipment.reset",
+            "writeValue": true
+          }
+        ]
+      },
+      "bindings": {
+        "tags": ["equipment.running", "equipment.faulted"]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "trigger": "onLoad",
+      "action": "subscribeToTags",
+      "params": {
+        "updateRate": 500
+      }
+    }
+  ]
+}

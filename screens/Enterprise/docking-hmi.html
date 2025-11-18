@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medical Imaging SCADA - Docking HMI</title>
+<style>
+/* ISA-101 High Performance HMI - Cream & Purple Theme */
+:root {
+  --color-bg-primary: #2a1a3a;
+  --color-bg-secondary: #3d2a52;
+  --color-bg-tertiary: #1a0f26;
+  --color-cream: #f5f2e8;
+  --color-cream-dark: #e8e0c8;
+  --color-purple-light: #9b7eb8;
+  --color-purple-accent: #b794f4;
+  --color-purple-glow: #8b5cf6;
+  --color-normal: #90ee90;
+  --color-warning: #ffd700;
+  --color-alarm: #ff6b6b;
+  --color-inactive: #808080;
+  --color-active: #00bfff;
+  --dock-north-height: 80px;
+  --dock-south-height: 40px;
+  --dock-east-width: 280px;
+  --dock-west-width: 280px;
+  --dock-gap: 4px;
+  --border-width: 2px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--color-bg-primary);
+  color: var(--color-cream);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+.dock-container {
+  display: grid;
+  grid-template-areas:
+    "north north north"
+    "west center east"
+    "south south south";
+  grid-template-rows: var(--dock-north-height) 1fr var(--dock-south-height);
+  grid-template-columns: var(--dock-west-width) 1fr var(--dock-east-width);
+  gap: var(--dock-gap);
+  height: 100vh;
+  width: 100vw;
+  padding: var(--dock-gap);
+  background: var(--color-bg-tertiary);
+}
+
+.dock-panel {
+  background: linear-gradient(135deg, var(--color-bg-secondary), var(--color-bg-primary));
+  border: var(--border-width) solid var(--color-purple-light);
+  border-radius: 8px;
+  padding: 12px;
+  overflow: auto;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  transition: all 0.3s ease;
+}
+
+.dock-panel:hover {
+  border-color: var(--color-purple-accent);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+}
+
+.dock-north {
+  grid-area: north;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: linear-gradient(135deg, #3d2a52, #2a1a3a);
+  border-bottom: 3px solid var(--color-purple-glow);
+}
+
+.dock-south {
+  grid-area: south;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  font-size: 0.85em;
+  background: linear-gradient(135deg, #1a0f26, #2a1a3a);
+  border-top: 3px solid var(--color-purple-glow);
+}
+
+.dock-east {
+  grid-area: east;
+  border-left: 3px solid var(--color-purple-glow);
+}
+
+.dock-west {
+  grid-area: west;
+  border-right: 3px solid var(--color-purple-glow);
+}
+
+.dock-center {
+  grid-area: center;
+  background: var(--color-bg-tertiary);
+  border: var(--border-width) solid var(--color-purple-accent);
+  box-shadow: inset 0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+.dock-panel::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dock-panel::-webkit-scrollbar-track {
+  background: var(--color-bg-tertiary);
+  border-radius: 4px;
+}
+
+.dock-panel::-webkit-scrollbar-thumb {
+  background: var(--color-purple-light);
+  border-radius: 4px;
+}
+
+.dock-panel::-webkit-scrollbar-thumb:hover {
+  background: var(--color-purple-accent);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+  color: var(--color-purple-light);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--color-purple-light);
+  border-top-color: var(--color-purple-glow);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.dock-header {
+  width: 100%;
+}
+
+.dock-logo {
+  font-size: 1.8em;
+  font-weight: 700;
+  color: var(--color-cream);
+  text-shadow: 0 0 15px var(--color-purple-glow);
+}
+
+.dock-title {
+  font-size: 1.3em;
+  color: var(--color-cream-dark);
+}
+
+.dock-nav {
+  display: flex;
+  gap: 15px;
+  margin-left: auto;
+}
+
+.dock-nav-item {
+  padding: 8px 16px;
+  background: rgba(245, 242, 232, 0.1);
+  border: 1px solid var(--color-cream-dark);
+  border-radius: 6px;
+  color: var(--color-cream);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.dock-nav-item:hover {
+  background: var(--color-purple-accent);
+  border-color: var(--color-purple-glow);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.6);
+  color: var(--color-cream);
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  background: rgba(245, 242, 232, 0.05);
+  border-radius: 4px;
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.status-indicator.normal {
+  background: var(--color-normal);
+  box-shadow: 0 0 10px var(--color-normal);
+}
+
+.status-indicator.warning {
+  background: var(--color-warning);
+  box-shadow: 0 0 10px var(--color-warning);
+}
+
+.status-indicator.alarm {
+  background: var(--color-alarm);
+  box-shadow: 0 0 10px var(--color-alarm);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.dock-section-title {
+  font-size: 1.1em;
+  font-weight: 700;
+  color: var(--color-cream);
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--color-purple-light);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.widget {
+  background: rgba(245, 242, 232, 0.05);
+  border: 1px solid var(--color-purple-light);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+  transition: all 0.3s;
+}
+
+.widget:hover {
+  background: rgba(245, 242, 232, 0.08);
+  border-color: var(--color-purple-accent);
+}
+
+.widget-title {
+  font-weight: 600;
+  color: var(--color-cream-dark);
+  margin-bottom: 8px;
+  font-size: 0.95em;
+}
+
+.widget-value {
+  font-size: 1.5em;
+  font-weight: 700;
+  color: var(--color-cream);
+  font-family: 'Courier New', monospace;
+}
+
+.widget-unit {
+  font-size: 0.8em;
+  color: var(--color-purple-light);
+  margin-left: 5px;
+}
+
+@media (max-width: 1200px) {
+  :root {
+    --dock-east-width: 240px;
+    --dock-west-width: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dock-container {
+    grid-template-areas:
+      "north"
+      "center"
+      "south";
+    grid-template-rows: var(--dock-north-height) 1fr var(--dock-south-height);
+    grid-template-columns: 1fr;
+  }
+  .dock-east, .dock-west {
+    display: none;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="dock-container">
+  <div class="dock-panel dock-north" id="dock-north">
+    <div class="loading"><div class="spinner"></div></div>
+  </div>
+  <div class="dock-panel dock-west" id="dock-west">
+    <div class="loading"><div class="spinner"></div></div>
+  </div>
+  <div class="dock-panel dock-center" id="dock-center">
+    <div class="loading"><div class="spinner"></div></div>
+  </div>
+  <div class="dock-panel dock-east" id="dock-east">
+    <div class="loading"><div class="spinner"></div></div>
+  </div>
+  <div class="dock-panel dock-south" id="dock-south">
+    <div class="loading"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<script>
+class DockingSystem {
+  constructor() {
+    this.basePath = '/templates/docking/docks';
+    this.docks = {
+      north: 'north.html',
+      south: 'south.html',
+      east: 'east.html',
+      west: 'west.html',
+      center: 'center.html'
+    };
+  }
+
+  async loadDock(dockName, containerId) {
+    try {
+      const response = await fetch(`${this.basePath}/${this.docks[dockName]}`);
+      if (!response.ok) throw new Error(`Failed to load ${dockName} dock`);
+      const html = await response.text();
+      document.getElementById(containerId).innerHTML = html;
+      document.dispatchEvent(new CustomEvent('dock-loaded', { detail: { dock: dockName } }));
+    } catch (error) {
+      console.error(`Error loading ${dockName} dock:`, error);
+      document.getElementById(containerId).innerHTML = `
+        <div style="color: var(--color-alarm); text-align: center;">
+          ⚠️ Error loading ${dockName} dock
+        </div>
+      `;
+    }
+  }
+
+  async loadAll() {
+    await Promise.all([
+      this.loadDock('north', 'dock-north'),
+      this.loadDock('south', 'dock-south'),
+      this.loadDock('east', 'dock-east'),
+      this.loadDock('west', 'dock-west'),
+      this.loadDock('center', 'dock-center')
+    ]);
+    console.log('All docks loaded successfully');
+  }
+
+  async loadCustomDock(dockName, url, containerId) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Failed to load custom dock from ${url}`);
+      const html = await response.text();
+      document.getElementById(containerId).innerHTML = html;
+    } catch (error) {
+      console.error(`Error loading custom dock:`, error);
+    }
+  }
+}
+
+const dockingSystem = new DockingSystem();
+
+document.addEventListener('DOMContentLoaded', () => {
+  dockingSystem.loadAll();
+});
+
+document.addEventListener('dock-loaded', (event) => {
+  console.log(`Dock loaded: ${event.detail.dock}`);
+});
+
+window.dockingSystem = dockingSystem;
+</script>
+
+</body>
+</html>

@@ -1,66 +1,15 @@
 {
-  "UUID": "5a7a2d0e-4ece-4f4b-bb79-f6d1621b4777",
+  "UUID": "f09384cd-3b77-43be-9689-0cd56b1fa335",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/controls/tag-providers/controls/tags/",
   "Directory_Name": "Tags",
   "Title": "Tags",
   "Description": "ISA-95 L3_MES - tags subsystem",
-  "Icon": "\ud83c\udff7\ufe0f",
+  "Icon": "\ud83d\udcc1",
   "Color_Scheme": "blue",
   "Parent_Path": "/os/controls/tag-providers/controls/",
   "Child_Directories": [],
-  "Sibling_Directories": [
-    {
-      "path": "/os/controls/tag-providers/controls/hmi/",
-      "title": "Hmi",
-      "description": "hmi area",
-      "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/controls/tag-providers/controls/plc/",
-      "title": "Plc",
-      "description": "plc area",
-      "icon": "\u2699\ufe0f"
-    },
-    {
-      "path": "/os/controls/tag-providers/controls/scada/",
-      "title": "Scada",
-      "description": "scada area",
-      "icon": "\ud83d\udcca"
-    }
-  ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/controls/",
-      "title": "Controls",
-      "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/controls/tag-providers/",
-      "title": "Tag Providers",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/controls/tag-providers/controls/",
-      "title": "Controls",
-      "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/controls/tag-providers/controls/tags/",
-      "title": "Tags",
-      "icon": "\ud83c\udff7\ufe0f"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": null,
   "Status_Path": null,
@@ -114,15 +63,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 753
     }
   ]
 }

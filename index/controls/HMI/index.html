@@ -289,6 +289,15 @@
                     <div class="nav-card-desc">Production reports and analytics</div>
                 </div>
             </div>
+
+            <!-- Template-Based Screens Section -->
+            <h2 style="color: var(--text-primary); margin-top: var(--spacing-2xl); margin-bottom: var(--spacing-lg);">
+                Template-Based Screens
+            </h2>
+
+            <div class="nav-grid" id="template-screens-container">
+                <p style="color: var(--text-secondary);">Loading template screens...</p>
+            </div>
         </main>
 
         <!-- Footer -->
@@ -303,7 +312,10 @@
     <!-- Navigation System -->
     <script src="js/navigation.js"></script>
 
-    <!-- Template System -->
+    <!-- New Template System (from /templates directory) -->
+    <script src="../../../templates/template-loader.js"></script>
+
+    <!-- Legacy Template System -->
     <script src="js/template-loader.js"></script>
 
     <!-- Screen Renderer -->
@@ -334,6 +346,43 @@
         console.log('UUID-based navigation enabled');
         console.log('ISA-101 theme loaded');
         console.log('Template system available');
+
+        // Load template screens
+        async function loadTemplateScreens() {
+            try {
+                if (typeof window.templateLoader === 'undefined') {
+                    console.log('Template loader not available');
+                    return;
+                }
+
+                await window.templateLoader.loadIndexes();
+                const screens = window.templateLoader.indexes.screens.screens;
+
+                const container = document.getElementById('template-screens-container');
+                let html = '';
+
+                screens.forEach(screen => {
+                    html += `
+                        <div class="nav-card" onclick="hmiNav.navigateToTemplate('${screen.uuid}', true)">
+                            <div class="status-badge" style="background: var(--primary-purple); box-shadow: 0 0 10px var(--primary-purple);"></div>
+                            <div class="nav-card-icon">🎨</div>
+                            <div class="nav-card-title">${screen.name}</div>
+                            <div class="nav-card-desc">${screen.description}</div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+                console.log('Loaded', screens.length, 'template screens');
+            } catch (error) {
+                console.error('Error loading template screens:', error);
+                document.getElementById('template-screens-container').innerHTML =
+                    '<p style="color: var(--alarm-high);">Failed to load template screens</p>';
+            }
+        }
+
+        // Load template screens after page loads
+        setTimeout(loadTemplateScreens, 1000);
     </script>
 </body>
 </html>

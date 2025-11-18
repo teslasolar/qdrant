@@ -1,5 +1,5 @@
 {
-  "UUID": "892cda6b-3213-4e2a-a23b-579b46200862",
+  "UUID": "4c6df3aa-f532-496e-af12-3d834863b39c",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/modules/medical/",
   "Directory_Name": "Medical",
@@ -13,67 +13,19 @@
       "path": "/os/modules/medical/controls/",
       "title": "Controls",
       "description": "controls subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 2
-    }
-  ],
-  "Sibling_Directories": [
-    {
-      "path": "/os/modules/ai/",
-      "title": "Ai",
-      "description": "ai area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/modules/cli/",
-      "title": "Cli",
-      "description": "cli area",
-      "icon": "\u2328\ufe0f"
-    },
-    {
-      "path": "/os/modules/controls/",
-      "title": "Controls",
-      "description": "controls area",
       "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/modules/packml/",
-      "title": "Packml",
-      "description": "packml area",
-      "icon": "\ud83d\udcc1"
     }
   ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/modules/",
-      "title": "Modules",
-      "icon": "\ud83d\udce6"
-    },
-    {
-      "path": "/os/modules/medical/",
-      "title": "Medical",
-      "icon": "\ud83c\udfe5"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
   "has_plc": true,
   "has_hmi": true,
   "has_scada": true,
-  "plc_path": "plc.html",
-  "hmi_path": "hmi.html",
-  "scada_path": "scada.html",
+  "plc_path": "/os/modules/medical/plc.html",
+  "hmi_path": "/os/modules/medical/hmi.html",
+  "scada_path": "/os/modules/medical/scada.html",
   "Features": [
     {
       "title": "DICOM Processing",
@@ -143,113 +95,6 @@
       "path": "scada.html",
       "name": "SCADA",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "hmi.html",
-      "name": "Hmi",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3917
-    },
-    {
-      "path": "plc.html",
-      "name": "Plc",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3685
-    },
-    {
-      "path": "scada.html",
-      "name": "Scada",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 6041
-    },
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 8092
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4597
-    },
-    {
-      "path": "medical-dataset.md",
-      "name": "Medical Dataset",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 2516
-    },
-    {
-      "path": "medical-dicom-viewer.md",
-      "name": "Medical Dicom Viewer",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 1929
-    },
-    {
-      "path": "medical-embeddings.md",
-      "name": "Medical Embeddings",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 1348
-    },
-    {
-      "path": "medical-imaging.md",
-      "name": "Medical Imaging",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 6376
-    },
-    {
-      "path": "medical-index.md",
-      "name": "Medical Index",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 2501
-    },
-    {
-      "path": "medical-inference.md",
-      "name": "Medical Inference",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4927
-    },
-    {
-      "path": "medical-qdrant-client.md",
-      "name": "Medical Qdrant Client",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 2093
-    },
-    {
-      "path": "medical-qdrant.md",
-      "name": "Medical Qdrant",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 1808
-    },
-    {
-      "path": "medical-xray-analyzer.md",
-      "name": "Medical Xray Analyzer",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 2105
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3618
     }
   ]
 }

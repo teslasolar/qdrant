@@ -1,0 +1,79 @@
+{
+  "uuid": "med-components-index",
+  "type": "index",
+  "category": "medical",
+  "metadata": {
+    "name": "Medical Imaging Components Index",
+    "description": "Index of all medical imaging component templates",
+    "version": "1.0.0",
+    "created": "2025-11-17T00:00:00Z"
+  },
+  "components": [
+    {
+      "id": "dicom-viewport",
+      "name": "DICOM Viewport",
+      "description": "Advanced DICOM image viewer with medical imaging tools",
+      "file": "dicom-viewport.json",
+      "icon": "🖼️",
+      "category": "viewer"
+    },
+    {
+      "id": "patient-info-card",
+      "name": "Patient Info Card",
+      "description": "Displays patient demographics and study information",
+      "file": "patient-info-card.json",
+      "icon": "👤",
+      "category": "info"
+    },
+    {
+      "id": "alf-probability-display",
+      "name": "AlF Probability Display",
+      "description": "Shows Alzheimer's/Autism screening probabilities",
+      "file": "alf-probability-display.json",
+      "icon": "🧠",
+      "category": "ai"
+    },
+    {
+      "id": "study-queue-panel",
+      "name": "Study Queue Panel",
+      "description": "Patient study worklist with filtering",
+      "file": "study-queue-panel.json",
+      "icon": "📋",
+      "category": "workflow"
+    },
+    {
+      "id": "workflow-diagram",
+      "name": "Workflow Diagram",
+      "description": "Visual DICOM processing pipeline diagram",
+      "file": "workflow-diagram.json",
+      "icon": "🔄",
+      "category": "workflow"
+    },
+    {
+      "id": "qdrant-similarity-panel",
+      "name": "Qdrant Similarity Panel",
+      "description": "Vector similarity search results display",
+      "file": "qdrant-similarity-panel.json",
+      "icon": "🔍",
+      "category": "ai"
+    }
+  ],
+  "categories": {
+    "viewer": {
+      "name": "Image Viewers",
+      "description": "DICOM image viewing components"
+    },
+    "info": {
+      "name": "Information Displays",
+      "description": "Patient and study information components"
+    },
+    "ai": {
+      "name": "AI Components",
+      "description": "AI-powered analysis and search components"
+    },
+    "workflow": {
+      "name": "Workflow Components",
+      "description": "Study queue and workflow management components"
+    }
+  }
+}

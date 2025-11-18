@@ -1,5 +1,5 @@
 {
-  "UUID": "c34956ff-8e35-4b7f-a94f-4d4a28d5e6db",
+  "UUID": "818ccebe-3f82-48e2-bbd3-4634fd17987a",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/language/trinary/",
   "Directory_Name": "Trinary",
@@ -13,62 +13,25 @@
       "path": "/os/language/trinary/compiler/",
       "title": "Compiler",
       "description": "compiler subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 9
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/os/language/trinary/controls/",
       "title": "Controls",
       "description": "controls subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 2
-    }
-  ],
-  "Sibling_Directories": [
-    {
-      "path": "/os/language/controls/",
-      "title": "Controls",
-      "description": "controls area",
       "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/language/snt/",
-      "title": "Snt",
-      "description": "snt area",
-      "icon": "\ud83d\udcc1"
     }
   ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/language/",
-      "title": "Language",
-      "icon": "\ud83c\udf10"
-    },
-    {
-      "path": "/os/language/trinary/",
-      "title": "Trinary",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": null,
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
   "has_plc": true,
   "has_hmi": true,
   "has_scada": true,
-  "plc_path": "plc.html",
-  "hmi_path": "hmi.html",
-  "scada_path": "scada.html",
+  "plc_path": "/os/language/trinary/plc.html",
+  "hmi_path": "/os/language/trinary/hmi.html",
+  "scada_path": "/os/language/trinary/scada.html",
   "Features": [
     {
       "title": "Core Functionality",
@@ -133,57 +96,6 @@
       "path": "scada.html",
       "name": "SCADA",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "hmi.html",
-      "name": "Hmi",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3661
-    },
-    {
-      "path": "plc.html",
-      "name": "Plc",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3603
-    },
-    {
-      "path": "scada.html",
-      "name": "Scada",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 5917
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4604
-    },
-    {
-      "path": "spacetime-compiler.md",
-      "name": "Spacetime Compiler",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 5251
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3623
-    },
-    {
-      "path": "trinary-core.md",
-      "name": "Trinary Core",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3551
     }
   ]
 }

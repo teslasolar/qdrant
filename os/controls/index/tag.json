@@ -1,5 +1,5 @@
 {
-  "UUID": "44a1766d-57da-4c4f-8cc5-38bf313f4c6f",
+  "UUID": "91771afc-4600-4648-aef4-11657794f381",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/controls/",
   "Directory_Name": "Controls",
@@ -13,134 +13,19 @@
       "path": "/os/controls/tag-providers/",
       "title": "Tag Providers",
       "description": "tag-providers subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 9
+      "icon": "\ud83d\udcc1"
     }
   ],
-  "Sibling_Directories": [
-    {
-      "path": "/os/backend/",
-      "title": "Backend",
-      "description": "backend area",
-      "icon": "\u2699\ufe0f"
-    },
-    {
-      "path": "/os/boot/",
-      "title": "Boot",
-      "description": "boot area",
-      "icon": "\ud83d\ude80"
-    },
-    {
-      "path": "/os/config/",
-      "title": "Config",
-      "description": "config area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/data/",
-      "title": "Data",
-      "description": "data area",
-      "icon": "\ud83d\udcca"
-    },
-    {
-      "path": "/os/debug/",
-      "title": "Debug",
-      "description": "debug area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/equipment/",
-      "title": "Equipment",
-      "description": "equipment area",
-      "icon": "\ud83c\udfed"
-    },
-    {
-      "path": "/os/frontend/",
-      "title": "Frontend",
-      "description": "frontend area",
-      "icon": "\ud83d\udda5\ufe0f"
-    },
-    {
-      "path": "/os/language/",
-      "title": "Language",
-      "description": "language area",
-      "icon": "\ud83c\udf10"
-    },
-    {
-      "path": "/os/logs/",
-      "title": "Logs",
-      "description": "logs area",
-      "icon": "\ud83d\udcdd"
-    },
-    {
-      "path": "/os/medical/",
-      "title": "Medical",
-      "description": "medical area",
-      "icon": "\ud83c\udfe5"
-    },
-    {
-      "path": "/os/models/",
-      "title": "Models",
-      "description": "models area",
-      "icon": "\ud83e\udd16"
-    },
-    {
-      "path": "/os/modules/",
-      "title": "Modules",
-      "description": "modules area",
-      "icon": "\ud83d\udce6"
-    },
-    {
-      "path": "/os/sandbox/",
-      "title": "Sandbox",
-      "description": "sandbox area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/scripts/",
-      "title": "Scripts",
-      "description": "scripts area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/templates/",
-      "title": "Templates",
-      "description": "templates area",
-      "icon": "\ud83d\udcc4"
-    },
-    {
-      "path": "/os/test-modules/",
-      "title": "Test Modules",
-      "description": "test-modules area",
-      "icon": "\ud83d\udce6"
-    }
-  ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/controls/",
-      "title": "Controls",
-      "icon": "\ud83c\udf9b\ufe0f"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
   "has_plc": true,
   "has_hmi": true,
   "has_scada": true,
-  "plc_path": "plc.html",
-  "hmi_path": "hmi.html",
-  "scada_path": "scada.html",
+  "plc_path": "/os/controls/plc.html",
+  "hmi_path": "/os/controls/hmi.html",
+  "scada_path": "/os/controls/scada.html",
   "Features": [
     {
       "title": "SCADA System",
@@ -197,11 +82,6 @@
       "type": "html"
     },
     {
-      "path": "index-custom.html",
-      "name": "Custom Index",
-      "type": "html"
-    },
-    {
       "path": "plc.html",
       "name": "PLC",
       "type": "html"
@@ -215,50 +95,6 @@
       "path": "scada.html",
       "name": "SCADA",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "hmi.html",
-      "name": "Hmi",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3925
-    },
-    {
-      "path": "plc.html",
-      "name": "Plc",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3682
-    },
-    {
-      "path": "scada.html",
-      "name": "Scada",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 6054
-    },
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 387
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4544
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3609
     }
   ]
 }

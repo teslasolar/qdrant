@@ -1,0 +1,102 @@
+{
+  "uuid": "880e8400-e29b-41d4-a716-446655440003",
+  "type": "screen",
+  "category": "trend",
+  "metadata": {
+    "name": "Historical Trend",
+    "description": "Multi-tag historical trending and analysis screen",
+    "version": "1.0.0",
+    "author": "Chazon SCADA",
+    "created": "2025-01-17T00:00:00Z",
+    "modified": "2025-01-17T00:00:00Z",
+    "tags": ["trend", "historical", "analysis"]
+  },
+  "layout": {
+    "grid": {
+      "columns": 1,
+      "rows": 3,
+      "gap": 10
+    },
+    "theme": "dark",
+    "colorScheme": "blue"
+  },
+  "components": [
+    {
+      "uuid": "comp-t001",
+      "type": "trend-chart",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 2
+      },
+      "config": {
+        "chartType": "line",
+        "legend": true,
+        "zoom": true,
+        "pan": true,
+        "crosshair": true,
+        "annotations": true,
+        "multiAxis": true,
+        "exportFormats": ["png", "csv", "pdf"]
+      },
+      "bindings": {
+        "tags": [
+          "process.temperature",
+          "process.pressure",
+          "process.flow",
+          "process.level"
+        ],
+        "timeRange": {
+          "start": "now-8h",
+          "end": "now"
+        }
+      }
+    },
+    {
+      "uuid": "comp-t002",
+      "type": "trend-controls",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "width": 1,
+        "height": 1
+      },
+      "config": {
+        "timeRangePresets": [
+          { "label": "Last Hour", "value": "1h" },
+          { "label": "Last 8 Hours", "value": "8h" },
+          { "label": "Last 24 Hours", "value": "24h" },
+          { "label": "Last Week", "value": "7d" },
+          { "label": "Last Month", "value": "30d" },
+          { "label": "Custom", "value": "custom" }
+        ],
+        "tagSelector": {
+          "enabled": true,
+          "maxTags": 8,
+          "searchable": true
+        },
+        "statistics": {
+          "show": true,
+          "metrics": ["min", "max", "avg", "stddev"]
+        }
+      },
+      "bindings": {
+        "tags": ["trend.timeRange", "trend.selectedTags"]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "trigger": "onLoad",
+      "action": "loadHistoricalData",
+      "params": {
+        "aggregation": "auto"
+      }
+    },
+    {
+      "trigger": "onTimeRangeChange",
+      "action": "reloadData"
+    }
+  ]
+}

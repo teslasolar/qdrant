@@ -1,0 +1,447 @@
+{
+  "uuid": "alf-detect-pdf-001",
+  "type": "report-template",
+  "category": "medical",
+  "metadata": {
+    "name": "AlF-DETECT PDF Report Template",
+    "description": "PDF report generation configuration for screening results",
+    "version": "1.0.0",
+    "created": "2025-01-17T00:00:00Z"
+  },
+  "template": {
+    "htmlSource": "/os/medical/reports/screening-report.html",
+    "engine": "puppeteer",
+    "outputFormat": "PDF"
+  },
+  "pdfOptions": {
+    "format": "Letter",
+    "orientation": "portrait",
+    "margin": {
+      "top": "0.5in",
+      "right": "0.5in",
+      "bottom": "0.5in",
+      "left": "0.5in"
+    },
+    "printBackground": true,
+    "displayHeaderFooter": false,
+    "preferCSSPageSize": true
+  },
+  "dataMapping": {
+    "HOSPITAL_NAME": {
+      "source": "config",
+      "path": "hospital.name",
+      "default": "Chazon Medical Center"
+    },
+    "REPORT_ID": {
+      "source": "generated",
+      "format": "ALF-{timestamp}-{random}"
+    },
+    "REPORT_DATE": {
+      "source": "timestamp",
+      "format": "YYYY-MM-DD"
+    },
+    "REPORT_TIME": {
+      "source": "timestamp",
+      "format": "HH:mm:ss"
+    },
+    "PATIENT_ID": {
+      "source": "input",
+      "required": true
+    },
+    "PATIENT_NAME": {
+      "source": "input",
+      "required": true
+    },
+    "PATIENT_DOB": {
+      "source": "input",
+      "required": true
+    },
+    "PATIENT_AGE": {
+      "source": "calculated",
+      "expression": "calculateAge(PATIENT_DOB)"
+    },
+    "PATIENT_GENDER": {
+      "source": "input",
+      "required": true
+    },
+    "REFERRING_PHYSICIAN": {
+      "source": "input",
+      "required": true
+    },
+    "ALZHEIMERS_PROB": {
+      "source": "tag",
+      "path": "medical.alfAlzheimersProbability",
+      "format": "number",
+      "decimals": 1
+    },
+    "ALZHEIMERS_CONF": {
+      "source": "tag",
+      "path": "medical.alfAlzheimersConfidence",
+      "format": "number",
+      "decimals": 1
+    },
+    "ALZHEIMERS_CONF_LEVEL": {
+      "source": "calculated",
+      "expression": "ALZHEIMERS_CONF >= 80 ? 'high' : ALZHEIMERS_CONF >= 60 ? 'medium' : 'low'"
+    },
+    "AUTISM_PROB": {
+      "source": "tag",
+      "path": "medical.alfAutismProbability",
+      "format": "number",
+      "decimals": 1
+    },
+    "AUTISM_CONF": {
+      "source": "tag",
+      "path": "medical.alfAutismConfidence",
+      "format": "number",
+      "decimals": 1
+    },
+    "AUTISM_CONF_LEVEL": {
+      "source": "calculated",
+      "expression": "AUTISM_CONF >= 80 ? 'high' : AUTISM_CONF >= 60 ? 'medium' : 'low'"
+    },
+    "NORMAL_PROB": {
+      "source": "tag",
+      "path": "medical.alfNormalProbability",
+      "format": "number",
+      "decimals": 1
+    },
+    "NORMAL_CONF": {
+      "source": "tag",
+      "path": "medical.alfNormalConfidence",
+      "format": "number",
+      "decimals": 1
+    },
+    "NORMAL_CONF_LEVEL": {
+      "source": "calculated",
+      "expression": "NORMAL_CONF >= 80 ? 'high' : NORMAL_CONF >= 60 ? 'medium' : 'low'"
+    },
+    "HIPPOCAMPUS_CONC": {
+      "source": "tag",
+      "path": "medical.alfHippocampusConc",
+      "format": "number",
+      "decimals": 1
+    },
+    "HIPPOCAMPUS_RISK": {
+      "source": "calculated",
+      "expression": "HIPPOCAMPUS_CONC >= 70 ? 'high' : HIPPOCAMPUS_CONC >= 40 ? 'medium' : 'low'"
+    },
+    "HIPPOCAMPUS_COLOR": {
+      "source": "calculated",
+      "expression": "HIPPOCAMPUS_RISK === 'high' ? '#ff0044' : HIPPOCAMPUS_RISK === 'medium' ? '#ffaa00' : '#00ff88'"
+    },
+    "HIPPOCAMPUS_RISK_TEXT": {
+      "source": "calculated",
+      "expression": "HIPPOCAMPUS_RISK === 'high' ? 'High Risk' : HIPPOCAMPUS_RISK === 'medium' ? 'Moderate' : 'Low Risk'"
+    },
+    "FRONTAL_CONC": {
+      "source": "tag",
+      "path": "medical.alfFrontalCortexConc",
+      "format": "number",
+      "decimals": 1
+    },
+    "FRONTAL_RISK": {
+      "source": "calculated",
+      "expression": "FRONTAL_CONC >= 70 ? 'high' : FRONTAL_CONC >= 40 ? 'medium' : 'low'"
+    },
+    "FRONTAL_COLOR": {
+      "source": "calculated",
+      "expression": "FRONTAL_RISK === 'high' ? '#ff0044' : FRONTAL_RISK === 'medium' ? '#ffaa00' : '#00ff88'"
+    },
+    "FRONTAL_RISK_TEXT": {
+      "source": "calculated",
+      "expression": "FRONTAL_RISK === 'high' ? 'High Risk' : FRONTAL_RISK === 'medium' ? 'Moderate' : 'Low Risk'"
+    },
+    "TEMPORAL_CONC": {
+      "source": "tag",
+      "path": "medical.alfTemporalLobeConc",
+      "format": "number",
+      "decimals": 1
+    },
+    "TEMPORAL_RISK": {
+      "source": "calculated",
+      "expression": "TEMPORAL_CONC >= 70 ? 'high' : TEMPORAL_CONC >= 40 ? 'medium' : 'low'"
+    },
+    "TEMPORAL_COLOR": {
+      "source": "calculated",
+      "expression": "TEMPORAL_RISK === 'high' ? '#ff0044' : TEMPORAL_RISK === 'medium' ? '#ffaa00' : '#00ff88'"
+    },
+    "TEMPORAL_RISK_TEXT": {
+      "source": "calculated",
+      "expression": "TEMPORAL_RISK === 'high' ? 'High Risk' : TEMPORAL_RISK === 'medium' ? 'Moderate' : 'Low Risk'"
+    },
+    "PARIETAL_CONC": {
+      "source": "tag",
+      "path": "medical.alfParietalLobeConc",
+      "format": "number",
+      "decimals": 1
+    },
+    "PARIETAL_RISK": {
+      "source": "calculated",
+      "expression": "PARIETAL_CONC >= 70 ? 'high' : PARIETAL_CONC >= 40 ? 'medium' : 'low'"
+    },
+    "PARIETAL_COLOR": {
+      "source": "calculated",
+      "expression": "PARIETAL_RISK === 'high' ? '#ff0044' : PARIETAL_RISK === 'medium' ? '#ffaa00' : '#00ff88'"
+    },
+    "PARIETAL_RISK_TEXT": {
+      "source": "calculated",
+      "expression": "PARIETAL_RISK === 'high' ? 'High Risk' : PARIETAL_RISK === 'medium' ? 'Moderate' : 'Low Risk'"
+    },
+    "OCCIPITAL_CONC": {
+      "source": "tag",
+      "path": "medical.alfOccipitalLobeConc",
+      "format": "number",
+      "decimals": 1
+    },
+    "OCCIPITAL_RISK": {
+      "source": "calculated",
+      "expression": "OCCIPITAL_CONC >= 70 ? 'high' : OCCIPITAL_CONC >= 40 ? 'medium' : 'low'"
+    },
+    "OCCIPITAL_COLOR": {
+      "source": "calculated",
+      "expression": "OCCIPITAL_RISK === 'high' ? '#ff0044' : OCCIPITAL_RISK === 'medium' ? '#ffaa00' : '#00ff88'"
+    },
+    "OCCIPITAL_RISK_TEXT": {
+      "source": "calculated",
+      "expression": "OCCIPITAL_RISK === 'high' ? 'High Risk' : OCCIPITAL_RISK === 'medium' ? 'Moderate' : 'Low Risk'"
+    },
+    "CEREBELLUM_CONC": {
+      "source": "tag",
+      "path": "medical.alfCerebellumConc",
+      "format": "number",
+      "decimals": 1
+    },
+    "CEREBELLUM_RISK": {
+      "source": "calculated",
+      "expression": "CEREBELLUM_CONC >= 70 ? 'high' : CEREBELLUM_CONC >= 40 ? 'medium' : 'low'"
+    },
+    "CEREBELLUM_COLOR": {
+      "source": "calculated",
+      "expression": "CEREBELLUM_RISK === 'high' ? '#ff0044' : CEREBELLUM_RISK === 'medium' ? '#ffaa00' : '#00ff88'"
+    },
+    "CEREBELLUM_RISK_TEXT": {
+      "source": "calculated",
+      "expression": "CEREBELLUM_RISK === 'high' ? 'High Risk' : CEREBELLUM_RISK === 'medium' ? 'Moderate' : 'Low Risk'"
+    },
+    "AMYGDALA_CONC": {
+      "source": "tag",
+      "path": "medical.alfAmygdalaConc",
+      "format": "number",
+      "decimals": 1
+    },
+    "AMYGDALA_RISK": {
+      "source": "calculated",
+      "expression": "AMYGDALA_CONC >= 70 ? 'high' : AMYGDALA_CONC >= 40 ? 'medium' : 'low'"
+    },
+    "AMYGDALA_COLOR": {
+      "source": "calculated",
+      "expression": "AMYGDALA_RISK === 'high' ? '#ff0044' : AMYGDALA_RISK === 'medium' ? '#ffaa00' : '#00ff88'"
+    },
+    "AMYGDALA_RISK_TEXT": {
+      "source": "calculated",
+      "expression": "AMYGDALA_RISK === 'high' ? 'High Risk' : AMYGDALA_RISK === 'medium' ? 'Moderate' : 'Low Risk'"
+    },
+    "BASAL_CONC": {
+      "source": "tag",
+      "path": "medical.alfBasalGangliaConc",
+      "format": "number",
+      "decimals": 1
+    },
+    "BASAL_RISK": {
+      "source": "calculated",
+      "expression": "BASAL_CONC >= 70 ? 'high' : BASAL_CONC >= 40 ? 'medium' : 'low'"
+    },
+    "BASAL_COLOR": {
+      "source": "calculated",
+      "expression": "BASAL_RISK === 'high' ? '#ff0044' : BASAL_RISK === 'medium' ? '#ffaa00' : '#00ff88'"
+    },
+    "BASAL_RISK_TEXT": {
+      "source": "calculated",
+      "expression": "BASAL_RISK === 'high' ? 'High Risk' : BASAL_RISK === 'medium' ? 'Moderate' : 'Low Risk'"
+    },
+    "INTERPRETATION_TEXT": {
+      "source": "generated",
+      "generator": "interpretationEngine"
+    },
+    "RECOMMENDATIONS_LIST": {
+      "source": "generated",
+      "generator": "recommendationsEngine"
+    },
+    "HIGH_ENERGY": {
+      "source": "input",
+      "default": "100"
+    },
+    "LOW_ENERGY": {
+      "source": "input",
+      "default": "40"
+    },
+    "RESOLUTION": {
+      "source": "input",
+      "default": "1024x1024"
+    },
+    "PROCESSING_TIME": {
+      "source": "tag",
+      "path": "medical.alfProcessingTime"
+    },
+    "DB_MATCHES": {
+      "source": "input",
+      "default": "1000+"
+    },
+    "VERSION": {
+      "source": "config",
+      "path": "system.version",
+      "default": "1.0.0"
+    },
+    "RADIOLOGIST_NAME": {
+      "source": "input",
+      "required": true
+    },
+    "RADIOLOGIST_LICENSE": {
+      "source": "input",
+      "required": true
+    },
+    "NEUROLOGIST_NAME": {
+      "source": "input",
+      "required": true
+    },
+    "NEUROLOGIST_LICENSE": {
+      "source": "input",
+      "required": true
+    },
+    "GENERATION_TIMESTAMP": {
+      "source": "timestamp",
+      "format": "YYYY-MM-DD HH:mm:ss Z"
+    }
+  },
+  "generators": {
+    "interpretationEngine": {
+      "type": "conditional",
+      "rules": [
+        {
+          "condition": "ALZHEIMERS_PROB >= 85",
+          "output": "The screening indicates a VERY HIGH probability of Alzheimer's disease based on significantly elevated AlF concentration in the hippocampus region ({{HIPPOCAMPUS_CONC}} mg/kg). This finding strongly correlates with early-stage neurodegenerative changes. Immediate follow-up with comprehensive clinical evaluation including MRI, cognitive assessment, and specialist consultation is URGENTLY recommended."
+        },
+        {
+          "condition": "ALZHEIMERS_PROB >= 70",
+          "output": "The screening indicates a HIGH probability of Alzheimer's disease based on elevated AlF concentration in the hippocampus region ({{HIPPOCAMPUS_CONC}} mg/kg). Follow-up with additional imaging (MRI), cognitive testing, and neurologist consultation is strongly recommended."
+        },
+        {
+          "condition": "AUTISM_PROB >= 85",
+          "output": "The screening indicates a VERY HIGH probability of autism spectrum disorder based on significantly elevated AlF concentration in the frontal cortex region ({{FRONTAL_CONC}} mg/kg). Immediate comprehensive developmental and behavioral assessment is URGENTLY recommended."
+        },
+        {
+          "condition": "AUTISM_PROB >= 70",
+          "output": "The screening indicates a HIGH probability of autism spectrum disorder based on elevated AlF concentration in the frontal cortex region ({{FRONTAL_CONC}} mg/kg). Follow-up with developmental pediatrician or specialist is strongly recommended."
+        },
+        {
+          "condition": "NORMAL_PROB >= 70",
+          "output": "The screening indicates a LOW risk for both Alzheimer's disease and autism spectrum disorder. AlF concentrations across all brain regions are within normal ranges. Routine monitoring is recommended as per standard clinical guidelines."
+        },
+        {
+          "condition": "default",
+          "output": "The screening shows intermediate results requiring additional clinical correlation. AlF concentrations show some elevation but do not reach high-risk thresholds. Clinical evaluation and possible repeat screening in 6-12 months is recommended."
+        }
+      ]
+    },
+    "recommendationsEngine": {
+      "type": "conditional-list",
+      "rules": [
+        {
+          "condition": "ALZHEIMERS_PROB >= 85",
+          "items": [
+            "<li><strong>URGENT:</strong> Schedule comprehensive neurological evaluation within 48 hours</li>",
+            "<li>Perform brain MRI with volumetric analysis (focus on hippocampal volume)</li>",
+            "<li>Conduct comprehensive cognitive assessment (MMSE, MoCA, detailed neuropsychological testing)</li>",
+            "<li>Consider PET imaging (amyloid/tau PET) for confirmation</li>",
+            "<li>Evaluate for reversible causes of cognitive impairment</li>",
+            "<li>Discuss treatment options and clinical trial eligibility with neurologist</li>",
+            "<li>Arrange family counseling and support services</li>"
+          ]
+        },
+        {
+          "condition": "ALZHEIMERS_PROB >= 70",
+          "items": [
+            "<li>Schedule neurologist consultation within 1-2 weeks</li>",
+            "<li>Perform brain MRI for structural assessment</li>",
+            "<li>Conduct cognitive screening (MMSE, MoCA)</li>",
+            "<li>Rule out other causes of cognitive changes</li>",
+            "<li>Consider repeat AlF-DETECT screening in 6 months</li>"
+          ]
+        },
+        {
+          "condition": "AUTISM_PROB >= 85",
+          "items": [
+            "<li><strong>URGENT:</strong> Schedule comprehensive developmental assessment within 1 week</li>",
+            "<li>Refer to developmental pediatrician or autism specialist</li>",
+            "<li>Conduct ADOS-2 (Autism Diagnostic Observation Schedule) assessment</li>",
+            "<li>Perform comprehensive speech and language evaluation</li>",
+            "<li>Arrange occupational therapy assessment</li>",
+            "<li>Discuss early intervention programs</li>",
+            "<li>Provide family support and resources</li>"
+          ]
+        },
+        {
+          "condition": "AUTISM_PROB >= 70",
+          "items": [
+            "<li>Schedule developmental pediatrician consultation</li>",
+            "<li>Conduct developmental screening assessments</li>",
+            "<li>Consider speech/language evaluation</li>",
+            "<li>Monitor development closely</li>",
+            "<li>Consider repeat screening in 6-12 months</li>"
+          ]
+        },
+        {
+          "condition": "NORMAL_PROB >= 70",
+          "items": [
+            "<li>Continue routine health monitoring</li>",
+            "<li>Maintain healthy lifestyle (diet, exercise, cognitive activities)</li>",
+            "<li>Consider repeat screening based on risk factors or family history</li>",
+            "<li>No immediate intervention required</li>"
+          ]
+        },
+        {
+          "condition": "default",
+          "items": [
+            "<li>Clinical correlation recommended</li>",
+            "<li>Consider repeat AlF-DETECT screening in 6-12 months</li>",
+            "<li>Monitor for clinical symptoms</li>",
+            "<li>Consult with appropriate specialist if concerns arise</li>"
+          ]
+        }
+      ]
+    }
+  },
+  "postProcessing": {
+    "watermark": {
+      "enabled": true,
+      "text": "CONFIDENTIAL MEDICAL REPORT",
+      "opacity": 0.1
+    },
+    "encryption": {
+      "enabled": true,
+      "password": "${REPORT_ENCRYPTION_PASSWORD}"
+    },
+    "digitalSignature": {
+      "enabled": true,
+      "certificate": "${DIGITAL_SIGNATURE_CERT}"
+    }
+  },
+  "distribution": {
+    "autoSave": {
+      "enabled": true,
+      "path": "/os/medical/reports/generated/{{REPORT_ID}}.pdf"
+    },
+    "autoEmail": {
+      "enabled": false,
+      "recipients": ["${REFERRING_PHYSICIAN_EMAIL}"],
+      "subject": "AlF-DETECT Screening Report - {{PATIENT_NAME}}",
+      "attachEncrypted": true
+    },
+    "archiving": {
+      "enabled": true,
+      "retention": "7years",
+      "complianceStandard": "HIPAA"
+    }
+  }
+}

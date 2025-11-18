@@ -1,0 +1,520 @@
+{
+  "standardId": "isa-101-hmi-v1.0",
+  "type": "design-patterns",
+  "metadata": {
+    "name": "ISA-101 HMI Design Patterns",
+    "description": "Human Machine Interface Design Standard - High Performance HMI principles",
+    "version": "1.0.0",
+    "standard": "ISA-101 (ANSI/ISA-101.01-2015)",
+    "created": "2025-11-17",
+    "tags": ["isa-101", "hmi", "scada", "user-interface", "situational-awareness"]
+  },
+  "specification": {
+    "description": "Design patterns and guidelines for effective operator interfaces",
+    "purpose": "Improve operator situational awareness, reduce cognitive load, enhance safety",
+    "application": "SCADA/HMI screen design, operator workstations, control rooms"
+  },
+  "designPhilosophy": {
+    "highPerformanceHMI": {
+      "principles": [
+        "Situational awareness",
+        "Consistency",
+        "Simplicity",
+        "Information density management",
+        "Use of color and graphics",
+        "Alarm management integration"
+      ],
+      "goals": [
+        "Reduce operator cognitive load",
+        "Enable rapid situation assessment",
+        "Support effective decision making",
+        "Minimize operator errors",
+        "Improve response time to abnormal situations"
+      ]
+    },
+    "avoidances": {
+      "description": "What NOT to do in HMI design",
+      "antiPatterns": [
+        "Photorealistic 3D graphics",
+        "Excessive animation",
+        "Chartjunk and decoration",
+        "Too many colors",
+        "Poor contrast",
+        "Inconsistent layouts",
+        "Cluttered screens"
+      ]
+    }
+  },
+  "screenHierarchy": {
+    "level1_overview": {
+      "name": "Level 1 - Overview Display",
+      "description": "Highest level - entire plant or major areas at a glance",
+      "purpose": "Enable operator to see overall plant status in seconds",
+      "viewingTime": "1-3 seconds",
+      "informationDensity": "Low",
+      "updateFrequency": "1-5 seconds",
+      "characteristics": {
+        "scope": "Entire facility, multiple areas",
+        "detail": "Summary status only",
+        "navigation": "Gateways to Level 2 displays",
+        "alarms": "Critical alarms only, aggregated",
+        "trends": "Minimal or none",
+        "controls": "Minimal, high-level only"
+      },
+      "layout": {
+        "regions": {
+          "header": {
+            "content": ["Plant name", "Current time", "Operator name", "Alarm summary"],
+            "height": "5-10%"
+          },
+          "main": {
+            "content": ["Area status tiles", "Key process indicators", "Navigation elements"],
+            "height": "80-90%"
+          },
+          "footer": {
+            "content": ["Navigation breadcrumbs", "System status"],
+            "height": "5%"
+          }
+        }
+      },
+      "components": [
+        {
+          "type": "AreaStatusTile",
+          "purpose": "Show status of major area",
+          "states": ["Normal", "Warning", "Alarm", "Offline"],
+          "information": ["Area name", "Status", "Key metric"],
+          "interaction": "Click to navigate to Level 2"
+        }
+      ],
+      "colorScheme": {
+        "background": "#1A1A1A (dark gray)",
+        "normal": "#3D3D3D (gray)",
+        "abnormal": "#D4A017 (amber)",
+        "alarm": "#C41E3A (red)",
+        "offline": "#6C6C6C (medium gray)"
+      },
+      "example": "Plant Overview - showing Radiology, Surgery, ICU areas"
+    },
+    "level2_group": {
+      "name": "Level 2 - Group Display",
+      "description": "Process area or unit group - multiple units",
+      "purpose": "Monitor a process area or functional group",
+      "viewingTime": "5-15 seconds",
+      "informationDensity": "Medium",
+      "updateFrequency": "1-2 seconds",
+      "characteristics": {
+        "scope": "Process area, multiple units",
+        "detail": "Key process variables, unit states",
+        "navigation": "Gateways to Level 3, back to Level 1",
+        "alarms": "Area alarms, filterable",
+        "trends": "Mini-trends or sparklines",
+        "controls": "Area-level controls, limited"
+      },
+      "layout": {
+        "regions": {
+          "header": {
+            "content": ["Area name", "Navigation breadcrumbs", "Alarm count"],
+            "height": "8%"
+          },
+          "sidebar": {
+            "content": ["Unit list", "Alarm summary", "Quick navigation"],
+            "width": "15-20%"
+          },
+          "main": {
+            "content": ["Unit status cards", "Key process values", "Mini-trends"],
+            "width": "60-70%"
+          },
+          "alarmPanel": {
+            "content": ["Active alarms for area"],
+            "width": "15-20%",
+            "collapsible": true
+          }
+        }
+      },
+      "components": [
+        {
+          "type": "UnitStatusCard",
+          "purpose": "Show status and key metrics of a unit",
+          "information": ["Unit name", "State", "Key process value", "Sparkline trend"],
+          "interaction": "Click to navigate to Level 3"
+        },
+        {
+          "type": "AlarmSummaryPanel",
+          "purpose": "Show active alarms for area",
+          "filtering": ["By priority", "By unit", "By age"]
+        }
+      ],
+      "example": "Radiology Area - showing CT-1, CT-2, MRI-1 units"
+    },
+    "level3_detail": {
+      "name": "Level 3 - Detail Display",
+      "description": "Individual unit or equipment - detailed control and monitoring",
+      "purpose": "Monitor and control a specific unit",
+      "viewingTime": "15-60 seconds",
+      "informationDensity": "High",
+      "updateFrequency": "500ms - 1 second",
+      "characteristics": {
+        "scope": "Single unit or equipment",
+        "detail": "All process variables, detailed states",
+        "navigation": "Faceplates, trends, back to Level 2",
+        "alarms": "All unit alarms",
+        "trends": "Real-time trends",
+        "controls": "Full control access"
+      },
+      "layout": {
+        "regions": {
+          "header": {
+            "content": ["Unit name", "State", "Mode", "Breadcrumbs"],
+            "height": "10%"
+          },
+          "processGraphic": {
+            "content": ["Simplified P&ID", "Process values", "Equipment status"],
+            "width": "50-60%"
+          },
+          "controlPanel": {
+            "content": ["Setpoints", "Manual controls", "Mode selection"],
+            "width": "20-25%"
+          },
+          "trendPanel": {
+            "content": ["Real-time trends of key variables"],
+            "width": "20-25%"
+          },
+          "footer": {
+            "content": ["Alarm summary", "Status messages"],
+            "height": "10%"
+          }
+        }
+      },
+      "components": [
+        {
+          "type": "ProcessGraphic",
+          "style": "High-performance (not photorealistic)",
+          "elements": ["Simplified equipment shapes", "Value displays", "Status indicators"]
+        },
+        {
+          "type": "Faceplate",
+          "purpose": "Detailed control of a single point",
+          "content": ["Current value", "Setpoint", "Mode", "Status", "Limits"]
+        },
+        {
+          "type": "TrendChart",
+          "variables": "4-8 key variables",
+          "timespan": "Configurable (1hr, 8hr, 24hr)"
+        }
+      ],
+      "example": "CT Scanner 1 - showing gantry, table, detector, x-ray source"
+    },
+    "level4_diagnostic": {
+      "name": "Level 4 - Diagnostic Display",
+      "description": "Detailed diagnostics, maintenance, configuration",
+      "purpose": "Troubleshooting, maintenance, and configuration",
+      "viewingTime": "Minutes",
+      "informationDensity": "Very high",
+      "updateFrequency": "1-5 seconds",
+      "characteristics": {
+        "scope": "Component-level detail",
+        "detail": "All available data",
+        "navigation": "Deep dive from Level 3",
+        "alarms": "All alarms including diagnostic",
+        "trends": "Historical trends, long timespan",
+        "controls": "Engineering controls, configuration"
+      },
+      "access": {
+        "securityLevel": "Engineering or Maintenance only",
+        "auditLogging": true
+      },
+      "components": [
+        {
+          "type": "DiagnosticTable",
+          "content": "All device parameters and status"
+        },
+        {
+          "type": "HistoricalTrend",
+          "timespan": "Days to months"
+        },
+        {
+          "type": "ConfigurationPanel",
+          "purpose": "Modify device settings"
+        }
+      ],
+      "example": "CT Scanner X-Ray Source Diagnostics"
+    }
+  },
+  "visualDesignStandards": {
+    "colorUsage": {
+      "philosophy": "Color should convey meaning, not decoration",
+      "palette": {
+        "background": {
+          "primary": "#1A1A1A",
+          "description": "Dark gray, reduces eye strain"
+        },
+        "equipment": {
+          "running": "#3D3D3D",
+          "stopped": "#6C6C6C",
+          "description": "Grayscale for normal operation"
+        },
+        "abnormal": {
+          "warning": "#D4A017",
+          "alarm": "#C41E3A",
+          "description": "Use color to draw attention to abnormal"
+        },
+        "process": {
+          "water": "#0066CC",
+          "steam": "#FF6B35",
+          "chemical": "#7D7D7D",
+          "description": "Process-specific colors when meaningful"
+        },
+        "status": {
+          "active": "#00A550",
+          "inactive": "#6C6C6C",
+          "fault": "#C41E3A"
+        }
+      },
+      "rules": [
+        "Use grayscale for normal operation",
+        "Reserve bright colors for abnormal conditions",
+        "Limit to 5-7 colors per screen",
+        "Ensure adequate contrast (4.5:1 minimum)",
+        "Test for color blindness"
+      ]
+    },
+    "typography": {
+      "fonts": {
+        "primary": "Arial, Helvetica, sans-serif",
+        "monospace": "Consolas, Courier New, monospace (for values)"
+      },
+      "sizes": {
+        "header": "18-24pt",
+        "body": "12-14pt",
+        "values": "14-16pt",
+        "labels": "10-12pt"
+      },
+      "rules": [
+        "Use consistent font throughout",
+        "Adequate font size for viewing distance",
+        "Bold for emphasis, not decoration"
+      ]
+    },
+    "shapes": {
+      "philosophy": "Simple, symbolic shapes - not photorealistic",
+      "equipment": {
+        "tank": "Rectangle or circle",
+        "pump": "Circle with arrow",
+        "valve": "Simplified valve symbol",
+        "motor": "Circle with M"
+      },
+      "rules": [
+        "Use ISA-5.1 symbols when applicable",
+        "Consistent shapes for same equipment type",
+        "No 3D effects or shadows",
+        "No unnecessary detail"
+      ]
+    },
+    "animation": {
+      "appropriate": [
+        "Flow direction arrows",
+        "Rotating equipment indicator",
+        "Filling tank level",
+        "Flashing for urgent alarms (sparingly)"
+      ],
+      "avoid": [
+        "Spinning 3D equipment",
+        "Excessive flashing",
+        "Animated backgrounds",
+        "Decorative animation"
+      ],
+      "rules": [
+        "Animation must convey operational information",
+        "Limit to 2-3 animated elements per screen",
+        "Use subtle animation",
+        "Provide option to disable"
+      ]
+    }
+  },
+  "informationDensity": {
+    "principles": {
+      "description": "Balance between too much and too little information",
+      "guidelines": [
+        "Show only information relevant to operator task",
+        "Group related information",
+        "Use visual hierarchy",
+        "Prioritize by importance",
+        "Progressive disclosure (levels 1-4)"
+      ]
+    },
+    "metrics": {
+      "overview": "10-20 information elements",
+      "group": "20-40 information elements",
+      "detail": "40-100 information elements",
+      "diagnostic": "100+ information elements acceptable"
+    }
+  },
+  "navigationPatterns": {
+    "hierarchical": {
+      "description": "Navigate through screen levels",
+      "pattern": "Overview → Group → Detail → Diagnostic",
+      "implementation": "Breadcrumbs, clickable areas, menu"
+    },
+    "associative": {
+      "description": "Navigate to related information",
+      "pattern": "Jump to related unit, trend, alarm detail",
+      "implementation": "Hyperlinks, context menus"
+    },
+    "direct": {
+      "description": "Jump directly to any screen",
+      "implementation": "Search, favorites, recent screens"
+    }
+  },
+  "alarmIntegration": {
+    "principles": [
+      "Integrate alarms with process context",
+      "Show alarms on relevant screens",
+      "Provide alarm context (what, where, when, why)",
+      "Enable rapid acknowledgement and response"
+    ],
+    "visualization": {
+      "summary": "Alarm counts by priority in header",
+      "inline": "Alarm indicators on affected equipment",
+      "panel": "Scrolling alarm list (collapsible)",
+      "detail": "Full alarm information with guidance"
+    },
+    "prioritization": {
+      "critical": "#C41E3A (red) - Immediate action required",
+      "high": "#FF8C00 (orange) - Prompt action required",
+      "medium": "#D4A017 (amber) - Attention required",
+      "low": "#4A90E2 (blue) - Informational"
+    }
+  },
+  "responsiveDesign": {
+    "resolution": {
+      "minimum": "1920x1080 (Full HD)",
+      "recommended": "2560x1440 or dual monitors",
+      "considerations": "Scale elements appropriately, maintain readability"
+    },
+    "viewingDistance": {
+      "typical": "18-24 inches (desk-mounted)",
+      "large": "6-10 feet (wall-mounted)",
+      "adjustments": "Larger fonts and elements for greater distance"
+    }
+  },
+  "components": {
+    "statusIndicator": {
+      "type": "component",
+      "states": ["Normal", "Warning", "Alarm", "Offline"],
+      "visualization": "Filled circle or square",
+      "size": "16-32px",
+      "color": "State-dependent"
+    },
+    "valueDisplay": {
+      "type": "component",
+      "content": ["Label", "Value", "Units", "Status"],
+      "format": "Label: 123.4 units",
+      "color": "Normal gray, abnormal uses alarm colors"
+    },
+    "faceplate": {
+      "type": "component",
+      "layout": "Popup or embedded panel",
+      "content": ["Current value", "Setpoint", "Output", "Mode", "Status", "Limits", "Controls"],
+      "interaction": "Click on value display to open"
+    },
+    "trendChart": {
+      "type": "component",
+      "variables": "1-8 pens",
+      "timespan": "Selectable",
+      "interaction": "Pan, zoom, cursor",
+      "color": "Distinct colors per pen"
+    },
+    "alarmBanner": {
+      "type": "component",
+      "position": "Top or bottom of screen",
+      "content": ["Most recent alarm", "Acknowledgement button", "Total count"],
+      "behavior": "Flash for new alarms, static when acknowledged"
+    }
+  },
+  "parameters": [
+    {
+      "name": "screenLevel",
+      "type": "string",
+      "required": true,
+      "enum": ["overview", "group", "detail", "diagnostic"],
+      "description": "Which level of screen hierarchy to generate"
+    },
+    {
+      "name": "scope",
+      "type": "string",
+      "required": true,
+      "description": "What area/unit this screen represents"
+    },
+    {
+      "name": "colorScheme",
+      "type": "string",
+      "required": false,
+      "default": "highPerformance",
+      "enum": ["highPerformance", "classic", "custom"],
+      "description": "Color scheme to apply"
+    },
+    {
+      "name": "includeAlarms",
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Include alarm integration"
+    },
+    {
+      "name": "includeTrends",
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Include trend charts"
+    }
+  ],
+  "tagGeneration": {
+    "screenPath": "HMI/Screens/{{level}}/{{screenName}}",
+    "componentPath": "HMI/Components/{{componentType}}/{{componentId}}",
+    "templates": {
+      "screen": "{{screenPath}}/{{property}}",
+      "navigation": "{{screenPath}}/Navigation/{{target}}",
+      "component": "{{componentPath}}/{{property}}"
+    }
+  },
+  "instantiation": {
+    "template": "isa101-hmi-screen",
+    "generates": [
+      "Screen layouts (JSON or XML)",
+      "Component instances",
+      "Navigation structure",
+      "Alarm integration",
+      "Trend definitions"
+    ],
+    "integrations": [
+      "ISA-88 Equipment Hierarchy (screen organization)",
+      "ISA-95 Level 2 (SCADA layer)",
+      "Existing HMI template system",
+      "Alarm management systems"
+    ]
+  },
+  "validation": {
+    "rules": [
+      {
+        "rule": "colorLimit",
+        "description": "No more than 7 distinct colors per screen",
+        "severity": "warning"
+      },
+      {
+        "rule": "contrastRatio",
+        "description": "Text contrast ratio must be >= 4.5:1",
+        "severity": "error"
+      },
+      {
+        "rule": "informationDensity",
+        "description": "Information elements within recommended range for screen level",
+        "severity": "warning"
+      },
+      {
+        "rule": "consistentNavigation",
+        "description": "All screens must have breadcrumbs or back button",
+        "severity": "error"
+      }
+    ]
+  }
+}

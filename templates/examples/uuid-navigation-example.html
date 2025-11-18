@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UUID Navigation Example</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Courier New', monospace;
+    background: #0a0a0a;
+    color: #00ff88;
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    color: #00ff88;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #00ff88;
+  }
+
+  .section {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border: 2px solid #00ff88;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .section h2 {
+    color: #00ff88;
+    margin-bottom: 15px;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    background: #00ff88;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+
+  .btn:hover { background: #00cc66; }
+  .btn.secondary { background: #333; color: #00ff88; }
+
+  pre {
+    background: #000;
+    border: 2px solid #00ff88;
+    border-radius: 8px;
+    padding: 15px;
+    overflow-x: auto;
+    color: #00ccff;
+    margin: 10px 0;
+  }
+
+  .example-box {
+    background: #000;
+    border: 2px solid #00ccff;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+  }
+
+  .label {
+    color: #888;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+  }
+
+  .value {
+    color: #00ff88;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🔗 UUID-Based Navigation Examples</h1>
+
+  <!-- Example 1: Direct UUID Navigation -->
+  <div class="section">
+    <h2>Example 1: Direct UUID Navigation</h2>
+    <p style="color: #888; margin-bottom: 15px;">
+      Load a screen directly by its UUID. This is the most common use case.
+    </p>
+
+    <div class="example-box">
+      <div class="label">System Overview Screen UUID:</div>
+      <div class="value" id="uuid-1">550e8400-e29b-41d4-a716-446655440000</div>
+    </div>
+
+    <button class="btn" onclick="navigateByUUID('550e8400-e29b-41d4-a716-446655440000')">
+      Load System Overview
+    </button>
+    <button class="btn" onclick="navigateByUUID('660e8400-e29b-41d4-a716-446655440001')">
+      Load Equipment Detail
+    </button>
+    <button class="btn" onclick="navigateByUUID('770e8400-e29b-41d4-a716-446655440002')">
+      Load Alarm Management
+    </button>
+
+    <h3 style="color: #00ff88; margin-top: 20px; margin-bottom: 10px;">Code Example:</h3>
+    <pre>
+// Load screen by UUID
+async function navigateByUUID(uuid) {
+  await loadScreen(uuid, 'hmi-container');
+}
+
+// Alternative: Open in new window
+window.open('example-hmi.html?uuid=' + uuid, '_blank');
+    </pre>
+  </div>
+
+  <!-- Example 2: Tag-Based Navigation -->
+  <div class="section">
+    <h2>Example 2: Tag-Based Navigation</h2>
+    <p style="color: #888; margin-bottom: 15px;">
+      Load screens by tag. Useful for category-based navigation.
+    </p>
+
+    <button class="btn" onclick="navigateByTag('overview')">
+      Load "overview" Screen
+    </button>
+    <button class="btn" onclick="navigateByTag('alarm')">
+      Load "alarm" Screen
+    </button>
+    <button class="btn" onclick="navigateByTag('detail')">
+      Load "detail" Screen
+    </button>
+    <button class="btn" onclick="navigateByTag('trend')">
+      Load "trend" Screen
+    </button>
+
+    <h3 style="color: #00ff88; margin-top: 20px; margin-bottom: 10px;">Code Example:</h3>
+    <pre>
+// Load screen by tag
+async function navigateByTag(tag) {
+  await loadScreenByTag(tag, 'hmi-container');
+}
+
+// Alternative: Using template loader directly
+const screens = await window.templateLoader.loadScreensByTag(tag);
+if (screens.length > 0) {
+  await window.templateLoader.renderScreen(screens[0], 'hmi-container');
+}
+    </pre>
+  </div>
+
+  <!-- Example 3: Programmatic Navigation with HMI Nav -->
+  <div class="section">
+    <h2>Example 3: Using HMI Navigation System</h2>
+    <p style="color: #888; margin-bottom: 15px;">
+      Use the HMI navigation system for integrated navigation.
+    </p>
+
+    <button class="btn" onclick="useHMINav()">
+      Navigate with HMI Nav
+    </button>
+
+    <h3 style="color: #00ff88; margin-top: 20px; margin-bottom: 10px;">Code Example:</h3>
+    <pre>
+// Using HMI Navigation system
+async function useHMINav() {
+  // Navigate to template screen
+  await hmiNav.navigateToTemplate('550e8400-e29b-41d4-a716-446655440000', true);
+
+  // Or navigate by tag
+  await hmiNav.navigateToScreenByTag('overview', true);
+}
+    </pre>
+  </div>
+
+  <!-- Example 4: Search and Navigate -->
+  <div class="section">
+    <h2>Example 4: Search and Navigate</h2>
+    <p style="color: #888; margin-bottom: 15px;">
+      Search for screens and navigate to results.
+    </p>
+
+    <input type="text" id="search-input" placeholder="Search screens (name, description, or tag)"
+           style="width: 100%; padding: 10px; background: #0a0a0a; color: #00ff88; border: 2px solid #00ff88; border-radius: 4px; font-family: inherit; margin-bottom: 10px;">
+
+    <button class="btn" onclick="searchAndNavigate()">
+      Search & Navigate
+    </button>
+
+    <div id="search-results" style="margin-top: 15px;"></div>
+
+    <h3 style="color: #00ff88; margin-top: 20px; margin-bottom: 10px;">Code Example:</h3>
+    <pre>
+// Search and navigate
+async function searchAndNavigate() {
+  const query = document.getElementById('search-input').value;
+  const results = await window.templateLoader.searchTemplates(query, 'screen');
+
+  if (results.length > 0) {
+    // Navigate to first result
+    await loadScreen(results[0].uuid, 'hmi-container');
+  }
+}
+    </pre>
+  </div>
+
+  <!-- Example 5: Dynamic Screen Loading -->
+  <div class="section">
+    <h2>Example 5: Dynamic Screen Loading with Parameters</h2>
+    <p style="color: #888; margin-bottom: 15px;">
+      Load screens dynamically based on URL parameters or user actions.
+    </p>
+
+    <button class="btn" onclick="loadFromURL()">
+      Load from URL Parameter
+    </button>
+    <button class="btn" onclick="loadMultipleScreens()">
+      Load Multiple Screens
+    </button>
+
+    <h3 style="color: #00ff88; margin-top: 20px; margin-bottom: 10px;">Code Example:</h3>
+    <pre>
+// Load screen from URL parameter
+function loadFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const uuid = params.get('uuid');
+
+  if (uuid) {
+    loadScreen(uuid, 'hmi-container');
+  }
+}
+
+// Load multiple screens into different containers
+async function loadMultipleScreens() {
+  await loadScreen('550e8400-e29b-41d4-a716-446655440000', 'container-1');
+  await loadScreen('660e8400-e29b-41d4-a716-446655440001', 'container-2');
+  await loadScreen('770e8400-e29b-41d4-a716-446655440002', 'container-3');
+}
+    </pre>
+  </div>
+
+  <!-- Available Screens -->
+  <div class="section">
+    <h2>Available Template Screens</h2>
+    <div id="available-screens">
+      <p style="color: #888;">Loading available screens...</p>
+    </div>
+  </div>
+</div>
+
+<script src="../template-loader.js"></script>
+<script>
+// Example 1: Navigate by UUID
+async function navigateByUUID(uuid) {
+  try {
+    window.open(`../example-hmi.html?uuid=${uuid}`, '_blank');
+  } catch (error) {
+    alert('Navigation failed: ' + error.message);
+  }
+}
+
+// Example 2: Navigate by tag
+async function navigateByTag(tag) {
+  try {
+    const screens = await window.templateLoader.loadScreensByTag(tag);
+    if (screens.length > 0) {
+      window.open(`../example-hmi.html?uuid=${screens[0].uuid}`, '_blank');
+    } else {
+      alert('No screens found with tag: ' + tag);
+    }
+  } catch (error) {
+    alert('Navigation failed: ' + error.message);
+  }
+}
+
+// Example 3: Use HMI Nav (if available)
+async function useHMINav() {
+  if (typeof hmiNav !== 'undefined') {
+    await hmiNav.navigateToTemplate('550e8400-e29b-41d4-a716-446655440000', true);
+  } else {
+    // Fallback to direct navigation
+    navigateByUUID('550e8400-e29b-41d4-a716-446655440000');
+  }
+}
+
+// Example 4: Search and navigate
+async function searchAndNavigate() {
+  const query = document.getElementById('search-input').value.trim();
+  if (!query) {
+    alert('Please enter a search query');
+    return;
+  }
+
+  try {
+    const results = await window.templateLoader.searchTemplates(query, 'screen');
+    const resultsContainer = document.getElementById('search-results');
+
+    if (results.length === 0) {
+      resultsContainer.innerHTML = '<p style="color: #ff0044;">No results found</p>';
+      return;
+    }
+
+    let html = '<h3 style="color: #00ff88; margin-bottom: 10px;">Search Results:</h3>';
+    results.forEach(screen => {
+      html += `
+        <div style="background: #1a1a2e; border: 2px solid #00ff88; border-radius: 8px; padding: 10px; margin-bottom: 10px; cursor: pointer;"
+             onclick="navigateByUUID('${screen.uuid}')">
+          <div style="font-weight: bold; color: #00ff88;">${screen.name}</div>
+          <div style="color: #888; font-size: 0.9em;">${screen.description}</div>
+          <div style="color: #00ccff; font-size: 0.85em; margin-top: 5px;">
+            Tags: ${screen.tags.join(', ')}
+          </div>
+        </div>
+      `;
+    });
+
+    resultsContainer.innerHTML = html;
+  } catch (error) {
+    alert('Search failed: ' + error.message);
+  }
+}
+
+// Example 5: Load from URL
+function loadFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const uuid = params.get('uuid');
+
+  if (uuid) {
+    navigateByUUID(uuid);
+  } else {
+    alert('No UUID parameter in URL. Try: ?uuid=550e8400-e29b-41d4-a716-446655440000');
+  }
+}
+
+async function loadMultipleScreens() {
+  alert('This would load multiple screens into different containers. See code example.');
+}
+
+// Load available screens
+async function loadAvailableScreens() {
+  try {
+    await window.templateLoader.loadIndexes();
+    const screens = window.templateLoader.indexes.screens.screens;
+
+    const container = document.getElementById('available-screens');
+    let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">';
+
+    screens.forEach(screen => {
+      html += `
+        <div style="background: #000; border: 2px solid #00ff88; border-radius: 8px; padding: 10px;">
+          <div style="font-weight: bold; color: #00ff88; margin-bottom: 5px;">${screen.name}</div>
+          <div style="color: #888; font-size: 0.85em; margin-bottom: 5px;">${screen.description}</div>
+          <div style="color: #00ccff; font-size: 0.75em; margin-bottom: 5px;">
+            UUID: <span style="font-family: monospace;">${screen.uuid}</span>
+          </div>
+          <div style="color: #888; font-size: 0.75em;">
+            Tags: ${screen.tags.join(', ')}
+          </div>
+        </div>
+      `;
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+  } catch (error) {
+    document.getElementById('available-screens').innerHTML =
+      '<p style="color: #ff0044;">Failed to load screens: ' + error.message + '</p>';
+  }
+}
+
+// Load on page load
+window.addEventListener('DOMContentLoaded', loadAvailableScreens);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics & Reporting - Medical Imaging Factory</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    color: #e0e0e0;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border-bottom: 3px solid #00ff88;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header h1 {
+    color: #00ff88;
+    font-size: 2em;
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #2a2a3e;
+    border: 2px solid #00ff88;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #00ff88;
+  }
+
+  .breadcrumb {
+    background: #1a1a2e;
+    border-bottom: 2px solid #333;
+    padding: 15px 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #888;
+  }
+
+  .breadcrumb a {
+    color: #00ccff;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .breadcrumb a:hover { color: #00ff88; }
+  .breadcrumb-current { color: #00ff88; font-weight: 600; }
+
+  .container {
+    padding: 40px;
+    max-width: 1800px;
+    margin: 0 auto;
+  }
+
+  .section {
+    background: #1a1a2e;
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #333;
+  }
+
+  .section h2 {
+    color: #00ff88;
+    font-size: 1.8em;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  /* Dashboard Grid */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+  }
+
+  .metric-card {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border: 2px solid #333;
+    border-left: 5px solid #00ccff;
+    border-radius: 12px;
+    padding: 25px;
+    transition: all 0.3s;
+  }
+
+  .metric-card:hover {
+    border-color: #00ccff;
+    box-shadow: 0 8px 30px rgba(0, 204, 255, 0.2);
+    transform: translateY(-3px);
+  }
+
+  .metric-icon {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+    opacity: 0.9;
+  }
+
+  .metric-title {
+    color: #888;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .metric-value {
+    color: #00ccff;
+    font-size: 2.2em;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .metric-change {
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .metric-change.up { color: #00ff88; }
+  .metric-change.down { color: #ff6666; }
+
+  /* Report Builder */
+  .report-builder {
+    background: #0a0a0a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 25px;
+    margin-top: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    color: #00ff88;
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .form-input, .form-select {
+    width: 100%;
+    padding: 12px;
+    background: #1a1a2e;
+    border: 2px solid #333;
+    border-radius: 8px;
+    color: #e0e0e0;
+    font-size: 1em;
+    font-family: inherit;
+  }
+
+  .form-input:focus, .form-select:focus {
+    outline: none;
+    border-color: #00ff88;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+
+  .checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+  }
+
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .checkbox-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+
+  .checkbox-item label {
+    color: #e0e0e0;
+    cursor: pointer;
+  }
+
+  /* Export Options */
+  .export-options {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+  }
+
+  .export-card {
+    background: #2a2a3e;
+    border: 2px solid #444;
+    border-radius: 8px;
+    padding: 20px;
+    flex: 1;
+    min-width: 200px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .export-card:hover {
+    border-color: #00ff88;
+    background: #333;
+    transform: translateY(-2px);
+  }
+
+  .export-icon {
+    font-size: 3em;
+    margin-bottom: 10px;
+  }
+
+  .export-title {
+    color: #00ccff;
+    font-weight: 600;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+  }
+
+  .export-description {
+    color: #888;
+    font-size: 0.9em;
+  }
+
+  /* Predefined Reports */
+  .reports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .report-card {
+    background: #2a2a3e;
+    border: 2px solid #444;
+    border-left: 4px solid #00ccff;
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s;
+  }
+
+  .report-card:hover {
+    border-left-color: #00ff88;
+    background: #333;
+  }
+
+  .report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+  }
+
+  .report-icon {
+    font-size: 2em;
+  }
+
+  .report-frequency {
+    background: rgba(0, 255, 136, 0.1);
+    color: #00ff88;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.85em;
+  }
+
+  .report-title {
+    color: #00ccff;
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .report-description {
+    color: #aaa;
+    font-size: 0.95em;
+    line-height: 1.5;
+    margin-bottom: 15px;
+  }
+
+  .report-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  /* Predictive Analytics */
+  .prediction-card {
+    background: linear-gradient(135deg, rgba(0, 204, 255, 0.1), rgba(0, 255, 136, 0.1));
+    border: 2px solid #00ccff;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+  }
+
+  .prediction-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .prediction-title {
+    color: #00ccff;
+    font-size: 1.4em;
+    font-weight: 600;
+  }
+
+  .prediction-confidence {
+    background: rgba(0, 255, 136, 0.2);
+    color: #00ff88;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .prediction-content {
+    color: #e0e0e0;
+    line-height: 1.7;
+  }
+
+  .prediction-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .prediction-metric {
+    text-align: center;
+  }
+
+  .prediction-metric-value {
+    color: #00ccff;
+    font-size: 1.8em;
+    font-weight: bold;
+  }
+
+  .prediction-metric-label {
+    color: #888;
+    font-size: 0.9em;
+    margin-top: 5px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #00ff88, #00cc66);
+    color: #000;
+  }
+
+  .btn-secondary {
+    background: #2a2a3e;
+    color: #00ccff;
+    border: 2px solid #00ccff;
+  }
+
+  .btn-small {
+    padding: 8px 16px;
+    font-size: 0.9em;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3);
+  }
+
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: #666;
+    border-top: 2px solid #333;
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📊 Analytics & Reporting</h1>
+  <div>
+    <span class="badge">L4 - Business</span>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <a href="index.html">🏭 ISA-95 Level 4</a>
+  <span>›</span>
+  <a href="enterprise-portal.html">Enterprise Portal</a>
+  <span>›</span>
+  <span class="breadcrumb-current">Analytics & Reporting</span>
+</div>
+
+<div class="container">
+
+  <!-- Business Intelligence Dashboard -->
+  <div class="section">
+    <div class="section-header">
+      <h2>📈 Business Intelligence Dashboard</h2>
+      <button class="btn btn-secondary" onclick="alert('Refresh data')">🔄 Refresh</button>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="metric-card">
+        <div class="metric-icon">📊</div>
+        <div class="metric-title">Total Studies (MTD)</div>
+        <div class="metric-value">28,340</div>
+        <div class="metric-change up">↑ 5.2% vs last month</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">💰</div>
+        <div class="metric-title">Revenue (MTD)</div>
+        <div class="metric-value">$856K</div>
+        <div class="metric-change up">↑ 12.5% vs last month</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">⚡</div>
+        <div class="metric-title">Average Throughput</div>
+        <div class="metric-value">52/hr</div>
+        <div class="metric-change up">↑ 3.1% vs last month</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">✓</div>
+        <div class="metric-title">Quality Score</div>
+        <div class="metric-value">98.3%</div>
+        <div class="metric-change up">↑ 0.8% vs last month</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">🏥</div>
+        <div class="metric-title">Equipment OEE</div>
+        <div class="metric-value">89.2%</div>
+        <div class="metric-change up">↑ 2.3% vs last month</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">⏱️</div>
+        <div class="metric-title">Avg Study Time</div>
+        <div class="metric-value">12.3m</div>
+        <div class="metric-change up">↓ 8.5% vs last month</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Predictive Analytics -->
+  <div class="section">
+    <div class="section-header">
+      <h2>🔮 Predictive Analytics</h2>
+    </div>
+
+    <div class="prediction-card">
+      <div class="prediction-header">
+        <div class="prediction-title">7-Day Volume Forecast</div>
+        <div class="prediction-confidence">92% Confidence</div>
+      </div>
+      <div class="prediction-content">
+        Based on historical patterns, seasonal trends, and current booking rates, the system predicts a
+        <strong style="color: #00ff88;">12% increase</strong> in study volume next week, with peak
+        demand on Wednesday (1,662 studies projected). Resource allocation recommendations have been
+        generated to optimize capacity utilization.
+      </div>
+      <div class="prediction-metrics">
+        <div class="prediction-metric">
+          <div class="prediction-metric-value">9,834</div>
+          <div class="prediction-metric-label">Predicted Volume</div>
+        </div>
+        <div class="prediction-metric">
+          <div class="prediction-metric-value">Wed</div>
+          <div class="prediction-metric-label">Peak Day</div>
+        </div>
+        <div class="prediction-metric">
+          <div class="prediction-metric-value">92.5%</div>
+          <div class="prediction-metric-label">Capacity Used</div>
+        </div>
+        <div class="prediction-metric">
+          <div class="prediction-metric-value">$298K</div>
+          <div class="prediction-metric-label">Est. Revenue</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prediction-card">
+      <div class="prediction-header">
+        <div class="prediction-title">Equipment Maintenance Forecast</div>
+        <div class="prediction-confidence">87% Confidence</div>
+      </div>
+      <div class="prediction-content">
+        Predictive maintenance algorithms indicate <strong style="color: #ffaa00;">MRI System #1</strong>
+        may require calibration adjustment within 5-7 days based on performance drift patterns.
+        Proactive scheduling recommended to prevent quality impact. CT Scanner #2 showing optimal
+        performance with no maintenance predicted for next 30 days.
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Report Builder -->
+  <div class="section">
+    <div class="section-header">
+      <h2>🔧 Custom Report Builder</h2>
+    </div>
+
+    <div class="report-builder">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Report Type</label>
+          <select class="form-select">
+            <option>Production Summary</option>
+            <option>Quality Analysis</option>
+            <option>Financial Summary</option>
+            <option>Equipment Performance</option>
+            <option>Resource Utilization</option>
+            <option>Custom</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Time Period</label>
+          <select class="form-select">
+            <option>Today</option>
+            <option>Last 7 Days</option>
+            <option>Last 30 Days</option>
+            <option>This Month</option>
+            <option>Last Month</option>
+            <option>This Quarter</option>
+            <option>This Year</option>
+            <option>Custom Range</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Date Range</label>
+          <div style="display: flex; gap: 10px;">
+            <input type="date" class="form-input" style="flex: 1;">
+            <input type="date" class="form-input" style="flex: 1;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Modality Filter</label>
+          <select class="form-select">
+            <option>All Modalities</option>
+            <option>CT Scanner</option>
+            <option>MRI System</option>
+            <option>X-Ray Machine</option>
+            <option>Ultrasound</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Include Metrics</label>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="metric1" checked>
+            <label for="metric1">Study Volume</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="metric2" checked>
+            <label for="metric2">Throughput Rate</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="metric3" checked>
+            <label for="metric3">Quality Metrics</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="metric4">
+            <label for="metric4">Defect Analysis</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="metric5" checked>
+            <label for="metric5">Equipment OEE</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="metric6">
+            <label for="metric6">Utilization %</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="metric7" checked>
+            <label for="metric7">Revenue Data</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="metric8">
+            <label for="metric8">Maintenance Events</label>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 15px; margin-top: 25px;">
+        <button class="btn btn-primary" onclick="alert('Generating report...')">
+          Generate Report
+        </button>
+        <button class="btn btn-secondary" onclick="alert('Preview report')">
+          Preview
+        </button>
+        <button class="btn btn-secondary" onclick="alert('Saving template...')">
+          Save as Template
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Options -->
+  <div class="section">
+    <div class="section-header">
+      <h2>📥 Export Capabilities</h2>
+    </div>
+
+    <div class="export-options">
+      <div class="export-card" onclick="alert('Exporting to PDF...')">
+        <div class="export-icon">📄</div>
+        <div class="export-title">PDF</div>
+        <div class="export-description">Professional reports with charts and tables</div>
+      </div>
+
+      <div class="export-card" onclick="alert('Exporting to Excel...')">
+        <div class="export-icon">📊</div>
+        <div class="export-title">Excel</div>
+        <div class="export-description">Spreadsheet with raw data and pivot tables</div>
+      </div>
+
+      <div class="export-card" onclick="alert('Exporting to CSV...')">
+        <div class="export-icon">📋</div>
+        <div class="export-title">CSV</div>
+        <div class="export-description">Comma-separated values for data import</div>
+      </div>
+
+      <div class="export-card" onclick="alert('Exporting to JSON...')">
+        <div class="export-icon">{ }</div>
+        <div class="export-title">JSON</div>
+        <div class="export-description">Structured data for API integration</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Predefined Reports -->
+  <div class="section">
+    <div class="section-header">
+      <h2>📚 Predefined Reports</h2>
+    </div>
+
+    <div class="reports-grid">
+      <div class="report-card">
+        <div class="report-header">
+          <div class="report-icon">📊</div>
+          <div class="report-frequency">Daily</div>
+        </div>
+        <div class="report-title">Daily Production Summary</div>
+        <div class="report-description">
+          Comprehensive daily overview including study volume, throughput, quality metrics, and equipment utilization.
+        </div>
+        <div class="report-actions">
+          <button class="btn btn-primary btn-small" onclick="alert('Running daily report...')">Run Now</button>
+          <button class="btn btn-secondary btn-small" onclick="alert('Scheduling report...')">Schedule</button>
+        </div>
+      </div>
+
+      <div class="report-card">
+        <div class="report-header">
+          <div class="report-icon">✓</div>
+          <div class="report-frequency">Weekly</div>
+        </div>
+        <div class="report-title">Quality Assurance Report</div>
+        <div class="report-description">
+          Quality metrics, defect analysis, SLA compliance, and CAPA status for the past week.
+        </div>
+        <div class="report-actions">
+          <button class="btn btn-primary btn-small" onclick="alert('Running quality report...')">Run Now</button>
+          <button class="btn btn-secondary btn-small" onclick="alert('Scheduling report...')">Schedule</button>
+        </div>
+      </div>
+
+      <div class="report-card">
+        <div class="report-header">
+          <div class="report-icon">💰</div>
+          <div class="report-frequency">Monthly</div>
+        </div>
+        <div class="report-title">Financial Performance Report</div>
+        <div class="report-description">
+          Revenue analysis, cost breakdown, ROI metrics, and financial trends for the month.
+        </div>
+        <div class="report-actions">
+          <button class="btn btn-primary btn-small" onclick="alert('Running financial report...')">Run Now</button>
+          <button class="btn btn-secondary btn-small" onclick="alert('Scheduling report...')">Schedule</button>
+        </div>
+      </div>
+
+      <div class="report-card">
+        <div class="report-header">
+          <div class="report-icon">🏥</div>
+          <div class="report-frequency">Weekly</div>
+        </div>
+        <div class="report-title">Equipment Performance Report</div>
+        <div class="report-description">
+          Equipment OEE, utilization rates, maintenance events, and performance trends.
+        </div>
+        <div class="report-actions">
+          <button class="btn btn-primary btn-small" onclick="alert('Running equipment report...')">Run Now</button>
+          <button class="btn btn-secondary btn-small" onclick="alert('Scheduling report...')">Schedule</button>
+        </div>
+      </div>
+
+      <div class="report-card">
+        <div class="report-header">
+          <div class="report-icon">📈</div>
+          <div class="report-frequency">Monthly</div>
+        </div>
+        <div class="report-title">Executive Dashboard</div>
+        <div class="report-description">
+          High-level KPIs, trends, predictions, and strategic insights for executive review.
+        </div>
+        <div class="report-actions">
+          <button class="btn btn-primary btn-small" onclick="alert('Running executive report...')">Run Now</button>
+          <button class="btn btn-secondary btn-small" onclick="alert('Scheduling report...')">Schedule</button>
+        </div>
+      </div>
+
+      <div class="report-card">
+        <div class="report-header">
+          <div class="report-icon">🔧</div>
+          <div class="report-frequency">Monthly</div>
+        </div>
+        <div class="report-title">Maintenance Analysis</div>
+        <div class="report-description">
+          Maintenance costs, downtime analysis, preventive vs corrective maintenance breakdown.
+        </div>
+        <div class="report-actions">
+          <button class="btn btn-primary btn-small" onclick="alert('Running maintenance report...')">Run Now</button>
+          <button class="btn btn-secondary btn-small" onclick="alert('Scheduling report...')">Schedule</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="section">
+    <div class="section-header">
+      <h2>⚡ Quick Actions</h2>
+    </div>
+
+    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+      <button class="btn btn-primary" onclick="alert('Opening trend analysis...')">
+        View Historical Trends
+      </button>
+      <button class="btn btn-secondary" onclick="window.location.href='production-planning.html'">
+        Production Planning
+      </button>
+      <button class="btn btn-secondary" onclick="window.location.href='quality-management.html'">
+        Quality Management
+      </button>
+      <button class="btn btn-secondary" onclick="window.location.href='enterprise-portal.html'">
+        Back to Portal
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p><strong>ISA-95 Level 4 - Business Planning & Logistics</strong></p>
+  <p>Analytics & Reporting - Medical Imaging Virtual Factory</p>
+</div>
+
+</body>
+</html>

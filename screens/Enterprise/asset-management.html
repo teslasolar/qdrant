@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asset Management - Medical Imaging Factory</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    color: #e0e0e0;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border-bottom: 3px solid #00ff88;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header h1 {
+    color: #00ff88;
+    font-size: 2em;
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #2a2a3e;
+    border: 2px solid #00ff88;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #00ff88;
+  }
+
+  .breadcrumb {
+    background: #1a1a2e;
+    border-bottom: 2px solid #333;
+    padding: 15px 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #888;
+  }
+
+  .breadcrumb a {
+    color: #00ccff;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .breadcrumb a:hover { color: #00ff88; }
+  .breadcrumb-current { color: #00ff88; font-weight: 600; }
+
+  .container {
+    padding: 40px;
+    max-width: 1800px;
+    margin: 0 auto;
+  }
+
+  .section {
+    background: #1a1a2e;
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #333;
+  }
+
+  .section h2 {
+    color: #00ff88;
+    font-size: 1.8em;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  /* Asset Summary Cards */
+  .asset-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+  }
+
+  .summary-card {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border: 2px solid #333;
+    border-left: 5px solid #00ff88;
+    border-radius: 12px;
+    padding: 25px;
+    transition: all 0.3s;
+  }
+
+  .summary-card:hover {
+    border-color: #00ff88;
+    box-shadow: 0 8px 30px rgba(0, 255, 136, 0.2);
+    transform: translateY(-3px);
+  }
+
+  .summary-card.blue { border-left-color: #00ccff; }
+  .summary-card.purple { border-left-color: #ff88ff; }
+  .summary-card.orange { border-left-color: #ffaa00; }
+
+  .card-icon {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+  }
+
+  .card-title {
+    color: #888;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .card-value {
+    color: #00ff88;
+    font-size: 2.2em;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .card-subtitle {
+    color: #aaa;
+    font-size: 0.9em;
+  }
+
+  /* Asset Inventory Table */
+  .asset-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  .asset-table th {
+    background: #2a2a3e;
+    color: #00ff88;
+    padding: 15px;
+    text-align: left;
+    border-bottom: 2px solid #00ff88;
+    position: sticky;
+    top: 0;
+  }
+
+  .asset-table td {
+    padding: 15px;
+    border-bottom: 1px solid #333;
+    color: #e0e0e0;
+  }
+
+  .asset-table tr:hover {
+    background: #2a2a3e;
+  }
+
+  .status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 600;
+  }
+
+  .status-indicator.operational {
+    background: rgba(0, 255, 136, 0.2);
+    color: #00ff88;
+  }
+
+  .status-indicator.maintenance {
+    background: rgba(255, 170, 0, 0.2);
+    color: #ffaa00;
+  }
+
+  .status-indicator.offline {
+    background: rgba(255, 102, 102, 0.2);
+    color: #ff6666;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* Utilization Charts */
+  .utilization-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .utilization-card {
+    background: #0a0a0a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .utilization-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .utilization-title {
+    color: #00ccff;
+    font-weight: 600;
+    font-size: 1.1em;
+  }
+
+  .utilization-percentage {
+    color: #00ff88;
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+
+  .utilization-bar {
+    width: 100%;
+    height: 12px;
+    background: #1a1a2e;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  .utilization-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ff88, #00cc66);
+    border-radius: 6px;
+    transition: width 0.5s;
+  }
+
+  .utilization-fill.high {
+    background: linear-gradient(90deg, #ffaa00, #ff8800);
+  }
+
+  .utilization-details {
+    color: #888;
+    font-size: 0.9em;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* Asset Lifecycle */
+  .lifecycle-card {
+    background: #2a2a3e;
+    border: 2px solid #444;
+    border-left: 4px solid #00ccff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .lifecycle-card:hover {
+    border-left-color: #00ff88;
+    background: #333;
+  }
+
+  .lifecycle-info h3 {
+    color: #00ccff;
+    margin-bottom: 5px;
+  }
+
+  .lifecycle-info p {
+    color: #888;
+    font-size: 0.9em;
+  }
+
+  .lifecycle-stat {
+    text-align: center;
+  }
+
+  .lifecycle-stat-value {
+    color: #00ff88;
+    font-size: 1.8em;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .lifecycle-stat-label {
+    color: #888;
+    font-size: 0.85em;
+  }
+
+  /* ROI Analysis */
+  .roi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .roi-card {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 25px;
+    text-align: center;
+  }
+
+  .roi-label {
+    color: #888;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .roi-value {
+    color: #00ff88;
+    font-size: 2.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .roi-trend {
+    color: #00ccff;
+    font-size: 0.95em;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #00ff88, #00cc66);
+    color: #000;
+  }
+
+  .btn-secondary {
+    background: #2a2a3e;
+    color: #00ccff;
+    border: 2px solid #00ccff;
+  }
+
+  .btn-small {
+    padding: 8px 16px;
+    font-size: 0.9em;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3);
+  }
+
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: #666;
+    border-top: 2px solid #333;
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🏭 Asset Management</h1>
+  <div>
+    <span class="badge">L4 - Business</span>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <a href="index.html">🏭 ISA-95 Level 4</a>
+  <span>›</span>
+  <a href="enterprise-portal.html">Enterprise Portal</a>
+  <span>›</span>
+  <span class="breadcrumb-current">Asset Management</span>
+</div>
+
+<div class="container">
+
+  <!-- Asset Summary -->
+  <div class="asset-summary">
+    <div class="summary-card">
+      <div class="card-icon">🏥</div>
+      <div class="card-title">Total Assets</div>
+      <div class="card-value">11</div>
+      <div class="card-subtitle">Medical Imaging Equipment</div>
+    </div>
+
+    <div class="summary-card blue">
+      <div class="card-icon">✓</div>
+      <div class="card-title">Operational</div>
+      <div class="card-value">9</div>
+      <div class="card-subtitle">Currently Active (81.8%)</div>
+    </div>
+
+    <div class="summary-card orange">
+      <div class="card-icon">🔧</div>
+      <div class="card-title">Maintenance</div>
+      <div class="card-value">2</div>
+      <div class="card-subtitle">Scheduled Downtime</div>
+    </div>
+
+    <div class="summary-card purple">
+      <div class="card-icon">💰</div>
+      <div class="card-title">Total Value</div>
+      <div class="card-value">$8.4M</div>
+      <div class="card-subtitle">Asset Portfolio Value</div>
+    </div>
+  </div>
+
+  <!-- Equipment Inventory -->
+  <div class="section">
+    <div class="section-header">
+      <h2>📋 Equipment Inventory</h2>
+      <div>
+        <button class="btn btn-secondary" onclick="alert('Add new asset')">+ Add Asset</button>
+        <button class="btn btn-secondary" onclick="alert('Export inventory')">Export</button>
+      </div>
+    </div>
+
+    <table class="asset-table">
+      <thead>
+        <tr>
+          <th>Asset ID</th>
+          <th>Equipment Type</th>
+          <th>Model</th>
+          <th>Serial Number</th>
+          <th>Status</th>
+          <th>Install Date</th>
+          <th>Utilization</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>CT-001</strong></td>
+          <td>CT Scanner</td>
+          <td>Siemens Somatom Force</td>
+          <td>SN-CT-2023-001</td>
+          <td><span class="status-indicator operational"><span class="status-dot"></span>Operational</span></td>
+          <td>2023-01-15</td>
+          <td>87.5%</td>
+          <td><button class="btn btn-secondary btn-small" onclick="alert('View details')">Details</button></td>
+        </tr>
+        <tr>
+          <td><strong>CT-002</strong></td>
+          <td>CT Scanner</td>
+          <td>GE Revolution EVO</td>
+          <td>SN-CT-2023-002</td>
+          <td><span class="status-indicator operational"><span class="status-dot"></span>Operational</span></td>
+          <td>2023-03-20</td>
+          <td>89.2%</td>
+          <td><button class="btn btn-secondary btn-small" onclick="alert('View details')">Details</button></td>
+        </tr>
+        <tr>
+          <td><strong>CT-003</strong></td>
+          <td>CT Scanner</td>
+          <td>Philips Ingenuity</td>
+          <td>SN-CT-2022-003</td>
+          <td><span class="status-indicator maintenance"><span class="status-dot"></span>Maintenance</span></td>
+          <td>2022-11-10</td>
+          <td>0%</td>
+          <td><button class="btn btn-secondary btn-small" onclick="alert('View details')">Details</button></td>
+        </tr>
+        <tr>
+          <td><strong>MRI-001</strong></td>
+          <td>MRI System</td>
+          <td>Siemens Magnetom Vida</td>
+          <td>SN-MRI-2023-001</td>
+          <td><span class="status-indicator operational"><span class="status-dot"></span>Operational</span></td>
+          <td>2023-02-01</td>
+          <td>92.3%</td>
+          <td><button class="btn btn-secondary btn-small" onclick="alert('View details')">Details</button></td>
+        </tr>
+        <tr>
+          <td><strong>MRI-002</strong></td>
+          <td>MRI System</td>
+          <td>GE Signa Premier</td>
+          <td>SN-MRI-2022-002</td>
+          <td><span class="status-indicator operational"><span class="status-dot"></span>Operational</span></td>
+          <td>2022-09-15</td>
+          <td>91.8%</td>
+          <td><button class="btn btn-secondary btn-small" onclick="alert('View details')">Details</button></td>
+        </tr>
+        <tr>
+          <td><strong>XR-001</strong></td>
+          <td>X-Ray Machine</td>
+          <td>Canon CXDI-810C</td>
+          <td>SN-XR-2023-001</td>
+          <td><span class="status-indicator operational"><span class="status-dot"></span>Operational</span></td>
+          <td>2023-04-10</td>
+          <td>76.5%</td>
+          <td><button class="btn btn-secondary btn-small" onclick="alert('View details')">Details</button></td>
+        </tr>
+        <tr>
+          <td><strong>XR-002</strong></td>
+          <td>X-Ray Machine</td>
+          <td>Fujifilm FDR D-EVO II</td>
+          <td>SN-XR-2023-002</td>
+          <td><span class="status-indicator operational"><span class="status-dot"></span>Operational</span></td>
+          <td>2023-05-22</td>
+          <td>78.2%</td>
+          <td><button class="btn btn-secondary btn-small" onclick="alert('View details')">Details</button></td>
+        </tr>
+        <tr>
+          <td><strong>XR-003</strong></td>
+          <td>X-Ray Machine</td>
+          <td>Carestream DRX-Revolution</td>
+          <td>SN-XR-2022-003</td>
+          <td><span class="status-indicator operational"><span class="status-dot"></span>Operational</span></td>
+          <td>2022-12-05</td>
+          <td>80.1%</td>
+          <td><button class="btn btn-secondary btn-small" onclick="alert('View details')">Details</button></td>
+        </tr>
+        <tr>
+          <td><strong>XR-004</strong></td>
+          <td>X-Ray Machine</td>
+          <td>Siemens Multix Fusion</td>
+          <td>SN-XR-2022-004</td>
+          <td><span class="status-indicator maintenance"><span class="status-dot"></span>Maintenance</span></td>
+          <td>2022-08-18</td>
+          <td>0%</td>
+          <td><button class="btn btn-secondary btn-small" onclick="alert('View details')">Details</button></td>
+        </tr>
+        <tr>
+          <td><strong>US-001</strong></td>
+          <td>Ultrasound</td>
+          <td>GE Logiq E10</td>
+          <td>SN-US-2023-001</td>
+          <td><span class="status-indicator operational"><span class="status-dot"></span>Operational</span></td>
+          <td>2023-06-01</td>
+          <td>68.5%</td>
+          <td><button class="btn btn-secondary btn-small" onclick="alert('View details')">Details</button></td>
+        </tr>
+        <tr>
+          <td><strong>US-002</strong></td>
+          <td>Ultrasound</td>
+          <td>Philips Affiniti 70</td>
+          <td>SN-US-2023-002</td>
+          <td><span class="status-indicator operational"><span class="status-dot"></span>Operational</span></td>
+          <td>2023-07-15</td>
+          <td>76.5%</td>
+          <td><button class="btn btn-secondary btn-small" onclick="alert('View details')">Details</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Utilization Tracking -->
+  <div class="section">
+    <div class="section-header">
+      <h2>📊 Utilization Tracking</h2>
+    </div>
+
+    <div class="utilization-grid">
+      <div class="utilization-card">
+        <div class="utilization-header">
+          <div class="utilization-title">CT Scanners</div>
+          <div class="utilization-percentage">87.5%</div>
+        </div>
+        <div class="utilization-bar">
+          <div class="utilization-fill" style="width: 87.5%"></div>
+        </div>
+        <div class="utilization-details">
+          <span>3 Units</span>
+          <span>Target: 85%</span>
+        </div>
+      </div>
+
+      <div class="utilization-card">
+        <div class="utilization-header">
+          <div class="utilization-title">MRI Systems</div>
+          <div class="utilization-percentage">92.1%</div>
+        </div>
+        <div class="utilization-bar">
+          <div class="utilization-fill high" style="width: 92.1%"></div>
+        </div>
+        <div class="utilization-details">
+          <span>2 Units</span>
+          <span style="color: #ffaa00;">High Load</span>
+        </div>
+      </div>
+
+      <div class="utilization-card">
+        <div class="utilization-header">
+          <div class="utilization-title">X-Ray Machines</div>
+          <div class="utilization-percentage">78.3%</div>
+        </div>
+        <div class="utilization-bar">
+          <div class="utilization-fill" style="width: 78.3%"></div>
+        </div>
+        <div class="utilization-details">
+          <span>4 Units</span>
+          <span>Target: 75%</span>
+        </div>
+      </div>
+
+      <div class="utilization-card">
+        <div class="utilization-header">
+          <div class="utilization-title">Ultrasound</div>
+          <div class="utilization-percentage">72.5%</div>
+        </div>
+        <div class="utilization-bar">
+          <div class="utilization-fill" style="width: 72.5%"></div>
+        </div>
+        <div class="utilization-details">
+          <span>2 Units</span>
+          <span>Target: 70%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Asset Lifecycle Management -->
+  <div class="section">
+    <div class="section-header">
+      <h2>🔄 Asset Lifecycle Management</h2>
+    </div>
+
+    <div class="lifecycle-card">
+      <div class="lifecycle-info">
+        <h3>CT-001 - Siemens Somatom Force</h3>
+        <p>Installed: Jan 2023 | Age: 22 months</p>
+      </div>
+      <div class="lifecycle-stat">
+        <div class="lifecycle-stat-value">38</div>
+        <div class="lifecycle-stat-label">Months Left</div>
+      </div>
+      <div class="lifecycle-stat">
+        <div class="lifecycle-stat-value">92%</div>
+        <div class="lifecycle-stat-label">Health Score</div>
+      </div>
+      <div class="lifecycle-stat">
+        <div class="lifecycle-stat-value">$1.2M</div>
+        <div class="lifecycle-stat-label">Current Value</div>
+      </div>
+    </div>
+
+    <div class="lifecycle-card">
+      <div class="lifecycle-info">
+        <h3>MRI-001 - Siemens Magnetom Vida</h3>
+        <p>Installed: Feb 2023 | Age: 21 months</p>
+      </div>
+      <div class="lifecycle-stat">
+        <div class="lifecycle-stat-value">39</div>
+        <div class="lifecycle-stat-label">Months Left</div>
+      </div>
+      <div class="lifecycle-stat">
+        <div class="lifecycle-stat-value">95%</div>
+        <div class="lifecycle-stat-label">Health Score</div>
+      </div>
+      <div class="lifecycle-stat">
+        <div class="lifecycle-stat-value">$2.1M</div>
+        <div class="lifecycle-stat-label">Current Value</div>
+      </div>
+    </div>
+
+    <div class="lifecycle-card">
+      <div class="lifecycle-info">
+        <h3>XR-003 - Carestream DRX-Revolution</h3>
+        <p>Installed: Dec 2022 | Age: 23 months</p>
+      </div>
+      <div class="lifecycle-stat">
+        <div class="lifecycle-stat-value">37</div>
+        <div class="lifecycle-stat-label">Months Left</div>
+      </div>
+      <div class="lifecycle-stat">
+        <div class="lifecycle-stat-value">88%</div>
+        <div class="lifecycle-stat-label">Health Score</div>
+      </div>
+      <div class="lifecycle-stat">
+        <div class="lifecycle-stat-value">$285K</div>
+        <div class="lifecycle-stat-label">Current Value</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROI Tracking -->
+  <div class="section">
+    <div class="section-header">
+      <h2>💰 ROI Analysis</h2>
+    </div>
+
+    <div class="roi-grid">
+      <div class="roi-card">
+        <div class="roi-label">Total Investment</div>
+        <div class="roi-value">$8.4M</div>
+        <div class="roi-trend">Equipment Portfolio</div>
+      </div>
+
+      <div class="roi-card">
+        <div class="roi-label">Annual Revenue</div>
+        <div class="roi-value">$10.3M</div>
+        <div class="roi-trend">↑ 12.5% YoY</div>
+      </div>
+
+      <div class="roi-card">
+        <div class="roi-label">ROI</div>
+        <div class="roi-value">122%</div>
+        <div class="roi-trend">Excellent Performance</div>
+      </div>
+
+      <div class="roi-card">
+        <div class="roi-label">Payback Period</div>
+        <div class="roi-value">9.8 mo</div>
+        <div class="roi-trend">Average Across Fleet</div>
+      </div>
+
+      <div class="roi-card">
+        <div class="roi-label">Maintenance Cost</div>
+        <div class="roi-value">$124K</div>
+        <div class="roi-trend">1.5% of Asset Value</div>
+      </div>
+
+      <div class="roi-card">
+        <div class="roi-label">Depreciation</div>
+        <div class="roi-value">$420K</div>
+        <div class="roi-trend">Annual (Linear)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="section">
+    <div class="section-header">
+      <h2>⚡ Quick Actions</h2>
+    </div>
+
+    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+      <button class="btn btn-primary" onclick="alert('Adding new asset...')">
+        + Add New Asset
+      </button>
+      <button class="btn btn-primary" onclick="alert('Opening bulk import...')">
+        Import Assets (CSV)
+      </button>
+      <button class="btn btn-secondary" onclick="window.location.href='maintenance-planning.html'">
+        Maintenance Planning
+      </button>
+      <button class="btn btn-secondary" onclick="alert('Generating asset report...')">
+        Generate Report
+      </button>
+      <button class="btn btn-secondary" onclick="window.location.href='enterprise-portal.html'">
+        Back to Portal
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p><strong>ISA-95 Level 4 - Business Planning & Logistics</strong></p>
+  <p>Asset Management - Medical Imaging Virtual Factory</p>
+</div>
+
+</body>
+</html>

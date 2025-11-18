@@ -1,5 +1,5 @@
 {
-  "UUID": "dc5ff1c4-dce7-4d4e-aa43-7773a1d0f842",
+  "UUID": "e2bb9807-7554-4dc6-8d58-85b3d5f5fd6e",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/templates/medical/",
   "Directory_Name": "Medical",
@@ -13,73 +13,19 @@
       "path": "/os/templates/medical/controls/",
       "title": "Controls",
       "description": "controls subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 2
-    }
-  ],
-  "Sibling_Directories": [
-    {
-      "path": "/os/templates/components/",
-      "title": "Components",
-      "description": "components area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/templates/controls/",
-      "title": "Controls",
-      "description": "controls area",
       "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/templates/layouts/",
-      "title": "Layouts",
-      "description": "layouts area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/templates/p-and-id/",
-      "title": "P And Id",
-      "description": "p-and-id area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/templates/views/",
-      "title": "Views",
-      "description": "views area",
-      "icon": "\ud83d\udcc1"
     }
   ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/templates/",
-      "title": "Templates",
-      "icon": "\ud83d\udcc4"
-    },
-    {
-      "path": "/os/templates/medical/",
-      "title": "Medical",
-      "icon": "\ud83c\udfe5"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
   "has_plc": true,
   "has_hmi": true,
   "has_scada": true,
-  "plc_path": "plc.html",
-  "hmi_path": "hmi.html",
-  "scada_path": "scada.html",
+  "plc_path": "/os/templates/medical/plc.html",
+  "hmi_path": "/os/templates/medical/hmi.html",
+  "scada_path": "/os/templates/medical/scada.html",
   "Features": [
     {
       "title": "DICOM Processing",
@@ -149,50 +95,6 @@
       "path": "scada.html",
       "name": "SCADA",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "hmi.html",
-      "name": "Hmi",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3917
-    },
-    {
-      "path": "plc.html",
-      "name": "Plc",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3685
-    },
-    {
-      "path": "scada.html",
-      "name": "Scada",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 6041
-    },
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 1637
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4613
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3618
     }
   ]
 }

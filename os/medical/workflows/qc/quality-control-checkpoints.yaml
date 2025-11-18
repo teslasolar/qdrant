@@ -1,0 +1,564 @@
+# Quality Control Checkpoints and Validation Rules
+# Comprehensive QC system for DICOM workflow quality assurance
+
+quality_control:
+  id: qc-checkpoints-001
+  name: Quality Control Checkpoints
+  version: "1.0.0"
+  isa_level: L3_MES
+  description: Automated quality control and validation throughout DICOM workflows
+
+metadata:
+  author: Medical Imaging Team
+  created: 2025-11-17
+  updated: 2025-11-17
+  tags:
+    - quality-control
+    - validation
+    - qc
+    - quality-assurance
+
+# QC Framework Configuration
+qc_framework:
+  enabled: true
+  strict_mode: false  # false = warnings, true = errors
+  auto_remediation: true
+  manual_review_threshold: 0.6  # QC score below this requires review
+
+  # QC Actions
+  actions:
+    pass:
+      continue_workflow: true
+      log_level: INFO
+
+    warning:
+      continue_workflow: true
+      log_level: WARNING
+      flag_for_review: optional
+      notify: false
+
+    fail:
+      halt_workflow: true
+      log_level: ERROR
+      quarantine: true
+      notify: true
+      require_manual_review: true
+
+# Checkpoint Locations
+checkpoints:
+  # Checkpoint 1: Post-Ingestion
+  post_ingestion:
+    id: qc-post-ingestion
+    name: Post-Ingestion Quality Control
+    trigger: after_ingestion
+    mandatory: true
+
+    validations:
+      # DICOM Conformance
+      - name: dicom_conformance
+        type: format_validation
+        severity: critical
+        checks:
+          - valid_dicom_header: true
+          - valid_transfer_syntax: true
+          - valid_sop_class: true
+          - required_tags_present: true
+        required_tags:
+          - PatientID
+          - StudyInstanceUID
+          - SeriesInstanceUID
+          - SOPInstanceUID
+          - Modality
+          - StudyDate
+        failure_action: fail
+
+      # File Integrity
+      - name: file_integrity
+        type: integrity_check
+        severity: critical
+        checks:
+          - file_readable: true
+          - file_size_valid: true
+          - checksum_valid: true
+          - no_corruption: true
+        failure_action: fail
+
+      # Metadata Completeness
+      - name: metadata_completeness
+        type: metadata_validation
+        severity: warning
+        checks:
+          - patient_info_present: true
+          - study_info_complete: true
+          - series_info_complete: true
+          - acquisition_parameters_present: true
+        failure_action: warning
+
+      # Study Completeness
+      - name: study_completeness
+        type: completeness_check
+        severity: warning
+        checks:
+          - expected_series_count: auto_detect
+          - expected_instance_count: verify
+          - no_missing_instances: true
+        failure_action: warning
+
+  # Checkpoint 2: Post-Anonymization
+  post_anonymization:
+    id: qc-post-anonymization
+    name: Post-Anonymization Quality Control
+    trigger: after_anonymization
+    mandatory: true
+
+    validations:
+      # PHI Removal Verification
+      - name: phi_removal_verification
+        type: privacy_validation
+        severity: critical
+        checks:
+          - no_patient_name: true
+          - no_patient_dob: true
+          - no_patient_address: true
+          - no_physician_names: true
+          - no_institution_names: true
+          - private_tags_removed: true
+        phi_detection_patterns:
+          - name_patterns: "[A-Z][a-z]+ [A-Z][a-z]+"
+          - ssn_patterns: "\\d{3}-\\d{2}-\\d{4}"
+          - mrn_patterns: "MRN[0-9]+"
+        failure_action: fail
+
+      # UID Regeneration
+      - name: uid_regeneration
+        type: anonymization_validation
+        severity: critical
+        checks:
+          - study_uid_changed: true
+          - series_uid_changed: true
+          - sop_uid_changed: true
+          - uid_hierarchy_maintained: true
+        failure_action: fail
+
+      # Date Shifting
+      - name: date_shifting
+        type: anonymization_validation
+        severity: critical
+        checks:
+          - dates_shifted: true
+          - date_consistency_maintained: true
+          - time_intervals_preserved: true
+        failure_action: fail
+
+      # Burned-in PHI Detection
+      - name: burned_in_phi
+        type: image_analysis
+        severity: warning
+        checks:
+          - ocr_scan_performed: true
+          - no_text_detected: preferred
+          - suspicious_regions_flagged: true
+        failure_action: warning
+
+  # Checkpoint 3: Post-Normalization
+  post_normalization:
+    id: qc-post-normalization
+    name: Post-Normalization Quality Control
+    trigger: after_normalization
+    mandatory: true
+
+    validations:
+      # Pixel Data Validation
+      - name: pixel_data_validation
+        type: image_validation
+        severity: critical
+        checks:
+          - pixel_data_present: true
+          - pixel_data_readable: true
+          - correct_bit_depth: true
+          - correct_photometric: true
+          - no_invalid_values: true
+        failure_action: fail
+
+      # Geometry Validation
+      - name: geometry_validation
+        type: geometric_validation
+        severity: warning
+        checks:
+          - valid_pixel_spacing: true
+          - valid_slice_thickness: true
+          - valid_orientation: true
+          - consistent_geometry: true
+        failure_action: warning
+
+      # Intensity Validation
+      - name: intensity_validation
+        type: intensity_validation
+        severity: warning
+        checks:
+          - intensity_range_valid: true
+          - no_intensity_clipping: true
+          - proper_normalization: true
+        modality_specific:
+          CT:
+            hu_range_valid: true
+            rescale_applied: true
+          MR:
+            intensity_normalized: true
+        failure_action: warning
+
+  # Checkpoint 4: Post-Enhancement
+  post_enhancement:
+    id: qc-post-enhancement
+    name: Post-Enhancement Quality Control
+    trigger: after_enhancement
+    mandatory: false
+
+    validations:
+      # Enhancement Quality
+      - name: enhancement_quality
+        type: quality_assessment
+        severity: warning
+        checks:
+          - snr_improved: true
+          - contrast_improved: true
+          - no_over_enhancement: true
+          - no_new_artifacts: true
+        metrics:
+          - psnr: ">= 30"
+          - ssim: ">= 0.9"
+          - quality_improvement: ">= 0.1"
+        failure_action: warning
+
+      # Feature Preservation
+      - name: feature_preservation
+        type: diagnostic_validation
+        severity: critical
+        checks:
+          - diagnostic_features_preserved: true
+          - no_detail_loss: true
+          - edge_integrity: true
+        failure_action: fail
+
+  # Checkpoint 5: Post-AI-Analysis
+  post_ai_analysis:
+    id: qc-post-ai-analysis
+    name: Post-AI-Analysis Quality Control
+    trigger: after_ai_analysis
+    mandatory: true
+
+    validations:
+      # AI Results Validation
+      - name: ai_results_validation
+        type: ai_validation
+        severity: warning
+        checks:
+          - results_complete: true
+          - confidence_scores_present: true
+          - confidence_above_threshold: true
+          - no_processing_errors: true
+        confidence_thresholds:
+          alzheimers_detection: 0.6
+          autism_detection: 0.6
+        failure_action: warning
+
+      # AI Result Consistency
+      - name: ai_consistency
+        type: consistency_check
+        severity: warning
+        checks:
+          - results_consistent_across_sequences: true
+          - biomarkers_in_valid_range: true
+          - no_contradictory_findings: true
+        failure_action: warning
+
+      # Uncertainty Flagging
+      - name: uncertainty_assessment
+        type: uncertainty_analysis
+        severity: info
+        checks:
+          - uncertainty_quantified: true
+          - high_uncertainty_flagged: true
+        uncertainty_threshold: 0.3
+        failure_action: warning
+
+  # Checkpoint 6: Post-Embedding-Generation
+  post_embedding:
+    id: qc-post-embedding
+    name: Post-Embedding Quality Control
+    trigger: after_embedding_generation
+    mandatory: true
+
+    validations:
+      # Embedding Quality
+      - name: embedding_quality
+        type: embedding_validation
+        severity: warning
+        checks:
+          - embeddings_generated: true
+          - correct_dimension: 512
+          - no_nan_values: true
+          - normalized: true
+        failure_action: warning
+
+      # Qdrant Upload Verification
+      - name: qdrant_verification
+        type: database_validation
+        severity: critical
+        checks:
+          - uploaded_to_qdrant: true
+          - searchable: true
+          - payload_complete: true
+          - count_matches: true
+        failure_action: fail
+
+      # Similarity Sanity Check
+      - name: similarity_sanity
+        type: similarity_validation
+        severity: warning
+        checks:
+          - self_similarity_high: ">= 0.95"
+          - can_retrieve_similar: true
+        failure_action: warning
+
+  # Checkpoint 7: Pre-Storage
+  pre_storage:
+    id: qc-pre-storage
+    name: Pre-Storage Quality Control
+    trigger: before_storage
+    mandatory: true
+
+    validations:
+      # Pipeline Completion
+      - name: pipeline_completion
+        type: workflow_validation
+        severity: critical
+        checks:
+          - all_workflows_completed: true
+          - no_pending_steps: true
+          - all_outputs_generated: true
+        failure_action: fail
+
+      # Data Integrity
+      - name: storage_integrity
+        type: integrity_check
+        severity: critical
+        checks:
+          - checksums_calculated: true
+          - files_verified: true
+          - no_corruption: true
+        failure_action: fail
+
+      # Metadata Completeness
+      - name: storage_metadata
+        type: metadata_validation
+        severity: warning
+        checks:
+          - processing_history_complete: true
+          - all_versions_present: true
+          - manifest_created: true
+        failure_action: warning
+
+# Automated QC Metrics
+automated_metrics:
+  # Image Quality Metrics
+  image_quality:
+    - snr  # Signal-to-Noise Ratio
+    - cnr  # Contrast-to-Noise Ratio
+    - sharpness
+    - contrast
+    - brightness
+    - uniformity
+    - geometric_accuracy
+
+  # Processing Quality Metrics
+  processing_quality:
+    - processing_success_rate
+    - average_qc_score
+    - checkpoint_pass_rate
+    - manual_review_rate
+    - quarantine_rate
+    - remediation_success_rate
+
+  # Compliance Metrics
+  compliance:
+    - phi_removal_success_rate
+    - anonymization_validation_rate
+    - audit_trail_completeness
+    - policy_compliance_rate
+
+# Manual Review Workflow
+manual_review:
+  enabled: true
+  triggers:
+    - qc_score: "< 0.6"
+    - checkpoint_failure: critical
+    - uncertainty: ">= 0.3"
+    - ai_high_risk: true
+
+  review_queue:
+    priority_high:
+      - critical_failures
+      - high_risk_findings
+      - safety_concerns
+
+    priority_medium:
+      - quality_warnings
+      - uncertainty_flags
+      - consistency_issues
+
+    priority_low:
+      - minor_warnings
+      - optional_reviews
+
+  reviewer_assignment:
+    method: round_robin
+    expertise_matching: true
+    workload_balancing: true
+
+# Quality Scoring
+quality_scoring:
+  # Overall QC Score Calculation
+  score_calculation:
+    method: weighted_average
+    weights:
+      dicom_conformance: 0.2
+      data_integrity: 0.2
+      image_quality: 0.15
+      processing_quality: 0.15
+      ai_confidence: 0.1
+      embedding_quality: 0.1
+      completeness: 0.1
+
+  # Score Interpretation
+  score_ranges:
+    excellent: [0.9, 1.0]
+    good: [0.8, 0.9]
+    acceptable: [0.6, 0.8]
+    needs_review: [0.4, 0.6]
+    unacceptable: [0.0, 0.4]
+
+  # Actions by Score
+  score_actions:
+    excellent:
+      - proceed_to_storage
+      - include_in_training_data
+
+    good:
+      - proceed_to_storage
+
+    acceptable:
+      - proceed_to_storage
+      - flag_for_monitoring
+
+    needs_review:
+      - flag_for_manual_review
+      - hold_storage
+
+    unacceptable:
+      - quarantine
+      - require_reprocessing
+      - notify_admin
+
+# Remediation Strategies
+remediation:
+  enabled: true
+  auto_remediation: true
+  max_retry_attempts: 2
+
+  strategies:
+    # Missing Data
+    missing_metadata:
+      - attempt_recovery_from_backup
+      - inference_from_related_data
+      - manual_data_entry
+
+    # Quality Issues
+    poor_image_quality:
+      - reprocess_with_aggressive_enhancement
+      - adjust_processing_parameters
+      - flag_for_rescan
+
+    # Processing Failures
+    processing_error:
+      - retry_with_different_parameters
+      - use_alternative_algorithm
+      - manual_processing
+
+    # AI Uncertainty
+    high_ai_uncertainty:
+      - ensemble_multiple_models
+      - run_additional_analysis
+      - request_expert_review
+
+# Monitoring and Reporting
+monitoring:
+  # QC Metrics
+  track_metrics:
+    - total_studies_checked
+    - qc_pass_rate
+    - qc_fail_rate
+    - checkpoint_failures_by_type
+    - average_qc_score
+    - manual_review_rate
+    - remediation_success_rate
+
+  # Real-time Dashboards
+  dashboards:
+    - qc_overview
+    - checkpoint_status
+    - quality_trends
+    - failure_analysis
+
+  # MQTT Topics
+  mqtt:
+    publish_events: true
+    topics:
+      - chazon/os/medical/qc/checkpoint-passed
+      - chazon/os/medical/qc/checkpoint-failed
+      - chazon/os/medical/qc/manual-review-required
+      - chazon/os/medical/qc/remediation-success
+
+  # Modbus Registers
+  modbus:
+    holding_registers:
+      - address: 40700
+        name: QC_STUDIES_CHECKED
+      - address: 40701
+        name: QC_PASS_RATE_PERCENT
+      - address: 40702
+        name: QC_MANUAL_REVIEW_COUNT
+      - address: 40703
+        name: QC_AVG_SCORE
+
+# Reporting
+reporting:
+  # Daily QC Report
+  daily_report:
+    enabled: true
+    schedule: "0 22 * * *"  # 10 PM daily
+    include:
+      - studies_processed
+      - qc_pass_fail_summary
+      - checkpoint_statistics
+      - quality_trends
+      - remediation_summary
+      - manual_review_summary
+
+  # Quality Trends Report
+  weekly_trends:
+    enabled: true
+    schedule: "0 8 * * MON"  # Monday 8 AM
+    include:
+      - weekly_quality_trends
+      - failure_pattern_analysis
+      - improvement_recommendations
+
+# Logging
+logging:
+  level: INFO
+  path: /var/log/medical/workflows/qc.log
+  rotation: daily
+  retention_days: 2555  # 7 years for compliance
+  log_all_checks: true
+  include_scores: true

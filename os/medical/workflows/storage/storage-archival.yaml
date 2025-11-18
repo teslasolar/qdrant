@@ -1,0 +1,459 @@
+# Storage and Archival Workflow
+# Long-term storage, archival, and lifecycle management of DICOM studies
+
+workflow:
+  id: storage-archival-001
+  name: Storage and Archival
+  version: "1.0.0"
+  isa_level: L3_MES
+  category: storage
+  priority: medium
+
+metadata:
+  description: Store, archive, and manage lifecycle of processed DICOM studies
+  author: Medical Imaging Team
+  created: 2025-11-17
+  updated: 2025-11-17
+  tags:
+    - storage
+    - archival
+    - lifecycle
+    - backup
+    - retention
+
+# Input Configuration
+input:
+  source: study
+  required_status: [EMBEDDED, AI_ANALYZED, PROCESSED]
+  include_all_versions: true  # Original, anonymized, enhanced
+
+# Storage Tiers Configuration
+storage_tiers:
+  hot:
+    name: Hot Storage
+    path: /data/medical/storage/hot/
+    description: Fast access for recent studies
+    retention_days: 90
+    storage_class: SSD
+    redundancy: RAID10
+    backup_frequency: daily
+
+  warm:
+    name: Warm Storage
+    path: /data/medical/storage/warm/
+    description: Medium access for older studies
+    retention_days: 365
+    storage_class: HDD
+    redundancy: RAID6
+    backup_frequency: weekly
+    compression: true
+
+  cold:
+    name: Cold Storage
+    path: /data/medical/storage/cold/
+    description: Infrequent access archive
+    retention_days: 2555  # 7 years
+    storage_class: tape
+    redundancy: dual_copy
+    backup_frequency: monthly
+    compression: true
+    encryption: true
+
+  glacier:
+    name: Glacier Storage
+    path: /data/medical/storage/glacier/
+    description: Long-term compliance archive
+    retention_days: 3650  # 10 years
+    storage_class: cloud_glacier
+    redundancy: geographic
+    retrieval_time: 24h
+    compression: true
+    encryption: true
+
+# Workflow Steps
+steps:
+  - id: validate-complete
+    name: Validate Study Complete
+    type: validation
+    action: validate_study_complete
+    config:
+      check_all_workflows_done: true
+      required_statuses:
+        - INGESTED
+        - ANONYMIZED
+        - NORMALIZED
+        - ENHANCED
+        - AI_ANALYZED
+        - EMBEDDED
+      verify_all_files_present: true
+    on_success: calculate-storage-requirements
+    on_failure: log-error
+
+  - id: calculate-storage-requirements
+    name: Calculate Storage Requirements
+    type: analysis
+    action: calculate_storage_needs
+    config:
+      calculate_size: true
+      estimate_compression_ratio: true
+      check_available_space: true
+      min_free_space_percent: 10
+
+      # Version tracking
+      versions_to_store:
+        - original
+        - anonymized
+        - normalized
+        - enhanced
+        - ai_results
+        - embeddings
+
+    on_success: determine-storage-tier
+    on_failure: log-error
+
+  - id: determine-storage-tier
+    name: Determine Storage Tier
+    type: classification
+    action: classify_storage_tier
+    config:
+      rules:
+        hot:
+          study_age_days: "<= 90"
+          access_frequency: ">= 5/month"
+          priority: high
+          ai_flags: high_risk
+
+        warm:
+          study_age_days: "<= 365"
+          access_frequency: ">= 1/month"
+          priority: medium
+
+        cold:
+          study_age_days: "<= 2555"
+          access_frequency: "< 1/month"
+          priority: low
+
+        glacier:
+          study_age_days: "> 2555"
+          access_frequency: rare
+          compliance_required: true
+
+      default_tier: hot
+      override_by_regulation: true
+
+    on_success: compress-if-needed
+    on_failure: log-error
+
+  - id: compress-if-needed
+    name: Compress Study Data
+    type: compression
+    action: compress_study
+    config:
+      compress_tiers: [warm, cold, glacier]
+      algorithm: zstd
+      compression_level: 6
+      parallel: true
+      verify_after: true
+
+      # Selective compression
+      compress_dicom: true
+      compress_ai_results: true
+      compress_reports: true
+      keep_original_until_verified: true
+
+    on_success: encrypt-if-needed
+    on_failure: log-error
+
+  - id: encrypt-if-needed
+    name: Encrypt Study Data
+    type: encryption
+    action: encrypt_study
+    config:
+      encrypt_tiers: [cold, glacier]
+      algorithm: AES256
+      key_management: vault
+      key_rotation: 90_days
+
+      # What to encrypt
+      encrypt_dicom: true
+      encrypt_ai_results: true
+      encrypt_reports: true
+      encrypt_metadata: false  # Keep searchable
+
+    on_success: create-manifest
+    on_failure: log-error
+
+  - id: create-manifest
+    name: Create Storage Manifest
+    type: documentation
+    action: create_storage_manifest
+    config:
+      include:
+        - file_inventory
+        - checksums_sha256
+        - file_sizes
+        - compression_info
+        - encryption_info
+        - storage_location
+        - timestamps
+        - version_history
+
+      format: json
+      sign_manifest: true
+
+    on_success: move-to-tier
+    on_failure: log-error
+
+  - id: move-to-tier
+    name: Move to Storage Tier
+    type: storage_operation
+    action: move_to_storage_tier
+    config:
+      verify_before_move: true
+      verify_after_move: true
+      calculate_checksum: true
+      parallel_transfer: true
+      chunk_size: 104857600  # 100MB
+
+      # Atomic operation
+      use_temp_location: true
+      cleanup_on_failure: true
+      keep_source_until_verified: true
+
+    on_success: update-storage-index
+    on_failure: rollback-transfer
+
+  - id: update-storage-index
+    name: Update Storage Index
+    type: indexing
+    action: update_storage_index
+    config:
+      database: qdrant
+      collection: storage_index
+
+      index_metadata:
+        - study_uid
+        - storage_tier
+        - storage_path
+        - file_count
+        - total_size
+        - compressed_size
+        - checksum
+        - stored_timestamp
+        - access_count
+        - last_access_timestamp
+        - retention_expiry
+        - versions_stored
+
+      create_retrieval_key: true
+
+    on_success: register-in-pacs
+    on_failure: log-error
+
+  - id: register-in-pacs
+    name: Register in PACS (Optional)
+    type: integration
+    action: register_in_pacs
+    config:
+      enabled: ${PACS_INTEGRATION_ENABLED:false}
+      pacs_host: ${PACS_HOST}
+      pacs_port: ${PACS_PORT}
+      ae_title: CHAZON_MES
+
+      # What to register
+      register_anonymized: true
+      register_original: false
+      register_ai_results: true
+
+    on_success: schedule-backup
+    on_failure: log-error
+
+  - id: schedule-backup
+    name: Schedule Backup
+    type: backup_scheduling
+    action: schedule_backup
+    config:
+      backup_schedule:
+        hot: daily
+        warm: weekly
+        cold: monthly
+        glacier: quarterly
+
+      backup_destination: /backup/medical/
+      backup_type: incremental
+      verify_backup: true
+      offsite_replication: true
+
+    on_success: set-lifecycle-policy
+    on_failure: log-error
+
+  - id: set-lifecycle-policy
+    name: Set Lifecycle Policy
+    type: lifecycle_management
+    action: apply_lifecycle_policy
+    config:
+      policies:
+        - name: tier_transition
+          rules:
+            - condition: age > 90 days
+              action: move_to_warm
+
+            - condition: age > 365 days
+              action: move_to_cold
+
+            - condition: age > 2555 days
+              action: move_to_glacier
+
+        - name: retention
+          rules:
+            - condition: age > 3650 days AND compliance_hold = false
+              action: eligible_for_deletion
+
+        - name: access_based
+          rules:
+            - condition: no_access > 180 days AND tier = hot
+              action: move_to_warm
+
+      check_frequency: daily
+      apply_immediately: false
+
+    on_success: update-tracking
+    on_failure: log-error
+
+  - id: update-tracking
+    name: Update Study Tracking
+    type: tracking
+    action: update_study_status
+    config:
+      database: qdrant
+      collection: medical_studies
+      status: ARCHIVED
+      add_storage_metadata:
+        storage_tier: auto
+        storage_path: auto
+        archived_timestamp: auto
+        retention_expiry: auto
+        backup_status: auto
+      timestamp: true
+
+    on_success: notify-completion
+    on_failure: log-error
+
+  - id: notify-completion
+    name: Notify Storage Complete
+    type: notification
+    action: send_notifications
+    config:
+      channels:
+        - mqtt
+
+      mqtt_topics:
+        - chazon/os/medical/storage/archived
+
+      include_summary: true
+
+    on_success: complete
+    on_failure: log-error
+
+# Retrieval Configuration
+retrieval:
+  enabled: true
+  request_methods:
+    - api
+    - dicom_c_move
+    - web_interface
+
+  sla:
+    hot: "< 1 minute"
+    warm: "< 5 minutes"
+    cold: "< 1 hour"
+    glacier: "< 24 hours"
+
+  # Cache retrieved studies in hot tier
+  cache_on_retrieval: true
+  cache_duration_days: 30
+
+# Error Handling
+error_handling:
+  rollback-transfer:
+    action: restore_from_source
+    cleanup_partial: true
+    log_level: ERROR
+    notify: true
+
+# Compliance and Retention
+compliance:
+  regulations:
+    - HIPAA
+    - GDPR
+    - FDA_21_CFR_Part_11
+
+  minimum_retention:
+    diagnostic_images: 2555  # 7 years
+    mammography: 3650  # 10 years
+    pediatric: 7300  # 20 years
+
+  legal_hold:
+    enabled: true
+    override_deletion: true
+
+  audit_trail:
+    log_all_access: true
+    log_all_modifications: true
+    log_all_deletions: true
+    retention_period: 2555  # 7 years
+
+# Disaster Recovery
+disaster_recovery:
+  backup_sites: 2
+  geographic_distribution: true
+  rto: 24  # hours
+  rpo: 24  # hours
+
+  # Backup verification
+  verify_backups:
+    enabled: true
+    frequency: monthly
+    sample_size: 1%  # of total studies
+
+# Performance
+performance:
+  max_concurrent_transfers: 10
+  bandwidth_limit: 100  # Mbps
+  io_priority: normal
+  deduplication: true
+  thin_provisioning: true
+
+# Monitoring and Metrics
+monitoring:
+  tags:
+    - STUDIES_ARCHIVED
+    - STORAGE_USED_GB
+    - STORAGE_AVAILABLE_GB
+    - ARCHIVAL_AVG_TIME
+    - RETRIEVAL_REQUESTS
+    - BACKUP_STATUS
+
+  mqtt:
+    publish_events: true
+    topics:
+      - chazon/os/medical/storage/archived
+      - chazon/os/medical/storage/tier-moved
+      - chazon/os/medical/storage/backup-completed
+
+  modbus:
+    holding_registers:
+      - address: 40400
+        name: STUDIES_ARCHIVED
+      - address: 40401
+        name: STORAGE_USED_GB
+      - address: 40402
+        name: ARCHIVAL_AVG_TIME
+
+# Logging
+logging:
+  level: INFO
+  path: /var/log/medical/workflows/storage-archival.log
+  rotation: daily
+  retention_days: 2555  # 7 years for compliance
+  log_all_transfers: true

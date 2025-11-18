@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CT Scan Viewer</title>
+<link rel="stylesheet" href="../styles/isa101-theme.css">
+<link rel="stylesheet" href="../styles/widgets.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>CT Scan Viewer</h1>
+
+  <div class="card">
+    <div class="widget-title">Patient Info</div>
+    <div id="patient-info">Loading...</div>
+  </div>
+
+  <div class="card">
+    <canvas id="ct-canvas" width="512" height="512"></canvas>
+    <div style="margin-top: 10px;">
+      <label>Slice: <input type="range" id="slice-slider" min="0" max="100" value="50"></label>
+      <span id="slice-number">50/100</span>
+    </div>
+  </div>
+
+  <div class="metric-grid">
+    <div class="widget">
+      <div class="widget-title">Window</div>
+      <div class="widget-value" id="window-value">400</div>
+    </div>
+    <div class="widget">
+      <div class="widget-title">Level</div>
+      <div class="widget-value" id="level-value">40</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import ImagePreprocessing from '../ai/preprocessing.js';
+
+const preprocessing = new ImagePreprocessing();
+const slider = document.getElementById('slice-slider');
+const sliceNumber = document.getElementById('slice-number');
+
+slider.addEventListener('input', (e) => {
+  sliceNumber.textContent = `${e.target.value}/100`;
+});
+</script>
+
+</body>
+</html>

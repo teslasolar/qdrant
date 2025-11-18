@@ -1,5 +1,5 @@
 {
-  "UUID": "14daf360-f5f0-4b05-b8ee-d9c18013cfac",
+  "UUID": "869311d8-6943-446a-bc77-122967473b5d",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/modules/cli/",
   "Directory_Name": "Cli",
@@ -13,67 +13,19 @@
       "path": "/os/modules/cli/controls/",
       "title": "Controls",
       "description": "controls subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 2
-    }
-  ],
-  "Sibling_Directories": [
-    {
-      "path": "/os/modules/ai/",
-      "title": "Ai",
-      "description": "ai area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/modules/controls/",
-      "title": "Controls",
-      "description": "controls area",
       "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/modules/medical/",
-      "title": "Medical",
-      "description": "medical area",
-      "icon": "\ud83c\udfe5"
-    },
-    {
-      "path": "/os/modules/packml/",
-      "title": "Packml",
-      "description": "packml area",
-      "icon": "\ud83d\udcc1"
     }
   ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/modules/",
-      "title": "Modules",
-      "icon": "\ud83d\udce6"
-    },
-    {
-      "path": "/os/modules/cli/",
-      "title": "Cli",
-      "icon": "\u2328\ufe0f"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
   "has_plc": true,
   "has_hmi": true,
   "has_scada": true,
-  "plc_path": "plc.html",
-  "hmi_path": "hmi.html",
-  "scada_path": "scada.html",
+  "plc_path": "/os/modules/cli/plc.html",
+  "hmi_path": "/os/modules/cli/hmi.html",
+  "scada_path": "/os/modules/cli/scada.html",
   "Features": [
     {
       "title": "Core Functionality",
@@ -143,99 +95,6 @@
       "path": "scada.html",
       "name": "SCADA",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "hmi.html",
-      "name": "Hmi",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3909
-    },
-    {
-      "path": "plc.html",
-      "name": "Plc",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3665
-    },
-    {
-      "path": "scada.html",
-      "name": "Scada",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 6025
-    },
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 6040
-    },
-    {
-      "path": "cli-core.md",
-      "name": "Cli Core",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3687
-    },
-    {
-      "path": "cli-db.md",
-      "name": "Cli Db",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 6245
-    },
-    {
-      "path": "cli-edit.md",
-      "name": "Cli Edit",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4476
-    },
-    {
-      "path": "cli-git.md",
-      "name": "Cli Git",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 5247
-    },
-    {
-      "path": "cli-logs.md",
-      "name": "Cli Logs",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4746
-    },
-    {
-      "path": "cli-models.md",
-      "name": "Cli Models",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 8086
-    },
-    {
-      "path": "cli-test.md",
-      "name": "Cli Test",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 6061
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4548
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3605
     }
   ]
 }

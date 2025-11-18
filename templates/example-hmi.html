@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Template-Based HMI Example</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Courier New', monospace;
+    background: #0a0a0a;
+    color: #00ff88;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  #app-container {
+    display: grid;
+    grid-template-rows: 60px 1fr 50px;
+    height: 100vh;
+  }
+
+  #app-header {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border-bottom: 3px solid #00ff88;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    justify-content: space-between;
+  }
+
+  #app-header h1 {
+    font-size: 1.5em;
+    color: #00ff88;
+  }
+
+  #hmi-container {
+    padding: 20px;
+    overflow-y: auto;
+  }
+
+  #app-footer {
+    background: #1a1a2e;
+    border-top: 2px solid #00ff88;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 10px;
+  }
+
+  .btn {
+    padding: 8px 16px;
+    background: #00ff88;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+  }
+
+  .btn:hover { background: #00cc66; }
+  .btn.secondary { background: #333; color: #00ff88; }
+
+  #screen-selector {
+    padding: 8px;
+    background: #1a1a2e;
+    color: #00ff88;
+    border: 2px solid #00ff88;
+    border-radius: 4px;
+    font-family: inherit;
+  }
+</style>
+</head>
+<body>
+
+<div id="app-container">
+  <!-- Header -->
+  <div id="app-header">
+    <h1>🎛️ Template-Based HMI</h1>
+    <div style="color: #00ccff; font-size: 1.2em;" id="system-time">00:00:00</div>
+  </div>
+
+  <!-- Main Content - Loaded from Templates -->
+  <div id="hmi-container">
+    <div style="text-align: center; padding: 50px;">
+      <h2>Select a screen template to load</h2>
+      <p style="color: #888; margin-top: 20px;">Use the dropdown below to load different screen templates</p>
+    </div>
+  </div>
+
+  <!-- Footer Controls -->
+  <div id="app-footer">
+    <label style="color: #00ff88;">Screen:</label>
+    <select id="screen-selector">
+      <option value="">-- Select Screen --</option>
+      <option value="550e8400-e29b-41d4-a716-446655440000">System Overview</option>
+      <option value="660e8400-e29b-41d4-a716-446655440001">Equipment Detail</option>
+      <option value="770e8400-e29b-41d4-a716-446655440002">Alarm Management</option>
+      <option value="880e8400-e29b-41d4-a716-446655440003">Historical Trend</option>
+    </select>
+    <button class="btn" onclick="loadSelectedScreen()">Load Screen</button>
+    <button class="btn secondary" onclick="searchByTag()">Search by Tag</button>
+  </div>
+</div>
+
+<script src="template-loader.js"></script>
+<script>
+// Update time
+function updateTime() {
+  document.getElementById('system-time').textContent = new Date().toLocaleTimeString();
+}
+setInterval(updateTime, 1000);
+updateTime();
+
+// Load selected screen
+async function loadSelectedScreen() {
+  const selector = document.getElementById('screen-selector');
+  const uuid = selector.value;
+
+  if (!uuid) {
+    alert('Please select a screen');
+    return;
+  }
+
+  try {
+    await loadScreen(uuid, 'hmi-container');
+    console.log(`Loaded screen: ${uuid}`);
+  } catch (error) {
+    console.error('Failed to load screen:', error);
+    alert(`Failed to load screen: ${error.message}`);
+  }
+}
+
+// Search by tag
+async function searchByTag() {
+  const tag = prompt('Enter tag to search (e.g., "overview", "alarm", "detail"):');
+  if (!tag) return;
+
+  try {
+    await loadScreenByTag(tag, 'hmi-container');
+    console.log(`Loaded screen with tag: ${tag}`);
+  } catch (error) {
+    console.error('Failed to load screen:', error);
+    alert(`Failed to load screen: ${error.message}`);
+  }
+}
+
+// Auto-load first screen on page load
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    // Load the system overview by default
+    await loadScreen('550e8400-e29b-41d4-a716-446655440000', 'hmi-container');
+  } catch (error) {
+    console.error('Failed to auto-load screen:', error);
+  }
+});
+</script>
+
+</body>
+</html>

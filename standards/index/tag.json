@@ -1,0 +1,95 @@
+{
+  "UUID": "standards-001-executable-framework",
+  "ISA_Level": "L3_MES",
+  "Directory_Path": "/standards/",
+  "Directory_Name": "Standards",
+  "Title": "Standards-as-Tags Framework",
+  "Description": "Executable industrial automation standards - PackML, ISA-88, ISA-95, ISA-101, MQTT, OPC-UA with Meta-Standard Language (MSL)",
+  "Icon": "📐",
+  "Color_Scheme": "purple",
+  "Parent_Path": "/",
+  "Child_Directories": [
+    {
+      "path": "/standards/packml/",
+      "title": "PackML",
+      "description": "ISA-TR88.00.02 state machine - 18 states, 10 commands",
+      "icon": "⚙️"
+    },
+    {
+      "path": "/standards/isa88/",
+      "title": "ISA-88",
+      "description": "Batch control standard - equipment hierarchy and recipes",
+      "icon": "🏭"
+    },
+    {
+      "path": "/standards/isa95/",
+      "title": "ISA-95",
+      "description": "Enterprise-control integration - 5-level Purdue Model",
+      "icon": "🏢"
+    },
+    {
+      "path": "/standards/isa101/",
+      "title": "ISA-101",
+      "description": "HMI design standard - high performance display methodology",
+      "icon": "🎛️"
+    },
+    {
+      "path": "/standards/mqtt/",
+      "title": "MQTT Sparkplug B",
+      "description": "IIoT pub/sub protocol for industrial data",
+      "icon": "📡"
+    },
+    {
+      "path": "/standards/opcua/",
+      "title": "OPC-UA",
+      "description": "Platform-independent interoperability standard",
+      "icon": "🔗"
+    },
+    {
+      "path": "/standards/engine/",
+      "title": "Instantiation Engine",
+      "description": "Python engine for loading and instantiating standards",
+      "icon": "🚀"
+    },
+    {
+      "path": "/standards/meta-standard/",
+      "title": "Meta-Standard Language",
+      "description": "DSL for composing and combining standards",
+      "icon": "📝"
+    }
+  ],
+  "Features": [
+    {
+      "title": "Executable Standards",
+      "description": "Standards as instantiable code, not documentation",
+      "icon": "⚡"
+    },
+    {
+      "title": "Meta-Standard Language",
+      "description": "Compose multiple standards declaratively",
+      "icon": "📝"
+    },
+    {
+      "title": "Instantiation Engine",
+      "description": "Load standards with custom parameters",
+      "icon": "🚀"
+    }
+  ],
+  "Quick_Actions": [
+    {
+      "label": "PackML State Machine",
+      "path": "packml/packml-state-machine.json",
+      "type": "primary"
+    },
+    {
+      "label": "Instantiation Engine",
+      "path": "engine/standard_instantiation_engine.py",
+      "type": "primary"
+    },
+    {
+      "label": "Examples",
+      "path": "examples/",
+      "type": "secondary"
+    }
+  ]
+}

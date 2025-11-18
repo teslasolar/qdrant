@@ -1,5 +1,5 @@
 {
-  "UUID": "78608de3-b856-4672-8f95-59aa2a9ba059",
+  "UUID": "3ae5c1a5-1640-4088-8c71-caa8ac379bf1",
   "ISA_Level": "L4_Business",
   "Directory_Path": "/docs/standards/protocols/",
   "Directory_Name": "Protocols",
@@ -13,54 +13,22 @@
       "path": "/docs/standards/protocols/modbus/",
       "title": "Modbus",
       "description": "modbus subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 4
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/docs/standards/protocols/mqtt/",
       "title": "Mqtt",
       "description": "mqtt subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 4
+      "icon": "\ud83d\udcc1"
     },
     {
       "path": "/docs/standards/protocols/opc-ua/",
       "title": "Opc Ua",
       "description": "opc-ua subsystem",
-      "icon": "\ud83d\udcc1",
-      "page_count": 4
-    }
-  ],
-  "Sibling_Directories": [
-    {
-      "path": "/docs/standards/isa/",
-      "title": "Isa",
-      "description": "isa area",
       "icon": "\ud83d\udcc1"
     }
   ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/docs/",
-      "title": "Docs",
-      "icon": "\ud83d\udcda"
-    },
-    {
-      "path": "/docs/standards/",
-      "title": "Standards",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/docs/standards/protocols/",
-      "title": "Protocols",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
@@ -124,29 +92,6 @@
       "path": "index.html",
       "name": "Index",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3303
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4637
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3625
     }
   ]
 }

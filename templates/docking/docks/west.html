@@ -1,0 +1,72 @@
+<!-- West Dock - Navigation & Quick Access -->
+<div class="dock-section-title">📍 Navigation</div>
+
+<div class="widget">
+  <div class="widget-title">🏭 ISA-95 Levels</div>
+  <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+    <a href="/enterprise-portal.html" style="color: var(--color-cream); text-decoration: none; padding: 8px; background: rgba(245, 242, 232, 0.05); border-radius: 4px; border-left: 3px solid var(--color-purple-accent);">
+      L4 - Business Planning
+    </a>
+    <a href="/os/medical/" style="color: var(--color-cream); text-decoration: none; padding: 8px; background: rgba(245, 242, 232, 0.05); border-radius: 4px; border-left: 3px solid var(--color-purple-light);">
+      L3 - MES Operations
+    </a>
+    <a href="/os/medical/controls/" style="color: var(--color-cream); text-decoration: none; padding: 8px; background: rgba(245, 242, 232, 0.05); border-radius: 4px; border-left: 3px solid var(--color-purple-light);">
+      L2 - SCADA
+    </a>
+    <a href="#" style="color: var(--color-cream); text-decoration: none; padding: 8px; background: rgba(245, 242, 232, 0.05); border-radius: 4px; border-left: 3px solid var(--color-purple-light);">
+      L1 - PLC Control
+    </a>
+  </div>
+</div>
+
+<div class="widget">
+  <div class="widget-title">🏥 Medical Modalities</div>
+  <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 10px;">
+    <div style="display: flex; justify-content: space-between; padding: 6px; background: rgba(144, 238, 144, 0.1); border-radius: 4px;">
+      <span>CT Scanner</span>
+      <span style="color: var(--color-normal);">●</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 6px; background: rgba(144, 238, 144, 0.1); border-radius: 4px;">
+      <span>MRI</span>
+      <span style="color: var(--color-normal);">●</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 6px; background: rgba(255, 215, 0, 0.1); border-radius: 4px;">
+      <span>X-Ray</span>
+      <span style="color: var(--color-warning);">●</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 6px; background: rgba(144, 238, 144, 0.1); border-radius: 4px;">
+      <span>Ultrasound</span>
+      <span style="color: var(--color-normal);">●</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 6px; background: rgba(128, 128, 128, 0.1); border-radius: 4px;">
+      <span>Mammography</span>
+      <span style="color: var(--color-inactive);">●</span>
+    </div>
+  </div>
+</div>
+
+<div class="widget">
+  <div class="widget-title">⚡ Quick Actions</div>
+  <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 10px;">
+    <button onclick="window.location.href='/os/medical/dashboard.html'" style="padding: 10px; background: var(--color-purple-accent); border: none; border-radius: 6px; color: var(--color-cream); font-weight: 600; cursor: pointer; transition: all 0.3s;">
+      📊 Dashboard
+    </button>
+    <button onclick="window.location.href='/os/medical/patient-study-manager.html'" style="padding: 10px; background: rgba(245, 242, 232, 0.1); border: 1px solid var(--color-purple-light); border-radius: 6px; color: var(--color-cream); font-weight: 600; cursor: pointer; transition: all 0.3s;">
+      👤 Patients
+    </button>
+    <button onclick="window.location.href='/os/medical/dicom-workflow.html'" style="padding: 10px; background: rgba(245, 242, 232, 0.1); border: 1px solid var(--color-purple-light); border-radius: 6px; color: var(--color-cream); font-weight: 600; cursor: pointer; transition: all 0.3s;">
+      🔄 Workflows
+    </button>
+  </div>
+</div>
+
+<style>
+button:hover {
+  background: var(--color-purple-glow) !important;
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.6);
+}
+
+a:hover {
+  background: rgba(245, 242, 232, 0.1) !important;
+}
+</style>

@@ -1,0 +1,38 @@
+{
+  "uuid": "ind-status-001",
+  "type": "component",
+  "category": "indicator",
+  "metadata": {
+    "name": "Status Indicator",
+    "description": "LED-style status indicator with labels",
+    "version": "1.0.0",
+    "tags": ["indicator", "status", "led"]
+  },
+  "template": {
+    "html": "<div class=\"status-indicator\">\n  <div class=\"indicator-light {{state}}\" data-state=\"{{state}}\"></div>\n  <div class=\"indicator-label\">{{label}}</div>\n</div>",
+    "css": ".status-indicator {\n  display: inline-flex;\n  align-items: center;\n  gap: 10px;\n  padding: 8px;\n}\n.indicator-light {\n  width: 20px;\n  height: 20px;\n  border-radius: 50%;\n  border: 2px solid #333;\n  background: #444;\n  box-shadow: inset 0 0 5px rgba(0,0,0,0.5);\n  transition: all 0.3s;\n}\n.indicator-light.on {\n  background: #00ff88;\n  box-shadow: 0 0 15px #00ff88, inset 0 0 5px rgba(255,255,255,0.5);\n  border-color: #00ff88;\n}\n.indicator-light.off {\n  background: #444;\n  border-color: #333;\n}\n.indicator-light.alarm {\n  background: #ff0044;\n  box-shadow: 0 0 15px #ff0044, inset 0 0 5px rgba(255,255,255,0.5);\n  border-color: #ff0044;\n  animation: blink 1s infinite;\n}\n.indicator-light.warn {\n  background: #ffaa00;\n  box-shadow: 0 0 15px #ffaa00, inset 0 0 5px rgba(255,255,255,0.5);\n  border-color: #ffaa00;\n}\n@keyframes blink {\n  0%, 100% { opacity: 1; }\n  50% { opacity: 0.3; }\n}\n.indicator-label {\n  color: #00ff88;\n  font-size: 14px;\n  font-weight: bold;\n}",
+    "js": "function initStatusIndicator(element, config) {\n  const light = element.querySelector('.indicator-light');\n  \n  function updateState(value) {\n    light.className = 'indicator-light';\n    \n    if (config.stateMap) {\n      const state = config.stateMap[value] || 'off';\n      light.classList.add(state);\n    } else if (typeof value === 'boolean') {\n      light.classList.add(value ? 'on' : 'off');\n    } else {\n      light.classList.add(value);\n    }\n  }\n  \n  return { updateState };\n}"
+  },
+  "properties": [
+    {
+      "name": "label",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "stateMap",
+      "type": "object",
+      "default": null,
+      "description": "Map values to states: {0: 'off', 1: 'on', 2: 'alarm'}"
+    }
+  ],
+  "bindings": {
+    "tags": [
+      {
+        "name": "valueTag",
+        "property": "state",
+        "callback": "updateState"
+      }
+    ]
+  }
+}

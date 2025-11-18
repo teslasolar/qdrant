@@ -1,0 +1,410 @@
+# Study Routing Rules
+# Intelligent routing of DICOM studies through appropriate workflow paths
+
+routing_rules:
+  id: study-routing-rules-001
+  name: Study Routing Rules
+  version: "1.0.0"
+  isa_level: L3_MES
+  description: Route studies based on modality, urgency, and clinical criteria
+
+metadata:
+  author: Medical Imaging Team
+  created: 2025-11-17
+  updated: 2025-11-17
+  tags:
+    - routing
+    - workflow
+    - decision-tree
+    - automation
+
+# Routing Decision Tree
+routing_engine:
+  type: rule_based
+  evaluation_order: priority  # priority, sequential
+  default_action: standard_workflow
+  fallback_on_error: true
+
+# Global Routing Rules
+global_rules:
+  # Rule 1: Emergency/STAT Studies
+  - name: emergency_fast_track
+    priority: 1
+    enabled: true
+    conditions:
+      any:
+        - urgency: STAT
+        - urgency: EMERGENCY
+        - clinical_indication: "*STROKE*"
+        - clinical_indication: "*TRAUMA*"
+    actions:
+      - set_priority: critical
+      - assign_queue: high_priority
+      - skip_anonymization: false
+      - fast_track_ai: true
+      - notify_radiologist: immediate
+      - workflow_sequence:
+          - ingestion
+          - normalization  # Skip enhancement for speed
+          - ai_analysis
+          - embedding_generation
+          - storage
+
+  # Rule 2: Research Studies
+  - name: research_studies
+    priority: 2
+    enabled: true
+    conditions:
+      any:
+        - study_type: RESEARCH
+        - institutional_department: "*RESEARCH*"
+        - protocol_name: "*RESEARCH*"
+    actions:
+      - set_priority: low
+      - assign_queue: low_priority
+      - require_anonymization: true
+      - enhanced_anonymization: true
+      - workflow_sequence:
+          - ingestion
+          - anonymization
+          - normalization
+          - enhancement
+          - ai_analysis
+          - embedding_generation
+          - storage
+
+  # Rule 3: Clinical AI Screening
+  - name: ai_screening_required
+    priority: 3
+    enabled: true
+    conditions:
+      any:
+        - clinical_indication: "*ALZHEIMER*"
+        - clinical_indication: "*DEMENTIA*"
+        - clinical_indication: "*AUTISM*"
+        - clinical_indication: "*COGNITIVE*"
+        - protocol_name: "*BRAIN*"
+    actions:
+      - set_priority: high
+      - assign_queue: ai_analysis
+      - enable_alf_detect: true
+      - generate_embeddings: true
+      - workflow_sequence:
+          - ingestion
+          - anonymization
+          - normalization
+          - enhancement
+          - ai_analysis  # AlF-DETECT
+          - embedding_generation
+          - storage
+
+  # Rule 4: Standard Processing
+  - name: standard_workflow
+    priority: 10
+    enabled: true
+    conditions:
+      all:
+        - urgency: ROUTINE
+    actions:
+      - set_priority: normal
+      - assign_queue: standard
+      - workflow_sequence:
+          - ingestion
+          - anonymization
+          - normalization
+          - enhancement
+          - ai_analysis
+          - embedding_generation
+          - storage
+
+# Modality-Specific Routing
+modality_routing:
+  # CT Routing
+  CT:
+    - name: ct_brain
+      conditions:
+        - body_part: BRAIN
+      actions:
+        - apply_profile: ct-profile.yaml
+        - window_presets: [brain, bone, soft_tissue]
+        - enable_ai_analysis: true
+        - route_to_alf_detect: true
+
+    - name: ct_chest
+      conditions:
+        - body_part: CHEST
+      actions:
+        - apply_profile: ct-profile.yaml
+        - window_presets: [lung, mediastinum, bone]
+        - enable_nodule_detection: true
+
+    - name: ct_angio
+      conditions:
+        - protocol_name: "*ANGIO*"
+        - series_description: "*ANGIO*"
+      actions:
+        - apply_profile: ct-profile.yaml
+        - window_presets: [angio, bone]
+        - generate_mip: true
+        - vessel_analysis: true
+
+  # MRI Routing
+  MR:
+    - name: mri_brain
+      conditions:
+        - body_part: BRAIN
+      actions:
+        - apply_profile: mr-profile.yaml
+        - enable_ai_analysis: true
+        - route_to_alf_detect: true
+        - brain_extraction: true
+        - tissue_segmentation: true
+
+    - name: mri_spine
+      conditions:
+        - body_part: SPINE
+      actions:
+        - apply_profile: mr-profile.yaml
+        - spinal_cord_segmentation: true
+
+    - name: mri_functional
+      conditions:
+        - protocol_name: "*FMRI*"
+        - series_description: "*BOLD*"
+      actions:
+        - apply_profile: mr-profile.yaml
+        - fmri_preprocessing: true
+        - skip_standard_enhancement: true
+
+  # X-Ray Routing
+  CR:
+    - name: chest_xray
+      conditions:
+        - body_part: CHEST
+      actions:
+        - apply_profile: xray-profile.yaml
+        - chest_pathology_detection: true
+        - ctr_measurement: true
+        - generate_embeddings: true
+
+    - name: extremity_xray
+      conditions:
+        - body_part_regex: "(HAND|FOOT|ANKLE|WRIST|ELBOW|KNEE)"
+      actions:
+        - apply_profile: xray-profile.yaml
+        - fracture_detection: true
+        - bone_enhancement: true
+
+  DX:
+    - name: chest_xray
+      conditions:
+        - body_part: CHEST
+      actions:
+        - apply_profile: xray-profile.yaml
+        - chest_pathology_detection: true
+        - ctr_measurement: true
+        - generate_embeddings: true
+
+# AI-Based Routing
+ai_routing:
+  # High Risk Detection
+  - name: high_risk_findings
+    trigger: post_ai_analysis
+    conditions:
+      any:
+        - ai_alzheimers_risk: ">= 0.7"
+        - ai_autism_risk: ">= 0.7"
+        - pathology_confidence: ">= 0.8"
+    actions:
+      - set_priority: critical
+      - notify_radiologist: immediate
+      - flag_for_review: urgent
+      - create_preliminary_report: true
+      - notify_channels:
+          - email
+          - sms
+          - mqtt
+
+  # Medium Risk
+  - name: medium_risk_findings
+    trigger: post_ai_analysis
+    conditions:
+      any:
+        - ai_alzheimers_risk: ">= 0.4"
+        - ai_autism_risk: ">= 0.4"
+        - pathology_confidence: ">= 0.6"
+    actions:
+      - flag_for_review: routine
+      - schedule_follow_up: true
+      - notify_channels:
+          - email
+          - mqtt
+
+  # Low Risk
+  - name: low_risk_findings
+    trigger: post_ai_analysis
+    conditions:
+      all:
+        - ai_alzheimers_risk: "< 0.4"
+        - ai_autism_risk: "< 0.4"
+        - pathology_confidence: "< 0.6"
+    actions:
+      - routine_processing: true
+      - archive_directly: true
+
+# Quality-Based Routing
+quality_routing:
+  # High Quality Studies
+  - name: high_quality
+    conditions:
+      - image_quality_score: ">= 0.8"
+    actions:
+      - standard_processing: true
+      - include_in_training_set: true
+
+  # Medium Quality Studies
+  - name: medium_quality
+    conditions:
+      - image_quality_score: ">= 0.5"
+      - image_quality_score: "< 0.8"
+    actions:
+      - apply_enhanced_preprocessing: true
+      - flag_quality_concerns: true
+
+  # Low Quality Studies
+  - name: low_quality
+    conditions:
+      - image_quality_score: "< 0.5"
+    actions:
+      - flag_for_review: quality_issues
+      - attempt_enhancement: aggressive
+      - notify_technologist: true
+      - consider_rescan: true
+
+# Time-Based Routing
+time_routing:
+  # Peak Hours
+  - name: peak_hours_routing
+    schedule: "08:00-18:00"
+    days: [MON, TUE, WED, THU, FRI]
+    conditions:
+      - urgency: ROUTINE
+    actions:
+      - defer_heavy_processing: true
+      - skip_optional_steps: true
+      - batch_non_urgent: true
+
+  # Off Hours
+  - name: off_hours_processing
+    schedule: "18:00-08:00"
+    actions:
+      - enable_full_processing: true
+      - process_backlog: true
+      - run_batch_jobs: true
+
+# Department-Based Routing
+department_routing:
+  NEUROLOGY:
+    - require_ai_analysis: true
+    - enable_alf_detect: true
+    - generate_embeddings: true
+    - priority_boost: 1
+
+  EMERGENCY:
+    - fast_track: true
+    - priority_boost: 5
+    - notify_radiologist: immediate
+    - minimal_processing: true
+
+  RESEARCH:
+    - require_anonymization: true
+    - enhanced_anonymization: true
+    - include_all_processing: true
+    - generate_all_outputs: true
+
+  ONCOLOGY:
+    - enable_ai_analysis: true
+    - tumor_detection: true
+    - longitudinal_comparison: true
+
+# Workflow Branching
+workflow_branches:
+  # Post-Ingestion Branch
+  post_ingestion:
+    conditions:
+      - privacy_required: true
+    branch_to: anonymization
+    else: normalization
+
+  # Post-Normalization Branch
+  post_normalization:
+    conditions:
+      - image_quality_score: "< 0.6"
+    branch_to: enhancement
+    else: ai_analysis
+
+  # Post-AI-Analysis Branch
+  post_ai_analysis:
+    conditions:
+      - high_risk_detected: true
+    branch_to: urgent_notification
+    else: embedding_generation
+
+# Error Routing
+error_routing:
+  # Processing Failures
+  - name: processing_failure
+    trigger: workflow_error
+    actions:
+      - move_to_quarantine: true
+      - notify_admin: true
+      - create_error_ticket: true
+      - attempt_recovery: true
+
+  # Validation Failures
+  - name: validation_failure
+    trigger: validation_error
+    actions:
+      - flag_for_review: validation_issues
+      - hold_processing: true
+      - notify_technologist: true
+
+# Routing Metrics
+monitoring:
+  track_metrics:
+    - studies_routed
+    - routing_decisions
+    - workflow_paths_taken
+    - average_routing_time
+    - routing_errors
+
+  tags:
+    - ROUTING_STUDIES_PROCESSED
+    - ROUTING_EMERGENCY_COUNT
+    - ROUTING_AI_FLAGGED
+    - ROUTING_AVG_TIME
+
+  mqtt:
+    publish_events: true
+    topics:
+      - chazon/os/medical/routing/decision
+      - chazon/os/medical/routing/high-priority
+      - chazon/os/medical/routing/ai-flagged
+
+  modbus:
+    holding_registers:
+      - address: 40600
+        name: ROUTING_STUDIES_PROCESSED
+      - address: 40601
+        name: ROUTING_EMERGENCY_COUNT
+      - address: 40602
+        name: ROUTING_AI_FLAGGED_COUNT
+
+# Logging
+logging:
+  level: INFO
+  path: /var/log/medical/workflows/routing.log
+  rotation: daily
+  retention_days: 90
+  log_all_decisions: true
+  include_conditions: true

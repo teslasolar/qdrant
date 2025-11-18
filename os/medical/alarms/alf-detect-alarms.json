@@ -1,0 +1,492 @@
+{
+  "uuid": "alf-detect-alarms-001",
+  "type": "alarm-configuration",
+  "category": "medical",
+  "metadata": {
+    "name": "AlF-DETECT Alarm Rules",
+    "description": "Comprehensive alarm rules for high-confidence detections and system monitoring",
+    "version": "1.0.0",
+    "created": "2025-01-17T00:00:00Z"
+  },
+  "alarmRules": [
+    {
+      "uuid": "alarm-001",
+      "name": "High Alzheimer's Probability Alert",
+      "description": "Triggered when Alzheimer's probability exceeds 70%",
+      "enabled": true,
+      "priority": "High",
+      "type": "threshold",
+      "condition": {
+        "tag": "medical.alfAlzheimersProbability",
+        "operator": ">=",
+        "value": 70,
+        "hysteresis": 5
+      },
+      "actions": [
+        {
+          "type": "mqtt-publish",
+          "topic": "chazon/os/medical/alf-detect/alert/alzheimers/high",
+          "payload": {
+            "severity": "HIGH",
+            "message": "High Alzheimer's probability detected",
+            "probability": "{medical.alfAlzheimersProbability}",
+            "confidence": "{medical.alfAlzheimersConfidence}",
+            "timestamp": "{timestamp}"
+          }
+        },
+        {
+          "type": "notification",
+          "method": "push",
+          "recipients": ["medical-team", "neurologist"],
+          "template": "high-alzheimers-detection"
+        },
+        {
+          "type": "log",
+          "level": "WARNING",
+          "message": "High Alzheimer's probability: {medical.alfAlzheimersProbability}%"
+        },
+        {
+          "type": "sound-alert",
+          "soundFile": "medical-high-priority.wav",
+          "repeat": 3
+        }
+      ],
+      "acknowledgmentRequired": true,
+      "autoReset": false
+    },
+    {
+      "uuid": "alarm-002",
+      "name": "Critical Alzheimer's Probability Alert",
+      "description": "Triggered when Alzheimer's probability exceeds 85%",
+      "enabled": true,
+      "priority": "Critical",
+      "type": "threshold",
+      "condition": {
+        "tag": "medical.alfAlzheimersProbability",
+        "operator": ">=",
+        "value": 85,
+        "hysteresis": 5
+      },
+      "actions": [
+        {
+          "type": "mqtt-publish",
+          "topic": "chazon/os/medical/alf-detect/alert/alzheimers/critical",
+          "payload": {
+            "severity": "CRITICAL",
+            "message": "Critical Alzheimer's probability - immediate review required",
+            "probability": "{medical.alfAlzheimersProbability}",
+            "confidence": "{medical.alfAlzheimersConfidence}",
+            "hippocampusConc": "{medical.alfHippocampusConc}",
+            "timestamp": "{timestamp}"
+          },
+          "qos": 2,
+          "retain": true
+        },
+        {
+          "type": "notification",
+          "method": "push",
+          "recipients": ["medical-team", "neurologist", "medical-director"],
+          "template": "critical-alzheimers-detection",
+          "urgency": "high"
+        },
+        {
+          "type": "email",
+          "recipients": ["neurology@hospital.com"],
+          "subject": "CRITICAL: AlF-DETECT High Alzheimer's Probability",
+          "template": "critical-detection-email"
+        },
+        {
+          "type": "generate-report",
+          "template": "emergency-screening-report",
+          "format": "PDF",
+          "autoSend": true
+        }
+      ],
+      "acknowledgmentRequired": true,
+      "escalationRules": {
+        "enabled": true,
+        "escalateAfterMinutes": 15,
+        "escalateTo": ["medical-director", "chief-neurologist"]
+      }
+    },
+    {
+      "uuid": "alarm-003",
+      "name": "High Autism Probability Alert",
+      "description": "Triggered when autism probability exceeds 70%",
+      "enabled": true,
+      "priority": "High",
+      "type": "threshold",
+      "condition": {
+        "tag": "medical.alfAutismProbability",
+        "operator": ">=",
+        "value": 70,
+        "hysteresis": 5
+      },
+      "actions": [
+        {
+          "type": "mqtt-publish",
+          "topic": "chazon/os/medical/alf-detect/alert/autism/high",
+          "payload": {
+            "severity": "HIGH",
+            "message": "High autism probability detected",
+            "probability": "{medical.alfAutismProbability}",
+            "confidence": "{medical.alfAutismConfidence}",
+            "timestamp": "{timestamp}"
+          }
+        },
+        {
+          "type": "notification",
+          "method": "push",
+          "recipients": ["medical-team", "developmental-specialist"],
+          "template": "high-autism-detection"
+        },
+        {
+          "type": "log",
+          "level": "WARNING",
+          "message": "High autism probability: {medical.alfAutismProbability}%"
+        }
+      ],
+      "acknowledgmentRequired": true
+    },
+    {
+      "uuid": "alarm-004",
+      "name": "Critical Autism Probability Alert",
+      "description": "Triggered when autism probability exceeds 85%",
+      "enabled": true,
+      "priority": "Critical",
+      "type": "threshold",
+      "condition": {
+        "tag": "medical.alfAutismProbability",
+        "operator": ">=",
+        "value": 85,
+        "hysteresis": 5
+      },
+      "actions": [
+        {
+          "type": "mqtt-publish",
+          "topic": "chazon/os/medical/alf-detect/alert/autism/critical",
+          "payload": {
+            "severity": "CRITICAL",
+            "message": "Critical autism probability - immediate review required",
+            "probability": "{medical.alfAutismProbability}",
+            "confidence": "{medical.alfAutismConfidence}",
+            "frontalCortexConc": "{medical.alfFrontalCortexConc}",
+            "timestamp": "{timestamp}"
+          },
+          "qos": 2,
+          "retain": true
+        },
+        {
+          "type": "notification",
+          "method": "push",
+          "recipients": ["medical-team", "developmental-specialist", "medical-director"],
+          "template": "critical-autism-detection",
+          "urgency": "high"
+        },
+        {
+          "type": "generate-report",
+          "template": "emergency-screening-report",
+          "format": "PDF",
+          "autoSend": true
+        }
+      ],
+      "acknowledgmentRequired": true
+    },
+    {
+      "uuid": "alarm-005",
+      "name": "Elevated Hippocampus AlF Concentration",
+      "description": "Triggered when hippocampus AlF concentration exceeds 70 mg/kg",
+      "enabled": true,
+      "priority": "High",
+      "type": "threshold",
+      "condition": {
+        "tag": "medical.alfHippocampusConc",
+        "operator": ">=",
+        "value": 70,
+        "hysteresis": 5
+      },
+      "actions": [
+        {
+          "type": "mqtt-publish",
+          "topic": "chazon/os/medical/alf-detect/alert/hippocampus",
+          "payload": {
+            "severity": "HIGH",
+            "message": "Elevated AlF in hippocampus - Alzheimer's risk",
+            "concentration": "{medical.alfHippocampusConc}",
+            "timestamp": "{timestamp}"
+          }
+        },
+        {
+          "type": "log",
+          "level": "WARNING",
+          "message": "Hippocampus AlF concentration: {medical.alfHippocampusConc} mg/kg"
+        }
+      ],
+      "acknowledgmentRequired": false
+    },
+    {
+      "uuid": "alarm-006",
+      "name": "Elevated Frontal Cortex AlF Concentration",
+      "description": "Triggered when frontal cortex AlF concentration exceeds 70 mg/kg",
+      "enabled": true,
+      "priority": "High",
+      "type": "threshold",
+      "condition": {
+        "tag": "medical.alfFrontalCortexConc",
+        "operator": ">=",
+        "value": 70,
+        "hysteresis": 5
+      },
+      "actions": [
+        {
+          "type": "mqtt-publish",
+          "topic": "chazon/os/medical/alf-detect/alert/frontalcortex",
+          "payload": {
+            "severity": "HIGH",
+            "message": "Elevated AlF in frontal cortex - autism risk",
+            "concentration": "{medical.alfFrontalCortexConc}",
+            "timestamp": "{timestamp}"
+          }
+        },
+        {
+          "type": "log",
+          "level": "WARNING",
+          "message": "Frontal cortex AlF concentration: {medical.alfFrontalCortexConc} mg/kg"
+        }
+      ],
+      "acknowledgmentRequired": false
+    },
+    {
+      "uuid": "alarm-007",
+      "name": "Screening Queue Overflow Warning",
+      "description": "Triggered when screening queue exceeds 50 items",
+      "enabled": true,
+      "priority": "Medium",
+      "type": "threshold",
+      "condition": {
+        "tag": "medical.alfScreeningQueue",
+        "operator": ">=",
+        "value": 50,
+        "hysteresis": 5
+      },
+      "actions": [
+        {
+          "type": "mqtt-publish",
+          "topic": "chazon/os/medical/alf-detect/alert/queue",
+          "payload": {
+            "severity": "MEDIUM",
+            "message": "Screening queue exceeds 50 items",
+            "queueSize": "{medical.alfScreeningQueue}",
+            "timestamp": "{timestamp}"
+          }
+        },
+        {
+          "type": "notification",
+          "method": "push",
+          "recipients": ["operations-team"],
+          "template": "queue-overflow-warning"
+        }
+      ],
+      "acknowledgmentRequired": false
+    },
+    {
+      "uuid": "alarm-008",
+      "name": "Screening Queue Critical",
+      "description": "Triggered when screening queue exceeds 100 items",
+      "enabled": true,
+      "priority": "High",
+      "type": "threshold",
+      "condition": {
+        "tag": "medical.alfScreeningQueue",
+        "operator": ">=",
+        "value": 100,
+        "hysteresis": 10
+      },
+      "actions": [
+        {
+          "type": "mqtt-publish",
+          "topic": "chazon/os/medical/alf-detect/alert/queue/critical",
+          "payload": {
+            "severity": "HIGH",
+            "message": "Screening queue critically high - performance degradation likely",
+            "queueSize": "{medical.alfScreeningQueue}",
+            "timestamp": "{timestamp}"
+          },
+          "qos": 2
+        },
+        {
+          "type": "notification",
+          "method": "push",
+          "recipients": ["operations-team", "it-support"],
+          "template": "queue-critical-alert",
+          "urgency": "high"
+        },
+        {
+          "type": "action",
+          "command": "scale-processing-capacity",
+          "params": {
+            "additionalInstances": 2
+          }
+        }
+      ],
+      "acknowledgmentRequired": true
+    },
+    {
+      "uuid": "alarm-009",
+      "name": "Low Average Confidence Warning",
+      "description": "Triggered when average confidence falls below 60%",
+      "enabled": true,
+      "priority": "Medium",
+      "type": "threshold",
+      "condition": {
+        "tag": "medical.alfAverageConfidence",
+        "operator": "<=",
+        "value": 60,
+        "hysteresis": 5
+      },
+      "actions": [
+        {
+          "type": "mqtt-publish",
+          "topic": "chazon/os/medical/alf-detect/alert/confidence",
+          "payload": {
+            "severity": "MEDIUM",
+            "message": "Average confidence below acceptable threshold",
+            "confidence": "{medical.alfAverageConfidence}",
+            "timestamp": "{timestamp}"
+          }
+        },
+        {
+          "type": "notification",
+          "method": "push",
+          "recipients": ["ml-engineers", "quality-assurance"],
+          "template": "low-confidence-warning"
+        },
+        {
+          "type": "log",
+          "level": "WARNING",
+          "message": "Average detection confidence low: {medical.alfAverageConfidence}%"
+        }
+      ],
+      "acknowledgmentRequired": false
+    },
+    {
+      "uuid": "alarm-010",
+      "name": "High Processing Time Alert",
+      "description": "Triggered when processing time exceeds 5 seconds",
+      "enabled": true,
+      "priority": "Medium",
+      "type": "threshold",
+      "condition": {
+        "tag": "medical.alfProcessingTime",
+        "operator": ">=",
+        "value": 5000,
+        "hysteresis": 500
+      },
+      "actions": [
+        {
+          "type": "mqtt-publish",
+          "topic": "chazon/os/medical/alf-detect/alert/performance",
+          "payload": {
+            "severity": "MEDIUM",
+            "message": "Processing time exceeding 5 seconds",
+            "processingTime": "{medical.alfProcessingTime}",
+            "timestamp": "{timestamp}"
+          }
+        },
+        {
+          "type": "notification",
+          "method": "push",
+          "recipients": ["operations-team"],
+          "template": "performance-degradation-alert"
+        }
+      ],
+      "acknowledgmentRequired": false
+    },
+    {
+      "uuid": "alarm-011",
+      "name": "Critical Processing Time Alert",
+      "description": "Triggered when processing time exceeds 10 seconds",
+      "enabled": true,
+      "priority": "High",
+      "type": "threshold",
+      "condition": {
+        "tag": "medical.alfProcessingTime",
+        "operator": ">=",
+        "value": 10000,
+        "hysteresis": 1000
+      },
+      "actions": [
+        {
+          "type": "mqtt-publish",
+          "topic": "chazon/os/medical/alf-detect/alert/performance/critical",
+          "payload": {
+            "severity": "HIGH",
+            "message": "Processing time critically high - system investigation required",
+            "processingTime": "{medical.alfProcessingTime}",
+            "timestamp": "{timestamp}"
+          },
+          "qos": 2
+        },
+        {
+          "type": "notification",
+          "method": "push",
+          "recipients": ["operations-team", "it-support"],
+          "template": "critical-performance-alert",
+          "urgency": "high"
+        }
+      ],
+      "acknowledgmentRequired": true
+    },
+    {
+      "uuid": "alarm-012",
+      "name": "High False Positive Rate",
+      "description": "Triggered when false positive rate exceeds 20%",
+      "enabled": true,
+      "priority": "Medium",
+      "type": "expression",
+      "condition": {
+        "expression": "({medical.alfFalsePositives} / ({medical.alfTruePositives} + {medical.alfFalsePositives})) * 100",
+        "operator": ">=",
+        "value": 20,
+        "hysteresis": 2
+      },
+      "actions": [
+        {
+          "type": "mqtt-publish",
+          "topic": "chazon/os/medical/alf-detect/alert/quality",
+          "payload": {
+            "severity": "MEDIUM",
+            "message": "High false positive rate detected - model retraining may be required",
+            "falsePositives": "{medical.alfFalsePositives}",
+            "truePositives": "{medical.alfTruePositives}",
+            "timestamp": "{timestamp}"
+          }
+        },
+        {
+          "type": "notification",
+          "method": "push",
+          "recipients": ["ml-engineers", "quality-assurance"],
+          "template": "high-fp-rate-alert"
+        }
+      ],
+      "acknowledgmentRequired": false
+    }
+  ],
+  "globalSettings": {
+    "enableAlarmHistory": true,
+    "alarmHistoryRetentionDays": 90,
+    "enableAlarmStatistics": true,
+    "mqttBroker": {
+      "host": "localhost",
+      "port": 1883,
+      "clientId": "alf-detect-alarms",
+      "username": "chazon",
+      "password": "${MQTT_PASSWORD}"
+    },
+    "notificationSettings": {
+      "pushEnabled": true,
+      "emailEnabled": true,
+      "smsEnabled": false
+    }
+  }
+}

@@ -1,0 +1,81 @@
+# Example 2: ISA-88 Recipe for DICOM Processing
+# This MSL program creates a complete recipe for processing DICOM images
+
+# Import required standards
+import isa88_procedural from "isa-88/procedural-model.json"
+import isa88_equipment from "isa-88/equipment-hierarchy.json"
+
+# Create equipment hierarchy for medical imaging
+instantiate isa88_equipment as medical_imaging_equipment with {
+    enterpriseName: "MedTech_Industries",
+    siteName: "Hospital_Boston",
+    includeMetrics: true,
+    maxDepth: 7
+}
+
+# Create DICOM processing recipe
+instantiate isa88_procedural as dicom_processing_recipe with {
+    recipeName: "CT_Head_Analysis_v2",
+    recipeType: "master",
+    targetEquipment: "Medical/Radiology/CT_Imaging_Cell",
+    includeStateManagement: true
+}
+
+# The recipe structure would include:
+#
+# Procedure: CT Head Analysis
+# ├── Unit Procedure 1: Image Acquisition
+# │   ├── Operation: Load DICOM Study
+# │   │   ├── Phase: Connect to PACS
+# │   │   ├── Phase: Query Study
+# │   │   └── Phase: Download Images
+# │   └── Operation: Validate Study
+# │       ├── Phase: Check Completeness
+# │       └── Phase: Verify Image Quality
+# │
+# ├── Unit Procedure 2: Preprocessing
+# │   ├── Operation: Enhance Contrast
+# │   │   ├── Phase: Apply CLAHE
+# │   │   └── Phase: Adjust Window/Level
+# │   ├── Operation: Normalize Intensity
+# │   │   └── Phase: Z-Score Normalization
+# │   └── Operation: Denoise
+# │       └── Phase: Non-Local Means Filter
+# │
+# ├── Unit Procedure 3: AI Analysis
+# │   ├── Operation: Segment Brain
+# │   │   ├── Phase: Load Segmentation Model
+# │   │   ├── Phase: Run Inference
+# │   │   └── Phase: Post-process Masks
+# │   ├── Operation: Detect Abnormalities
+# │   │   ├── Phase: Load Detection Model
+# │   │   ├── Phase: Run Inference
+# │   │   └── Phase: Filter by Confidence
+# │   └── Operation: Extract Measurements
+# │       ├── Phase: Calculate Volumes
+# │       └── Phase: Compute Densities
+# │
+# ├── Unit Procedure 4: Quality Control
+# │   ├── Operation: Review Findings
+# │   │   └── Phase: Check Confidence Scores
+# │   └── Operation: Flag for Review
+# │       └── Phase: Create Review Task
+# │
+# └── Unit Procedure 5: Generate Report
+#     ├── Operation: Format Findings
+#     │   ├── Phase: Create Structured Report
+#     │   └── Phase: Generate DICOM SR
+#     └── Operation: Distribute Report
+#         ├── Phase: Send to PACS
+#         └── Phase: Notify Radiologist
+
+# Bind recipe to equipment hierarchy
+bind dicom_processing_recipe.equipmentRequirements to medical_imaging_equipment.levels.processCell
+
+# Map procedural hierarchy to equipment
+map dicom_processing_recipe.proceduralLevels.unitProcedure to medical_imaging_equipment.levels.unit
+map dicom_processing_recipe.proceduralLevels.operation to medical_imaging_equipment.levels.equipmentModule
+map dicom_processing_recipe.proceduralLevels.phase to medical_imaging_equipment.levels.controlModule
+
+# Generate final recipe
+generate dicom_processing_recipe

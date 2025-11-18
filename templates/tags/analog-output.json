@@ -1,0 +1,77 @@
+{
+  "uuid": "tag-ao-001",
+  "type": "tag",
+  "category": "analog",
+  "metadata": {
+    "name": "Analog Output Template",
+    "description": "Standard analog output tag template (e.g., valve position, speed)",
+    "version": "1.0.0",
+    "tags": ["analog", "output", "control"]
+  },
+  "config": {
+    "dataType": "Float",
+    "accessMode": "ReadWrite",
+    "scanRate": 1000,
+    "engUnits": "{{units}}",
+    "scaling": {
+      "enabled": true,
+      "scaledLow": "{{min}}",
+      "scaledHigh": "{{max}}",
+      "rawLow": 0,
+      "rawHigh": 32767,
+      "clampEnabled": true
+    },
+    "limits": {
+      "enabled": true,
+      "low": "{{limitLow}}",
+      "high": "{{limitHigh}}"
+    },
+    "rateOfChange": {
+      "enabled": true,
+      "maxRate": "{{maxRate}}",
+      "units": "{{units}}/sec"
+    },
+    "historization": {
+      "enabled": true,
+      "provider": "default",
+      "sampleMode": "OnChange",
+      "sampleRate": 1000,
+      "deadband": 0.5
+    },
+    "security": {
+      "writePermission": "Operator"
+    }
+  },
+  "examples": [
+    {
+      "name": "Valve Position",
+      "path": "control/valve/position",
+      "units": "%",
+      "min": 0,
+      "max": 100,
+      "limitLow": 0,
+      "limitHigh": 100,
+      "maxRate": 10
+    },
+    {
+      "name": "Motor Speed",
+      "path": "equipment/motor/speed_sp",
+      "units": "RPM",
+      "min": 0,
+      "max": 3600,
+      "limitLow": 0,
+      "limitHigh": 3600,
+      "maxRate": 100
+    },
+    {
+      "name": "Temperature Setpoint",
+      "path": "control/temperature/setpoint",
+      "units": "°C",
+      "min": 20,
+      "max": 100,
+      "limitLow": 20,
+      "limitHigh": 100,
+      "maxRate": 5
+    }
+  ]
+}

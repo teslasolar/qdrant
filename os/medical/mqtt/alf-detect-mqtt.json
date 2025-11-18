@@ -1,0 +1,326 @@
+{
+  "uuid": "alf-detect-mqtt-001",
+  "type": "mqtt-integration",
+  "category": "medical",
+  "metadata": {
+    "name": "AlF-DETECT MQTT Integration",
+    "description": "Real-time MQTT messaging for AlF-DETECT screening alerts and status updates",
+    "version": "1.0.0",
+    "created": "2025-01-17T00:00:00Z"
+  },
+  "broker": {
+    "host": "localhost",
+    "port": 1883,
+    "protocol": "mqtt",
+    "clientId": "alf-detect-medical-system",
+    "username": "${MQTT_USERNAME}",
+    "password": "${MQTT_PASSWORD}",
+    "keepalive": 60,
+    "cleanSession": false,
+    "reconnectPeriod": 1000,
+    "connectTimeout": 30000
+  },
+  "topics": {
+    "results": {
+      "topic": "chazon/os/medical/alf-detect/result",
+      "qos": 2,
+      "retain": true,
+      "description": "Screening results from completed analysis",
+      "payloadSchema": {
+        "patientId": "string",
+        "screeningId": "string",
+        "timestamp": "iso8601",
+        "probabilities": {
+          "alzheimers": "float",
+          "autism": "float",
+          "normal": "float"
+        },
+        "confidence": {
+          "alzheimers": "float",
+          "autism": "float",
+          "normal": "float"
+        },
+        "brainRegions": {
+          "hippocampus": "float",
+          "frontalCortex": "float",
+          "temporalLobe": "float",
+          "parietalLobe": "float",
+          "occipitalLobe": "float",
+          "cerebellum": "float",
+          "amygdala": "float",
+          "basalGanglia": "float"
+        },
+        "processingTime": "integer",
+        "imageQuality": "float",
+        "modelVersion": "string"
+      },
+      "publish": true,
+      "subscribe": false
+    },
+    "alerts": {
+      "topic": "chazon/os/medical/alf-detect/alert",
+      "qos": 2,
+      "retain": true,
+      "description": "High-priority alerts for positive detections",
+      "payloadSchema": {
+        "severity": "enum[LOW,MEDIUM,HIGH,CRITICAL]",
+        "alertType": "enum[ALZHEIMERS,AUTISM,QUEUE_OVERFLOW,PERFORMANCE,QUALITY]",
+        "message": "string",
+        "patientId": "string",
+        "probability": "float",
+        "confidence": "float",
+        "timestamp": "iso8601",
+        "requiresAcknowledgment": "boolean"
+      },
+      "publish": true,
+      "subscribe": false,
+      "triggers": [
+        {
+          "condition": "tag:medical.alfAlzheimersProbability >= 70",
+          "payload": {
+            "severity": "HIGH",
+            "alertType": "ALZHEIMERS",
+            "message": "High Alzheimer's probability detected",
+            "probability": "{medical.alfAlzheimersProbability}",
+            "confidence": "{medical.alfAlzheimersConfidence}",
+            "requiresAcknowledgment": true
+          }
+        },
+        {
+          "condition": "tag:medical.alfAutismProbability >= 70",
+          "payload": {
+            "severity": "HIGH",
+            "alertType": "AUTISM",
+            "message": "High autism probability detected",
+            "probability": "{medical.alfAutismProbability}",
+            "confidence": "{medical.alfAutismConfidence}",
+            "requiresAcknowledgment": true
+          }
+        }
+      ]
+    },
+    "status": {
+      "topic": "chazon/os/medical/alf-detect/status",
+      "qos": 1,
+      "retain": true,
+      "description": "System status updates",
+      "payloadSchema": {
+        "systemStatus": "enum[READY,PROCESSING,ERROR,MAINTENANCE]",
+        "queueSize": "integer",
+        "averageProcessingTime": "integer",
+        "averageConfidence": "float",
+        "totalScreenings": "integer",
+        "positiveDetections": "integer",
+        "timestamp": "iso8601",
+        "systemHealth": "float"
+      },
+      "publish": true,
+      "subscribe": false,
+      "publishInterval": 5000
+    },
+    "queue": {
+      "topic": "chazon/os/medical/alf-detect/queue",
+      "qos": 1,
+      "retain": true,
+      "description": "Screening queue status",
+      "payloadSchema": {
+        "queueSize": "integer",
+        "estimatedWaitTime": "integer",
+        "processingRate": "float",
+        "timestamp": "iso8601"
+      },
+      "publish": true,
+      "subscribe": false,
+      "publishInterval": 2000
+    },
+    "commands": {
+      "topic": "chazon/os/medical/alf-detect/command",
+      "qos": 2,
+      "retain": false,
+      "description": "Commands to control the system",
+      "payloadSchema": {
+        "command": "enum[START,STOP,PAUSE,RESUME,CALIBRATE,RESET]",
+        "parameters": "object",
+        "timestamp": "iso8601",
+        "requestId": "string"
+      },
+      "publish": false,
+      "subscribe": true,
+      "handlers": [
+        {
+          "command": "START",
+          "action": "startProcessing"
+        },
+        {
+          "command": "STOP",
+          "action": "stopProcessing"
+        },
+        {
+          "command": "PAUSE",
+          "action": "pauseProcessing"
+        },
+        {
+          "command": "RESUME",
+          "action": "resumeProcessing"
+        }
+      ]
+    },
+    "batchStatus": {
+      "topic": "chazon/os/medical/alf-detect/batch/status",
+      "qos": 1,
+      "retain": true,
+      "description": "Batch processing status updates",
+      "payloadSchema": {
+        "batchId": "string",
+        "totalItems": "integer",
+        "completedItems": "integer",
+        "failedItems": "integer",
+        "progress": "float",
+        "estimatedTimeRemaining": "integer",
+        "timestamp": "iso8601"
+      },
+      "publish": true,
+      "subscribe": false
+    },
+    "metrics": {
+      "topic": "chazon/os/medical/alf-detect/metrics",
+      "qos": 0,
+      "retain": false,
+      "description": "Performance and quality metrics",
+      "payloadSchema": {
+        "precision": "float",
+        "recall": "float",
+        "f1Score": "float",
+        "auc": {
+          "alzheimers": "float",
+          "autism": "float"
+        },
+        "confusionMatrix": {
+          "truePositives": "integer",
+          "falsePositives": "integer",
+          "trueNegatives": "integer",
+          "falseNegatives": "integer"
+        },
+        "timestamp": "iso8601"
+      },
+      "publish": true,
+      "subscribe": false,
+      "publishInterval": 60000
+    },
+    "multiModalUpdate": {
+      "topic": "chazon/os/medical/alf-detect/multimodal/update",
+      "qos": 2,
+      "retain": true,
+      "description": "Multi-modal analysis updates (MRI + PET + Clinical)",
+      "payloadSchema": {
+        "patientId": "string",
+        "modalities": {
+          "xray": "object",
+          "mri": "object",
+          "pet": "object",
+          "clinical": "object"
+        },
+        "fusedProbabilities": {
+          "alzheimers": "float",
+          "autism": "float",
+          "normal": "float"
+        },
+        "fusedConfidence": "float",
+        "timestamp": "iso8601"
+      },
+      "publish": true,
+      "subscribe": false
+    }
+  },
+  "messageTemplates": {
+    "highAlzheimersAlert": {
+      "severity": "HIGH",
+      "alertType": "ALZHEIMERS",
+      "message": "High Alzheimer's probability detected: {probability}%",
+      "priority": 1,
+      "soundAlert": true,
+      "visualAlert": true
+    },
+    "highAutismAlert": {
+      "severity": "HIGH",
+      "alertType": "AUTISM",
+      "message": "High autism probability detected: {probability}%",
+      "priority": 1,
+      "soundAlert": true,
+      "visualAlert": true
+    },
+    "criticalAlzheimersAlert": {
+      "severity": "CRITICAL",
+      "alertType": "ALZHEIMERS",
+      "message": "CRITICAL Alzheimer's probability: {probability}% - Immediate review required",
+      "priority": 0,
+      "soundAlert": true,
+      "visualAlert": true,
+      "escalate": true
+    },
+    "criticalAutismAlert": {
+      "severity": "CRITICAL",
+      "alertType": "AUTISM",
+      "message": "CRITICAL autism probability: {probability}% - Immediate review required",
+      "priority": 0,
+      "soundAlert": true,
+      "visualAlert": true,
+      "escalate": true
+    }
+  },
+  "subscriptions": [
+    {
+      "topic": "chazon/os/medical/alf-detect/command",
+      "callback": "handleCommand",
+      "qos": 2
+    },
+    {
+      "topic": "chazon/os/medical/dicom/loaded",
+      "callback": "handleDICOMLoaded",
+      "qos": 1
+    },
+    {
+      "topic": "chazon/os/medical/analysis/trigger",
+      "callback": "handleAnalysisTrigger",
+      "qos": 2
+    }
+  ],
+  "publishing": {
+    "enableBuffering": true,
+    "bufferSize": 1000,
+    "flushInterval": 1000,
+    "enableCompression": false,
+    "enableEncryption": true
+  },
+  "security": {
+    "tlsEnabled": false,
+    "tlsVersion": "1.2",
+    "validateCertificate": true,
+    "clientCertificate": "${MQTT_CLIENT_CERT}",
+    "clientKey": "${MQTT_CLIENT_KEY}",
+    "caCertificate": "${MQTT_CA_CERT}"
+  },
+  "persistence": {
+    "enabled": true,
+    "storePath": "/os/medical/mqtt/persistence",
+    "maxQueuedMessages": 10000
+  },
+  "logging": {
+    "enabled": true,
+    "level": "INFO",
+    "logPath": "/os/logs/medical/mqtt.log",
+    "logRotation": {
+      "enabled": true,
+      "maxSize": "100MB",
+      "maxFiles": 10
+    }
+  },
+  "errorHandling": {
+    "retryAttempts": 3,
+    "retryDelay": 1000,
+    "exponentialBackoff": true,
+    "maxRetryDelay": 30000,
+    "onError": "log",
+    "deadLetterTopic": "chazon/os/medical/alf-detect/errors"
+  }
+}

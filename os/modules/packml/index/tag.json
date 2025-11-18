@@ -1,5 +1,5 @@
 {
-  "UUID": "b06dfef4-1dc0-4175-8311-e08c7e1bfb60",
+  "UUID": "fe407c5f-92bf-4bab-ac8d-20e5509d4a2f",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/modules/packml/",
   "Directory_Name": "Packml",
@@ -13,67 +13,19 @@
       "path": "/os/modules/packml/controls/",
       "title": "Controls",
       "description": "controls subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 2
-    }
-  ],
-  "Sibling_Directories": [
-    {
-      "path": "/os/modules/ai/",
-      "title": "Ai",
-      "description": "ai area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/modules/cli/",
-      "title": "Cli",
-      "description": "cli area",
-      "icon": "\u2328\ufe0f"
-    },
-    {
-      "path": "/os/modules/controls/",
-      "title": "Controls",
-      "description": "controls area",
       "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/modules/medical/",
-      "title": "Medical",
-      "description": "medical area",
-      "icon": "\ud83c\udfe5"
     }
   ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/modules/",
-      "title": "Modules",
-      "icon": "\ud83d\udce6"
-    },
-    {
-      "path": "/os/modules/packml/",
-      "title": "Packml",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": "README.md",
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
   "has_plc": true,
   "has_hmi": true,
   "has_scada": true,
-  "plc_path": "plc.html",
-  "hmi_path": "hmi.html",
-  "scada_path": "scada.html",
+  "plc_path": "/os/modules/packml/plc.html",
+  "hmi_path": "/os/modules/packml/hmi.html",
+  "scada_path": "/os/modules/packml/scada.html",
   "Features": [
     {
       "title": "Core Functionality",
@@ -143,57 +95,6 @@
       "path": "scada.html",
       "name": "SCADA",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "hmi.html",
-      "name": "Hmi",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3915
-    },
-    {
-      "path": "plc.html",
-      "name": "Plc",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3680
-    },
-    {
-      "path": "scada.html",
-      "name": "Scada",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 6037
-    },
-    {
-      "path": "README.md",
-      "name": "Readme",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 1109
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4584
-    },
-    {
-      "path": "packml-baton.md",
-      "name": "Packml Baton",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 6039
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3610
     }
   ]
 }

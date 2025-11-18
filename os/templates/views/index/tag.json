@@ -1,5 +1,5 @@
 {
-  "UUID": "5cf4c1b2-aa33-4b17-86a2-d40555362328",
+  "UUID": "d242a623-59bd-48cd-991d-e29b9d83e2e1",
   "ISA_Level": "L3_MES",
   "Directory_Path": "/os/templates/views/",
   "Directory_Name": "Views",
@@ -13,73 +13,19 @@
       "path": "/os/templates/views/controls/",
       "title": "Controls",
       "description": "controls subsystem",
-      "icon": "\ud83c\udf9b\ufe0f",
-      "page_count": 2
-    }
-  ],
-  "Sibling_Directories": [
-    {
-      "path": "/os/templates/components/",
-      "title": "Components",
-      "description": "components area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/templates/controls/",
-      "title": "Controls",
-      "description": "controls area",
       "icon": "\ud83c\udf9b\ufe0f"
-    },
-    {
-      "path": "/os/templates/layouts/",
-      "title": "Layouts",
-      "description": "layouts area",
-      "icon": "\ud83d\udcc1"
-    },
-    {
-      "path": "/os/templates/medical/",
-      "title": "Medical",
-      "description": "medical area",
-      "icon": "\ud83c\udfe5"
-    },
-    {
-      "path": "/os/templates/p-and-id/",
-      "title": "P And Id",
-      "description": "p-and-id area",
-      "icon": "\ud83d\udcc1"
     }
   ],
-  "Breadcrumb_Trail": [
-    {
-      "path": "/",
-      "title": "Home",
-      "icon": "\ud83c\udfe0"
-    },
-    {
-      "path": "/os/",
-      "title": "Os",
-      "icon": "\ud83d\udcbb"
-    },
-    {
-      "path": "/os/templates/",
-      "title": "Templates",
-      "icon": "\ud83d\udcc4"
-    },
-    {
-      "path": "/os/templates/views/",
-      "title": "Views",
-      "icon": "\ud83d\udcc1"
-    }
-  ],
+  "Sibling_Directories": [],
   "README_Path": null,
   "Controls_Path": "controls.md",
   "Status_Path": "status.md",
   "has_plc": true,
   "has_hmi": true,
   "has_scada": true,
-  "plc_path": "plc.html",
-  "hmi_path": "hmi.html",
-  "scada_path": "scada.html",
+  "plc_path": "/os/templates/views/plc.html",
+  "hmi_path": "/os/templates/views/hmi.html",
+  "scada_path": "/os/templates/views/scada.html",
   "Features": [
     {
       "title": "Core Functionality",
@@ -144,92 +90,6 @@
       "path": "scada.html",
       "name": "SCADA",
       "type": "html"
-    }
-  ],
-  "Page_Links": [
-    {
-      "path": "hmi.html",
-      "name": "Hmi",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3657
-    },
-    {
-      "path": "plc.html",
-      "name": "Plc",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 3593
-    },
-    {
-      "path": "scada.html",
-      "name": "Scada",
-      "type": "html",
-      "icon": "\ud83c\udf10",
-      "size": 5909
-    },
-    {
-      "path": "chazon.md",
-      "name": "Chazon",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 2167
-    },
-    {
-      "path": "controls.md",
-      "name": "Controls",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 4588
-    },
-    {
-      "path": "ct-template.md",
-      "name": "Ct Template",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 2166
-    },
-    {
-      "path": "dashboard.md",
-      "name": "Dashboard",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 852
-    },
-    {
-      "path": "demo.md",
-      "name": "Demo",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 1084
-    },
-    {
-      "path": "medical-viewer.md",
-      "name": "Medical Viewer",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 1734
-    },
-    {
-      "path": "mri-template.md",
-      "name": "Mri Template",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 2386
-    },
-    {
-      "path": "status.md",
-      "name": "Status",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 3613
-    },
-    {
-      "path": "xray-template.md",
-      "name": "Xray Template",
-      "type": "markdown",
-      "icon": "\ud83d\udcdd",
-      "size": 1517
     }
   ]
 }

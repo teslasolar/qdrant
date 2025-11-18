@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AlF-DETECT Screening</title>
+<link rel="stylesheet" href="../styles/isa101-theme.css">
+<link rel="stylesheet" href="../styles/widgets.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>AlF-DETECT Screening</h1>
+  <p>Alzheimer's & Autism Detection via Dual-Energy X-Ray</p>
+
+  <div class="card">
+    <div class="widget-title">Patient ID</div>
+    <input type="text" id="patient-id" placeholder="Enter patient ID">
+    <button id="start-screen" class="btn btn-primary">Start Screening</button>
+  </div>
+
+  <div class="metric-grid">
+    <div class="widget">
+      <div class="widget-title">Alzheimer's Risk</div>
+      <div class="widget-value" id="alz-risk">--</div>
+    </div>
+    <div class="widget">
+      <div class="widget-title">Autism Risk</div>
+      <div class="widget-value" id="autism-risk">--</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="widget-title">Brain Region Analysis</div>
+    <div id="regions"></div>
+  </div>
+</div>
+
+<script type="module">
+import AlfDetect from '../ai/alf-detect.js';
+
+const alfDetect = new AlfDetect();
+const startBtn = document.getElementById('start-screen');
+
+startBtn.addEventListener('click', async () => {
+  const alzResult = await alfDetect.screenAlzheimers(null);
+  const autismResult = await alfDetect.screenAutism(null);
+
+  document.getElementById('alz-risk').textContent =
+    (alzResult.probability * 100).toFixed(1) + '%';
+  document.getElementById('autism-risk').textContent =
+    (autismResult.probability * 100).toFixed(1) + '%';
+});
+</script>
+
+</body>
+</html>

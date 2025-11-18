@@ -1,0 +1,156 @@
+{
+  "uuid": "dock-001-isa101-cream-purple",
+  "type": "docking-system",
+  "name": "ISA-101 Cream & Purple Docking System",
+  "description": "High-performance HMI docking layout with North/South/East/West/Center panels using cream and purple ISA-101 color scheme",
+  "version": "1.0.0",
+  "author": "Medical Imaging Virtual Factory",
+  "created": "2025-11-17",
+
+  "theme": {
+    "name": "Cream & Purple ISA-101",
+    "colors": {
+      "primary_background": "#2a1a3a",
+      "secondary_background": "#3d2a52",
+      "tertiary_background": "#1a0f26",
+      "cream": "#f5f2e8",
+      "cream_dark": "#e8e0c8",
+      "purple_light": "#9b7eb8",
+      "purple_accent": "#b794f4",
+      "purple_glow": "#8b5cf6",
+      "normal": "#90ee90",
+      "warning": "#ffd700",
+      "alarm": "#ff6b6b",
+      "inactive": "#808080",
+      "active": "#00bfff"
+    },
+    "standards_compliance": [
+      "ISA-101 High Performance HMI",
+      "Situational Awareness Design",
+      "Reduced Cognitive Load"
+    ]
+  },
+
+  "layout": {
+    "type": "grid",
+    "areas": [
+      ["north", "north", "north"],
+      ["west", "center", "east"],
+      ["south", "south", "south"]
+    ],
+    "dimensions": {
+      "north_height": "80px",
+      "south_height": "40px",
+      "east_width": "280px",
+      "west_width": "280px",
+      "gap": "4px"
+    }
+  },
+
+  "docks": {
+    "north": {
+      "file": "docks/north.html",
+      "purpose": "Header/Navigation",
+      "typical_content": ["Logo", "Navigation Menu", "Quick Actions"],
+      "position": "top",
+      "fixed_height": true
+    },
+    "south": {
+      "file": "docks/south.html",
+      "purpose": "Status Bar/Footer",
+      "typical_content": ["System Status", "Clock", "User Info", "Connection Status"],
+      "position": "bottom",
+      "fixed_height": true
+    },
+    "west": {
+      "file": "docks/west.html",
+      "purpose": "Left Sidebar/Navigation",
+      "typical_content": ["Tree Navigation", "Quick Links", "Equipment Status"],
+      "position": "left",
+      "fixed_width": true
+    },
+    "east": {
+      "file": "docks/east.html",
+      "purpose": "Right Sidebar/Metrics",
+      "typical_content": ["KPIs", "Alerts", "Live Metrics", "Notifications"],
+      "position": "right",
+      "fixed_width": true
+    },
+    "center": {
+      "file": "docks/center.html",
+      "purpose": "Main Content Area",
+      "typical_content": ["Process Graphics", "Dashboards", "Forms", "Data Tables"],
+      "position": "center",
+      "flexible": true
+    }
+  },
+
+  "features": [
+    "Responsive grid layout",
+    "Async loading of dock panels",
+    "Custom event system (dock-loaded)",
+    "ISA-101 compliant color scheme",
+    "Smooth transitions and animations",
+    "Mobile-responsive (hides sidebars on small screens)",
+    "Custom scrollbar styling",
+    "Modular dock templates",
+    "Live metric updates",
+    "Status indicator animations"
+  ],
+
+  "usage": {
+    "main_file": "docking-layout.html",
+    "standalone_example": "/docking-hmi.html",
+    "load_method": "DockingSystem class",
+    "customization": "Replace dock HTML files or use loadCustomDock()"
+  },
+
+  "api": {
+    "class": "DockingSystem",
+    "methods": {
+      "loadDock": {
+        "description": "Load a single dock panel",
+        "parameters": ["dockName", "containerId"],
+        "example": "dockingSystem.loadDock('north', 'dock-north')"
+      },
+      "loadAll": {
+        "description": "Load all dock panels simultaneously",
+        "parameters": [],
+        "example": "dockingSystem.loadAll()"
+      },
+      "loadCustomDock": {
+        "description": "Load custom content into a dock",
+        "parameters": ["dockName", "url", "containerId"],
+        "example": "dockingSystem.loadCustomDock('center', '/custom-page.html', 'dock-center')"
+      }
+    },
+    "events": {
+      "dock-loaded": {
+        "description": "Fired when a dock finishes loading",
+        "detail": "{ dock: 'dockName' }"
+      }
+    }
+  },
+
+  "integration": {
+    "isa_95_levels": ["L4", "L3", "L2", "L1"],
+    "compatible_systems": [
+      "Medical Imaging SCADA",
+      "DICOM Workflow",
+      "AlF-DETECT Screening",
+      "Enterprise Portals",
+      "Production Planning",
+      "Quality Management"
+    ]
+  },
+
+  "files": [
+    "docking-layout.html",
+    "docks/north.html",
+    "docks/south.html",
+    "docks/east.html",
+    "docks/west.html",
+    "docks/center.html",
+    "docking-system.json"
+  ]
+}

@@ -1,0 +1,170 @@
+{
+  "uuid": "med-screen-alf-001",
+  "type": "screen",
+  "category": "medical",
+  "metadata": {
+    "name": "AlF-DETECT Screening",
+    "description": "Alzheimer's and Autism screening using aluminum fluoride detection",
+    "version": "1.0.0",
+    "author": "Medical Imaging SCADA",
+    "created": "2025-11-17T00:00:00Z",
+    "modified": "2025-11-17T00:00:00Z",
+    "tags": ["medical", "alf-detect", "alzheimers", "autism", "screening"]
+  },
+  "layout": {
+    "grid": {
+      "columns": 3,
+      "rows": 3,
+      "gap": 15
+    },
+    "theme": "dark",
+    "colorScheme": "medical-purple"
+  },
+  "components": [
+    {
+      "uuid": "alf-xray-viewer",
+      "type": "dual-energy-xray-viewer",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "width": 2,
+        "height": 2
+      },
+      "config": {
+        "title": "Dual-Energy X-Ray Viewer",
+        "showHighEnergy": true,
+        "showLowEnergy": true,
+        "showSubtraction": true,
+        "overlayHeatmap": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.alf.highEnergyImage",
+          "medical.alf.lowEnergyImage",
+          "medical.alf.alfConcentrationMap"
+        ]
+      }
+    },
+    {
+      "uuid": "alf-probability-panel",
+      "type": "alf-probability-display",
+      "position": {
+        "x": 2,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      },
+      "config": {
+        "title": "Diagnosis Probabilities",
+        "showBars": true,
+        "showPercentages": true,
+        "conditions": ["alzheimers", "autism", "normal"]
+      },
+      "bindings": {
+        "tags": [
+          "medical.alf.alzheimersProb",
+          "medical.alf.autismProb",
+          "medical.alf.normalProb"
+        ]
+      }
+    },
+    {
+      "uuid": "alf-risk-score",
+      "type": "risk-score-gauge",
+      "position": {
+        "x": 2,
+        "y": 1,
+        "width": 1,
+        "height": 1
+      },
+      "config": {
+        "title": "AlF Risk Score",
+        "units": "mg/kg",
+        "thresholds": {
+          "low": 30,
+          "medium": 60,
+          "high": 90
+        }
+      },
+      "bindings": {
+        "tags": [
+          "medical.alf.riskScore"
+        ]
+      }
+    },
+    {
+      "uuid": "alf-brain-regions",
+      "type": "brain-region-map",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "width": 2,
+        "height": 1
+      },
+      "config": {
+        "title": "AlF Concentration by Brain Region",
+        "regions": ["hippocampus", "frontalCortex", "temporalLobe", "parietalLobe"],
+        "showValues": true,
+        "colorCode": true
+      },
+      "bindings": {
+        "tags": [
+          "medical.alf.regions.hippocampus",
+          "medical.alf.regions.frontalCortex",
+          "medical.alf.regions.temporalLobe",
+          "medical.alf.regions.parietalLobe"
+        ]
+      }
+    },
+    {
+      "uuid": "alf-similar-cases",
+      "type": "qdrant-similarity-panel",
+      "position": {
+        "x": 2,
+        "y": 2,
+        "width": 1,
+        "height": 1
+      },
+      "config": {
+        "title": "Similar Cases (Qdrant)",
+        "maxResults": 5,
+        "showScores": true,
+        "embeddingModel": "BiomedCLIP"
+      },
+      "bindings": {
+        "tags": [
+          "medical.alf.similarCases",
+          "medical.similaritySearches"
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "trigger": "onImageUpload",
+      "action": "runAlfAnalysis",
+      "params": {
+        "autoDetectEnergy": true,
+        "performSimilaritySearch": true,
+        "updateQdrant": true
+      }
+    },
+    {
+      "trigger": "onAnalysisComplete",
+      "action": "displayResults",
+      "params": {
+        "showHeatmap": true,
+        "highlightRiskRegions": true
+      }
+    }
+  ],
+  "scientificBasis": {
+    "method": "Dual-Energy X-ray Subtraction",
+    "biomarker": "AlF3/AlF4- accumulation",
+    "aiModel": "Vision Transformer + BiomedCLIP",
+    "vectorSearch": "Qdrant similarity matching",
+    "references": [
+      "Konomi et al. - Aluminum Fluoride in Neurodegenerative Disorders"
+    ]
+  }
+}

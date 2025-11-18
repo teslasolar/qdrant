@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quality Management - Medical Imaging Factory</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    color: #e0e0e0;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border-bottom: 3px solid #00ff88;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header h1 {
+    color: #00ff88;
+    font-size: 2em;
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #2a2a3e;
+    border: 2px solid #00ff88;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #00ff88;
+  }
+
+  .breadcrumb {
+    background: #1a1a2e;
+    border-bottom: 2px solid #333;
+    padding: 15px 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #888;
+  }
+
+  .breadcrumb a {
+    color: #00ccff;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .breadcrumb a:hover { color: #00ff88; }
+  .breadcrumb-current { color: #00ff88; font-weight: 600; }
+
+  .container {
+    padding: 40px;
+    max-width: 1800px;
+    margin: 0 auto;
+  }
+
+  .section {
+    background: #1a1a2e;
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #333;
+  }
+
+  .section h2 {
+    color: #00ff88;
+    font-size: 1.8em;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  /* Quality Metrics Grid */
+  .quality-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+  }
+
+  .quality-card {
+    background: linear-gradient(135deg, #1a1a2e, #2a2a3e);
+    border: 2px solid #333;
+    border-left: 5px solid #00ff88;
+    border-radius: 12px;
+    padding: 25px;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .quality-card:hover {
+    border-color: #00ff88;
+    box-shadow: 0 8px 30px rgba(0, 255, 136, 0.2);
+    transform: translateY(-3px);
+  }
+
+  .quality-card.warning { border-left-color: #ffaa00; }
+  .quality-card.critical { border-left-color: #ff6666; }
+  .quality-card.good { border-left-color: #00ff88; }
+
+  .card-icon {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+  }
+
+  .card-title {
+    color: #888;
+    font-size: 0.95em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .card-value {
+    color: #00ff88;
+    font-size: 2.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .card-subtitle {
+    color: #aaa;
+    font-size: 0.9em;
+  }
+
+  .status-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 600;
+  }
+
+  .status-badge.good {
+    background: rgba(0, 255, 136, 0.2);
+    color: #00ff88;
+  }
+
+  .status-badge.warning {
+    background: rgba(255, 170, 0, 0.2);
+    color: #ffaa00;
+  }
+
+  .status-badge.critical {
+    background: rgba(255, 102, 102, 0.2);
+    color: #ff6666;
+  }
+
+  /* Defect Tracking Table */
+  .defect-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  .defect-table th {
+    background: #2a2a3e;
+    color: #00ff88;
+    padding: 15px;
+    text-align: left;
+    border-bottom: 2px solid #00ff88;
+  }
+
+  .defect-table td {
+    padding: 15px;
+    border-bottom: 1px solid #333;
+    color: #e0e0e0;
+  }
+
+  .defect-table tr:hover {
+    background: #2a2a3e;
+  }
+
+  .severity-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 600;
+  }
+
+  .severity-badge.high {
+    background: rgba(255, 102, 102, 0.2);
+    color: #ff6666;
+  }
+
+  .severity-badge.medium {
+    background: rgba(255, 170, 0, 0.2);
+    color: #ffaa00;
+  }
+
+  .severity-badge.low {
+    background: rgba(0, 255, 136, 0.2);
+    color: #00ff88;
+  }
+
+  /* SLA Compliance */
+  .sla-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .sla-card {
+    background: #0a0a0a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .sla-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .sla-title {
+    color: #00ccff;
+    font-weight: 600;
+    font-size: 1.1em;
+  }
+
+  .sla-percentage {
+    color: #00ff88;
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+
+  .sla-bar {
+    width: 100%;
+    height: 12px;
+    background: #1a1a2e;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  .sla-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ff88, #00cc66);
+    border-radius: 6px;
+    transition: width 0.5s;
+  }
+
+  .sla-fill.warning {
+    background: linear-gradient(90deg, #ffaa00, #ff8800);
+  }
+
+  .sla-details {
+    color: #888;
+    font-size: 0.9em;
+  }
+
+  /* Pareto Chart */
+  .pareto-chart {
+    background: #0a0a0a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    height: 350px;
+    position: relative;
+  }
+
+  .chart-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    height: 280px;
+    padding-bottom: 40px;
+  }
+
+  .chart-bar {
+    flex: 1;
+    margin: 0 5px;
+    background: linear-gradient(to top, #ff6666, #ff4444);
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    min-height: 20px;
+    transition: all 0.3s;
+  }
+
+  .chart-bar:hover {
+    background: linear-gradient(to top, #ff8888, #ff6666);
+    transform: scaleY(1.05);
+  }
+
+  .chart-bar-label {
+    position: absolute;
+    bottom: -35px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: #888;
+    font-size: 0.75em;
+    transform: rotate(-15deg);
+  }
+
+  .chart-bar-value {
+    position: absolute;
+    top: -25px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: #ff6666;
+    font-weight: 600;
+    font-size: 0.85em;
+  }
+
+  /* CAPA Management */
+  .capa-card {
+    background: #2a2a3e;
+    border: 2px solid #444;
+    border-left: 4px solid #00ccff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    transition: all 0.3s;
+  }
+
+  .capa-card:hover {
+    border-left-color: #00ff88;
+    background: #333;
+  }
+
+  .capa-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .capa-id {
+    color: #00ccff;
+    font-weight: 600;
+    font-size: 1.1em;
+  }
+
+  .capa-title {
+    color: #e0e0e0;
+    font-size: 1.05em;
+    margin-bottom: 10px;
+  }
+
+  .capa-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    color: #888;
+    font-size: 0.9em;
+  }
+
+  .capa-detail-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .capa-detail-label {
+    color: #666;
+    font-size: 0.85em;
+    margin-bottom: 5px;
+  }
+
+  .capa-detail-value {
+    color: #e0e0e0;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #00ff88, #00cc66);
+    color: #000;
+  }
+
+  .btn-secondary {
+    background: #2a2a3e;
+    color: #00ccff;
+    border: 2px solid #00ccff;
+  }
+
+  .btn-small {
+    padding: 8px 16px;
+    font-size: 0.9em;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3);
+  }
+
+  /* Trend Line */
+  .trend-chart {
+    background: #0a0a0a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .trend-line {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 30px;
+    color: #666;
+    border-top: 2px solid #333;
+    margin-top: 60px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>✓ Quality Management</h1>
+  <div>
+    <span class="badge">L4 - Business</span>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <a href="index.html">🏭 ISA-95 Level 4</a>
+  <span>›</span>
+  <a href="enterprise-portal.html">Enterprise Portal</a>
+  <span>›</span>
+  <span class="breadcrumb-current">Quality Management</span>
+</div>
+
+<div class="container">
+
+  <!-- Quality Metrics Overview -->
+  <div class="quality-grid">
+    <div class="quality-card good">
+      <div class="status-badge good">✓ On Target</div>
+      <div class="card-icon">✓</div>
+      <div class="card-title">First Pass Success</div>
+      <div class="card-value">98.3%</div>
+      <div class="card-subtitle">Target: ≥ 97%</div>
+    </div>
+
+    <div class="quality-card warning">
+      <div class="status-badge warning">⚠ Monitor</div>
+      <div class="card-icon">🔄</div>
+      <div class="card-title">Re-Scan Rate</div>
+      <div class="card-value">1.7%</div>
+      <div class="card-subtitle">Target: ≤ 1.5%</div>
+    </div>
+
+    <div class="quality-card good">
+      <div class="status-badge good">✓ Excellent</div>
+      <div class="card-icon">📊</div>
+      <div class="card-title">Image Quality Score</div>
+      <div class="card-value">9.4/10</div>
+      <div class="card-subtitle">Target: ≥ 9.0</div>
+    </div>
+
+    <div class="quality-card good">
+      <div class="status-badge good">✓ On Target</div>
+      <div class="card-icon">⚡</div>
+      <div class="card-title">QC Pass Rate</div>
+      <div class="card-value">99.1%</div>
+      <div class="card-subtitle">Target: ≥ 98%</div>
+    </div>
+  </div>
+
+  <!-- SLA Compliance -->
+  <div class="section">
+    <div class="section-header">
+      <h2>📋 SLA Compliance Monitoring</h2>
+      <button class="btn btn-secondary" onclick="alert('Export SLA report')">Export Report</button>
+    </div>
+
+    <div class="sla-grid">
+      <div class="sla-card">
+        <div class="sla-header">
+          <div class="sla-title">Study Turnaround Time</div>
+          <div class="sla-percentage">99.2%</div>
+        </div>
+        <div class="sla-bar">
+          <div class="sla-fill" style="width: 99.2%"></div>
+        </div>
+        <div class="sla-details">
+          Target: ≤ 15 minutes | Actual: 12.3 min avg
+        </div>
+      </div>
+
+      <div class="sla-card">
+        <div class="sla-header">
+          <div class="sla-title">Report Delivery Time</div>
+          <div class="sla-percentage">98.8%</div>
+        </div>
+        <div class="sla-bar">
+          <div class="sla-fill" style="width: 98.8%"></div>
+        </div>
+        <div class="sla-details">
+          Target: ≤ 24 hours | Actual: 18.5 hrs avg
+        </div>
+      </div>
+
+      <div class="sla-card">
+        <div class="sla-header">
+          <div class="sla-title">System Uptime</div>
+          <div class="sla-percentage">99.7%</div>
+        </div>
+        <div class="sla-bar">
+          <div class="sla-fill" style="width: 99.7%"></div>
+        </div>
+        <div class="sla-details">
+          Target: ≥ 99.5% | Downtime: 2.2 hrs/month
+        </div>
+      </div>
+
+      <div class="sla-card">
+        <div class="sla-header">
+          <div class="sla-title">Emergency Response</div>
+          <div class="sla-percentage">100%</div>
+        </div>
+        <div class="sla-bar">
+          <div class="sla-fill" style="width: 100%"></div>
+        </div>
+        <div class="sla-details">
+          Target: ≤ 30 seconds | Actual: 18 sec avg
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Defect Tracking -->
+  <div class="section">
+    <div class="section-header">
+      <h2>🔍 Defect Tracking</h2>
+      <button class="btn btn-secondary" onclick="alert('Add new defect')">+ New Defect</button>
+    </div>
+
+    <table class="defect-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Modality</th>
+          <th>Severity</th>
+          <th>Status</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>DEF-2025-147</strong></td>
+          <td>Image Artifact</td>
+          <td>Motion blur in CT chest study</td>
+          <td>CT Scanner #2</td>
+          <td><span class="severity-badge medium">Medium</span></td>
+          <td>Under Investigation</td>
+          <td>2025-11-17</td>
+        </tr>
+        <tr>
+          <td><strong>DEF-2025-146</strong></td>
+          <td>Calibration Drift</td>
+          <td>MRI intensity variance +5%</td>
+          <td>MRI System #1</td>
+          <td><span class="severity-badge high">High</span></td>
+          <td>Action Required</td>
+          <td>2025-11-16</td>
+        </tr>
+        <tr>
+          <td><strong>DEF-2025-145</strong></td>
+          <td>Protocol Error</td>
+          <td>Incorrect contrast timing</td>
+          <td>CT Scanner #1</td>
+          <td><span class="severity-badge low">Low</span></td>
+          <td>Resolved</td>
+          <td>2025-11-15</td>
+        </tr>
+        <tr>
+          <td><strong>DEF-2025-144</strong></td>
+          <td>Data Transfer</td>
+          <td>DICOM transmission timeout</td>
+          <td>PACS Server</td>
+          <td><span class="severity-badge medium">Medium</span></td>
+          <td>Resolved</td>
+          <td>2025-11-14</td>
+        </tr>
+        <tr>
+          <td><strong>DEF-2025-143</strong></td>
+          <td>Quality Check</td>
+          <td>Positioning error in X-Ray</td>
+          <td>X-Ray #3</td>
+          <td><span class="severity-badge low">Low</span></td>
+          <td>Resolved</td>
+          <td>2025-11-13</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pareto Chart -->
+  <div class="section">
+    <div class="section-header">
+      <h2>📊 Defect Pareto Analysis</h2>
+    </div>
+
+    <div class="pareto-chart">
+      <div style="color: #888; font-size: 0.9em; margin-bottom: 15px;">
+        Top Defect Categories - Last 30 Days
+      </div>
+      <div class="chart-bars">
+        <div class="chart-bar" style="height: 85%;">
+          <div class="chart-bar-value">34</div>
+          <div class="chart-bar-label">Motion Blur</div>
+        </div>
+        <div class="chart-bar" style="height: 65%;">
+          <div class="chart-bar-value">26</div>
+          <div class="chart-bar-label">Positioning</div>
+        </div>
+        <div class="chart-bar" style="height: 50%;">
+          <div class="chart-bar-value">20</div>
+          <div class="chart-bar-label">Calibration</div>
+        </div>
+        <div class="chart-bar" style="height: 35%;">
+          <div class="chart-bar-value">14</div>
+          <div class="chart-bar-label">Protocol</div>
+        </div>
+        <div class="chart-bar" style="height: 25%;">
+          <div class="chart-bar-value">10</div>
+          <div class="chart-bar-label">DICOM</div>
+        </div>
+        <div class="chart-bar" style="height: 15%;">
+          <div class="chart-bar-value">6</div>
+          <div class="chart-bar-label">Network</div>
+        </div>
+        <div class="chart-bar" style="height: 10%;">
+          <div class="chart-bar-value">4</div>
+          <div class="chart-bar-label">Other</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quality Trends -->
+  <div class="section">
+    <div class="section-header">
+      <h2>📈 Quality Trends (Last 6 Months)</h2>
+      <button class="btn btn-secondary" onclick="alert('Export trend data')">Export Data</button>
+    </div>
+
+    <div class="trend-chart">
+      <canvas id="trendCanvas" style="width: 100%; height: 100%;"></canvas>
+    </div>
+  </div>
+
+  <!-- CAPA Management -->
+  <div class="section">
+    <div class="section-header">
+      <h2>🔧 CAPA (Corrective & Preventive Actions)</h2>
+      <button class="btn btn-secondary" onclick="alert('Create new CAPA')">+ New CAPA</button>
+    </div>
+
+    <div class="capa-card">
+      <div class="capa-header">
+        <div class="capa-id">CAPA-2025-023</div>
+        <button class="btn btn-secondary btn-small">View Details</button>
+      </div>
+      <div class="capa-title">Implement automated motion detection for CT scans</div>
+      <div class="capa-details">
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Type:</div>
+          <div class="capa-detail-value">Preventive Action</div>
+        </div>
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Priority:</div>
+          <div class="capa-detail-value" style="color: #ffaa00;">High</div>
+        </div>
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Status:</div>
+          <div class="capa-detail-value" style="color: #00ccff;">In Progress</div>
+        </div>
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Due Date:</div>
+          <div class="capa-detail-value">2025-12-01</div>
+        </div>
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Owner:</div>
+          <div class="capa-detail-value">Quality Team</div>
+        </div>
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Progress:</div>
+          <div class="capa-detail-value">65%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="capa-card">
+      <div class="capa-header">
+        <div class="capa-id">CAPA-2025-022</div>
+        <button class="btn btn-secondary btn-small">View Details</button>
+      </div>
+      <div class="capa-title">Calibration procedure update for MRI systems</div>
+      <div class="capa-details">
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Type:</div>
+          <div class="capa-detail-value">Corrective Action</div>
+        </div>
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Priority:</div>
+          <div class="capa-detail-value" style="color: #ff6666;">Critical</div>
+        </div>
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Status:</div>
+          <div class="capa-detail-value" style="color: #ffaa00;">Pending Review</div>
+        </div>
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Due Date:</div>
+          <div class="capa-detail-value">2025-11-25</div>
+        </div>
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Owner:</div>
+          <div class="capa-detail-value">Engineering</div>
+        </div>
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Progress:</div>
+          <div class="capa-detail-value">85%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="capa-card">
+      <div class="capa-header">
+        <div class="capa-id">CAPA-2025-021</div>
+        <button class="btn btn-secondary btn-small">View Details</button>
+      </div>
+      <div class="capa-title">DICOM network optimization</div>
+      <div class="capa-details">
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Type:</div>
+          <div class="capa-detail-value">Preventive Action</div>
+        </div>
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Priority:</div>
+          <div class="capa-detail-value" style="color: #00ff88;">Medium</div>
+        </div>
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Status:</div>
+          <div class="capa-detail-value" style="color: #00ff88;">Completed</div>
+        </div>
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Due Date:</div>
+          <div class="capa-detail-value">2025-11-10</div>
+        </div>
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Owner:</div>
+          <div class="capa-detail-value">IT Team</div>
+        </div>
+        <div class="capa-detail-item">
+          <div class="capa-detail-label">Progress:</div>
+          <div class="capa-detail-value">100%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="section">
+    <div class="section-header">
+      <h2>⚡ Quick Actions</h2>
+    </div>
+
+    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+      <button class="btn btn-primary" onclick="alert('Opening defect entry form...')">
+        Report New Defect
+      </button>
+      <button class="btn btn-primary" onclick="alert('Opening CAPA form...')">
+        Create CAPA
+      </button>
+      <button class="btn btn-secondary" onclick="window.location.href='production-planning.html'">
+        Production Planning
+      </button>
+      <button class="btn btn-secondary" onclick="window.location.href='analytics-reporting.html'">
+        Generate Quality Report
+      </button>
+      <button class="btn btn-secondary" onclick="window.location.href='enterprise-portal.html'">
+        Back to Portal
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p><strong>ISA-95 Level 4 - Business Planning & Logistics</strong></p>
+  <p>Quality Management - Medical Imaging Virtual Factory</p>
+</div>
+
+<script>
+// Simple trend line visualization
+const canvas = document.getElementById('trendCanvas');
+const ctx = canvas.getContext('2d');
+
+function drawTrendChart() {
+  if (!canvas || !ctx) return;
+
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+
+  // Sample data points (quality score over 6 months)
+  const data = [96.5, 97.2, 97.8, 98.1, 98.5, 98.3];
+  const labels = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'];
+
+  // Draw grid
+  ctx.strokeStyle = '#333';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 5; i++) {
+    const y = (canvas.height / 5) * i;
+    ctx.beginPath();
+    ctx.moveTo(50, y);
+    ctx.lineTo(canvas.width - 20, y);
+    ctx.stroke();
+  }
+
+  // Draw trend line
+  ctx.strokeStyle = '#00ff88';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+
+  const xStep = (canvas.width - 70) / (data.length - 1);
+  const yScale = canvas.height / 5;
+
+  data.forEach((value, index) => {
+    const x = 50 + (index * xStep);
+    const y = canvas.height - ((value - 95) * yScale * 2);
+
+    if (index === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+
+    // Draw point
+    ctx.fillStyle = '#00ff88';
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Draw label
+    ctx.fillStyle = '#888';
+    ctx.font = '12px Segoe UI';
+    ctx.textAlign = 'center';
+    ctx.fillText(labels[index], x, canvas.height - 10);
+
+    // Draw value
+    ctx.fillStyle = '#00ff88';
+    ctx.fillText(value.toFixed(1) + '%', x, y - 15);
+  });
+
+  ctx.stroke();
+
+  // Y-axis labels
+  ctx.fillStyle = '#888';
+  ctx.font = '12px Segoe UI';
+  ctx.textAlign = 'right';
+  for (let i = 0; i <= 5; i++) {
+    const value = 95 + (i * 1);
+    const y = canvas.height - (i * yScale);
+    ctx.fillText(value + '%', 45, y + 4);
+  }
+}
+
+// Initialize chart
+window.addEventListener('load', drawTrendChart);
+window.addEventListener('resize', drawTrendChart);
+</script>
+
+</body>
+</html>

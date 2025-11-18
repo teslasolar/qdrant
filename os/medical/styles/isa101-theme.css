@@ -1,0 +1,75 @@
+/* ISA-101 Cream & Purple Theme - Shared Styles */
+
+:root {
+  --bg-primary: #2a1a3a;
+  --bg-secondary: #3d2a52;
+  --bg-tertiary: #1a0f26;
+  --cream: #f5f2e8;
+  --cream-dark: #e8e0c8;
+  --purple-light: #9b7eb8;
+  --purple-accent: #b794f4;
+  --purple-glow: #8b5cf6;
+  --normal: #90ee90;
+  --warning: #ffd700;
+  --alarm: #ff6b6b;
+  --inactive: #808080;
+  --active: #00bfff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg-primary);
+  color: var(--cream);
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.card {
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+  border: 2px solid var(--purple-light);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  transition: all 0.3s;
+}
+
+.card:hover {
+  border-color: var(--purple-accent);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-primary {
+  background: var(--purple-accent);
+  color: var(--cream);
+}
+
+.btn-primary:hover {
+  background: var(--purple-glow);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.6);
+}
+
+.status-normal { color: var(--normal); }
+.status-warning { color: var(--warning); }
+.status-alarm { color: var(--alarm); }
+.status-inactive { color: var(--inactive); }

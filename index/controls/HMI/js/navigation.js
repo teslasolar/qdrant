@@ -87,6 +87,84 @@ class HMINavigation {
     }
 
     /**
+     * Navigate to a template-based screen by UUID
+     */
+    async navigateToTemplate(uuid, newWindow = false) {
+        try {
+            // Check if templateLoader is available
+            if (typeof window.templateLoader === 'undefined') {
+                console.error('Template loader not available');
+                return;
+            }
+
+            // Load the screen template
+            await window.templateLoader.loadIndexes();
+            const screens = window.templateLoader.indexes.screens.screens;
+            const screen = screens.find(s => s.uuid === uuid);
+
+            if (!screen) {
+                console.error(`Template screen not found: ${uuid}`);
+                return;
+            }
+
+            // Navigate to template viewer
+            const templatesBasePath = this.getTemplatesBasePath();
+            const url = `${templatesBasePath}/example-hmi.html?uuid=${uuid}`;
+
+            if (newWindow) {
+                window.open(url, '_blank');
+            } else {
+                window.location.href = url;
+            }
+        } catch (error) {
+            console.error('Error navigating to template:', error);
+        }
+    }
+
+    /**
+     * Get base path for templates directory
+     */
+    getTemplatesBasePath() {
+        // Navigate up from HMI directory to find templates
+        const currentPath = window.location.pathname;
+        const hmiIndex = currentPath.indexOf('/HMI/');
+
+        if (hmiIndex !== -1) {
+            const basePath = currentPath.substring(0, hmiIndex);
+            return window.location.origin + basePath + '/../../templates';
+        }
+
+        return window.location.origin + '/templates';
+    }
+
+    /**
+     * Navigate to a screen by tag
+     */
+    async navigateToScreenByTag(tag, newWindow = false) {
+        try {
+            if (typeof window.templateLoader === 'undefined') {
+                console.error('Template loader not available');
+                return;
+            }
+
+            await window.templateLoader.loadIndexes();
+            const screens = window.templateLoader.indexes.screens.screens.filter(s =>
+                s.tags && s.tags.includes(tag)
+            );
+
+            if (screens.length === 0) {
+                console.error(`No screens found with tag: ${tag}`);
+                return;
+            }
+
+            // Navigate to first matching screen
+            await this.navigateToTemplate(screens[0].uuid, newWindow);
+        } catch (error) {
+            console.error('Error navigating by tag:', error);
+        }
+    }
+
+    /**
      * Get screen information by UUID
      */
     getScreen(uuid) {

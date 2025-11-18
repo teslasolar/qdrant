@@ -1,0 +1,62 @@
+{
+  "uuid": "med-comp-patient-001",
+  "type": "component",
+  "category": "medical",
+  "metadata": {
+    "name": "Patient Info Card",
+    "description": "Displays patient demographics and study information",
+    "version": "1.0.0",
+    "tags": ["medical", "patient", "demographics"]
+  },
+  "template": {
+    "html": "<div class=\"patient-info-card\">\n  <div class=\"card-header\">\n    <div class=\"patient-icon\">👤</div>\n    <div class=\"patient-name\" id=\"{{id}}-name\">{{patientName}}</div>\n  </div>\n  <div class=\"card-body\">\n    <div class=\"info-grid\">\n      <div class=\"info-item\">\n        <div class=\"info-label\">Patient ID:</div>\n        <div class=\"info-value\" id=\"{{id}}-pid\">{{patientID}}</div>\n      </div>\n      <div class=\"info-item\">\n        <div class=\"info-label\">Age/Sex:</div>\n        <div class=\"info-value\" id=\"{{id}}-demographics\">{{age}}/{{sex}}</div>\n      </div>\n      <div class=\"info-item\">\n        <div class=\"info-label\">Study Date:</div>\n        <div class=\"info-value\" id=\"{{id}}-date\">{{studyDate}}</div>\n      </div>\n      <div class=\"info-item\">\n        <div class=\"info-label\">Modality:</div>\n        <div class=\"info-value\" id=\"{{id}}-modality\">{{modality}}</div>\n      </div>\n      <div class=\"info-item\" style=\"grid-column: 1 / -1;\">\n        <div class=\"info-label\">Study Description:</div>\n        <div class=\"info-value\" id=\"{{id}}-description\">{{studyDescription}}</div>\n      </div>\n    </div>\n  </div>\n</div>",
+    "css": ".patient-info-card {\n  background: #1a1a2e;\n  border: 2px solid #00ccff;\n  border-radius: 8px;\n  overflow: hidden;\n}\n.card-header {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 15px;\n  background: linear-gradient(135deg, #1a1a2e, #16213e);\n  border-bottom: 2px solid #00ccff;\n}\n.patient-icon {\n  font-size: 2em;\n}\n.patient-name {\n  font-size: 1.3em;\n  font-weight: bold;\n  color: #00ff88;\n}\n.card-body {\n  padding: 15px;\n}\n.info-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 12px;\n}\n.info-item {\n  display: flex;\n  flex-direction: column;\n  gap: 5px;\n}\n.info-label {\n  font-size: 0.75em;\n  color: #888;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n}\n.info-value {\n  font-size: 1em;\n  color: #00ccff;\n  font-weight: bold;\n}",
+    "js": "function initPatientInfoCard(element, config) {\n  function updatePatientInfo(data) {\n    if (data.patientName) {\n      element.querySelector('#' + config.id + '-name').textContent = data.patientName;\n    }\n    if (data.patientID) {\n      element.querySelector('#' + config.id + '-pid').textContent = data.patientID;\n    }\n    if (data.age && data.sex) {\n      element.querySelector('#' + config.id + '-demographics').textContent = data.age + '/' + data.sex;\n    }\n    if (data.studyDate) {\n      element.querySelector('#' + config.id + '-date').textContent = data.studyDate;\n    }\n    if (data.modality) {\n      element.querySelector('#' + config.id + '-modality').textContent = data.modality;\n    }\n    if (data.studyDescription) {\n      element.querySelector('#' + config.id + '-description').textContent = data.studyDescription;\n    }\n  }\n  \n  return { updatePatientInfo };\n}"
+  },
+  "properties": [
+    {
+      "name": "patientName",
+      "type": "string",
+      "default": "Unknown Patient"
+    },
+    {
+      "name": "patientID",
+      "type": "string",
+      "default": "N/A"
+    },
+    {
+      "name": "age",
+      "type": "number",
+      "default": null
+    },
+    {
+      "name": "sex",
+      "type": "string",
+      "default": "U"
+    },
+    {
+      "name": "studyDate",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "modality",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "studyDescription",
+      "type": "string",
+      "default": ""
+    }
+  ],
+  "bindings": {
+    "tags": [
+      {
+        "name": "patientDataTag",
+        "property": "patientData",
+        "callback": "updatePatientInfo"
+      }
+    ]
+  }
+}

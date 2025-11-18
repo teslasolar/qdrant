@@ -1,0 +1,337 @@
+# DICOM C-STORE Ingestion Workflow
+# Receives DICOM instances via DICOM C-STORE protocol (SCP role)
+
+workflow:
+  id: c-store-ingestion-001
+  name: DICOM C-STORE Receiver
+  version: "1.0.0"
+  isa_level: L3_MES
+  category: ingestion
+  priority: high
+
+metadata:
+  description: DICOM Storage SCP for receiving studies from modalities and PACS
+  author: Medical Imaging Team
+  created: 2025-11-17
+  updated: 2025-11-17
+  tags:
+    - c-store
+    - scp
+    - ingestion
+    - dicom
+    - modality
+
+# Source Configuration
+source:
+  type: DICOM_SCP
+  protocol: DICOM_C_STORE
+
+  # SCP Configuration
+  scp:
+    ae_title: CHAZON_MES
+    host: 0.0.0.0  # Listen on all interfaces
+    port: 11112
+    max_pdu_size: 16384
+    timeout: 60
+
+  # Accepted Transfer Syntaxes
+  transfer_syntaxes:
+    - ImplicitVRLittleEndian
+    - ExplicitVRLittleEndian
+    - ExplicitVRBigEndian
+    - JPEG2000Lossless
+    - JPEG2000
+    - JPEGBaseline1
+    - JPEGExtended24
+    - JPEGLossless
+    - JPEGLSLossless
+    - JPEGLSNearLossless
+    - RLELossless
+
+  # Accepted SOP Classes
+  sop_classes:
+    - CTImageStorage
+    - MRImageStorage
+    - ComputedRadiographyImageStorage
+    - DigitalXRayImageStorage
+    - MammographyImageStorage
+    - UltrasoundImageStorage
+    - PETImageStorage
+    - NuclearMedicineImageStorage
+    - SecondaryCaptureImageStorage
+    - GrayscaleSoftcopyPresentationStateStorage
+
+  # Association Configuration
+  association:
+    max_concurrent: 10
+    timeout: 300
+    require_calling_ae_validation: false
+    allowed_calling_ae:
+      - CT_SCANNER_01
+      - MR_SCANNER_01
+      - CR_SYSTEM_01
+      - "*"  # Allow all
+
+  # Storage Configuration
+  storage:
+    temporary_path: /data/medical/c-store/temp/
+    final_path: /data/medical/c-store/received/
+    organize_by: study
+    folder_pattern: "{StudyDate}/{PatientID}/{StudyInstanceUID}"
+
+# Workflow Steps
+steps:
+  - id: receive-association
+    name: Accept DICOM Association
+    type: dicom_association
+    action: accept_association
+    config:
+      validate_calling_ae: false
+      log_association: true
+      negotiate_transfer_syntax: true
+      max_operations_invoked: 5
+    on_success: receive-instance
+    on_failure: reject-association
+
+  - id: receive-instance
+    name: Receive C-STORE Instance
+    type: c-store-scp
+    action: receive_dicom_instance
+    config:
+      store_temporary: true
+      verify_during_transfer: true
+      send_status_on_error: true
+      max_receive_time: 120  # seconds
+    on_success: validate-instance
+    on_failure: send-error-status
+
+  - id: validate-instance
+    name: Validate Received Instance
+    type: validation
+    action: validate_dicom_instance
+    config:
+      check_header: true
+      check_transfer_syntax: true
+      check_sop_class: true
+      check_required_tags: true
+      required_tags:
+        - SOPInstanceUID
+        - StudyInstanceUID
+        - SeriesInstanceUID
+        - PatientID
+        - Modality
+      reject_invalid: true
+    on_success: extract-metadata
+    on_failure: quarantine
+
+  - id: extract-metadata
+    name: Extract Instance Metadata
+    type: extraction
+    action: extract_dicom_tags
+    config:
+      extract_all_required: true
+      extract_study_info: true
+      extract_series_info: true
+      extract_image_info: true
+      cache_metadata: true
+    on_success: check-duplicate
+    on_failure: quarantine
+
+  - id: check-duplicate
+    name: Check for Duplicate Instance
+    type: deduplication
+    action: check_existing_sop_instance
+    config:
+      check_by:
+        - SOPInstanceUID
+      database: qdrant
+      collection: medical_instances
+      action_on_duplicate: replace  # or skip
+    on_success: store-instance
+    on_duplicate: handle-duplicate
+    on_failure: log-error
+
+  - id: store-instance
+    name: Store Instance to Final Location
+    type: storage
+    action: store_dicom_file
+    config:
+      destination: /data/medical/c-store/received/
+      organize_by_study: true
+      calculate_checksum: true
+      verify_after_write: true
+      compression: none
+    on_success: update-study-tracking
+    on_failure: quarantine
+
+  - id: update-study-tracking
+    name: Update Study Tracking
+    type: tracking
+    action: update_study_status
+    config:
+      database: qdrant
+      collection: medical_studies
+      increment_instance_count: true
+      update_received_timestamp: true
+      check_completeness: true
+    on_success: check-study-complete
+    on_failure: log-error
+
+  - id: check-study-complete
+    name: Check if Study is Complete
+    type: validation
+    action: check_study_completeness
+    config:
+      compare_expected_instances: true
+      timeout: 300  # seconds
+      allow_incomplete: true
+      trigger_on_complete: true
+    on_success: route-complete-study
+    on_incomplete: wait-for-more
+    on_failure: log-error
+
+  - id: route-complete-study
+    name: Route Complete Study
+    type: routing
+    action: route_to_workflow
+    config:
+      next_workflow: processing-pipeline
+      routing_rules: /workflows/routing/study-routing-rules.yaml
+      notify_mqtt: true
+      mqtt_topic: chazon/os/medical/workflow/study-received-complete
+    on_success: send-success-status
+    on_failure: log-error
+
+  - id: send-success-status
+    name: Send C-STORE Success
+    type: dicom_response
+    action: send_c_store_response
+    config:
+      status: 0x0000  # Success
+      error_comment: null
+    on_success: complete
+    on_failure: log-error
+
+# Error Handling
+error_handling:
+  reject-association:
+    reason: "Association rejected"
+    result: 1  # Rejected permanent
+    source: 1  # Service user
+
+  send-error-status:
+    status: 0xA700  # Out of resources
+    log_error: true
+    close_association: false
+
+  handle-duplicate:
+    action: replace_or_skip
+    log_level: WARNING
+    send_status: 0x0000  # Success anyway
+
+  quarantine:
+    enabled: true
+    path: /data/medical/quarantine/c-store/
+    retention_days: 30
+    notify: true
+    categorize_by_error: true
+
+  wait-for-more:
+    action: monitor_and_wait
+    timeout: 600  # seconds
+    check_interval: 10
+
+# Performance Configuration
+performance:
+  max_concurrent_associations: 10
+  max_concurrent_stores: 20
+  buffer_size: 65536
+  disk_io_threads: 5
+  network_threads: 5
+  queue_size: 1000
+
+# Monitoring and Metrics
+monitoring:
+  tags:
+    - CSTORE_ASSOCIATIONS_TOTAL
+    - CSTORE_INSTANCES_RECEIVED
+    - CSTORE_STUDIES_COMPLETED
+    - CSTORE_ERRORS
+    - CSTORE_AVG_TRANSFER_TIME
+    - CSTORE_BYTES_RECEIVED
+
+  mqtt:
+    publish_events: true
+    topics:
+      - chazon/os/medical/cstore/association
+      - chazon/os/medical/cstore/instance-received
+      - chazon/os/medical/cstore/study-complete
+      - chazon/os/medical/cstore/error
+
+  modbus:
+    holding_registers:
+      - address: 40120
+        name: CSTORE_INSTANCES_RECEIVED
+      - address: 40121
+        name: CSTORE_ASSOCIATIONS_ACTIVE
+      - address: 40122
+        name: CSTORE_AVG_TRANSFER_TIME
+
+# Network Configuration
+network:
+  keep_alive: true
+  tcp_no_delay: true
+  receive_buffer_size: 131072
+  send_buffer_size: 131072
+  connection_timeout: 60
+  idle_timeout: 300
+
+# Security
+security:
+  tls:
+    enabled: false  # Enable for DICOM TLS
+    cert_path: /etc/medical/certs/server.crt
+    key_path: /etc/medical/certs/server.key
+    verify_client: false
+  firewall:
+    allowed_ips:
+      - 10.0.0.0/8
+      - 172.16.0.0/12
+      - 192.168.0.0/16
+    blocked_ips: []
+  rate_limiting:
+    enabled: true
+    max_associations_per_minute: 60
+    max_instances_per_minute: 1000
+
+# High Availability
+high_availability:
+  enabled: false
+  failover:
+    secondary_host: chazon-mes-02
+    heartbeat_interval: 5
+    failover_timeout: 30
+  load_balancing:
+    enabled: false
+    algorithm: round_robin
+
+# Logging
+logging:
+  level: INFO
+  path: /var/log/medical/workflows/c-store-ingestion.log
+  rotation: daily
+  retention_days: 90
+  include_dicom_tags: true
+  log_associations: true
+  log_pdvs: false  # Set to true for deep debugging
+
+# Service Configuration
+service:
+  auto_start: true
+  restart_on_failure: true
+  max_restart_attempts: 5
+  restart_delay: 10
+  health_check:
+    enabled: true
+    interval: 30
+    endpoint: /health/c-store

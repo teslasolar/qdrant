@@ -1,0 +1,417 @@
+# CHAZON Medical Imaging SCADA - Configuration
+# Environment: demo | dev | prod
+
+# Current Environment (change this to switch modes)
+environment: demo
+
+# Environment-specific configurations
+environments:
+  demo:
+    name: "Demo Mode - lablab.ai"
+    description: "Fully functional demo with mock data and sample images"
+
+    # Feature flags
+    features:
+      use_mock_ai: true              # Use mock AI responses (fast, no GPU needed)
+      use_sample_data: true           # Auto-load sample images
+      enable_downloads: false         # Disable large dataset downloads
+      enable_user_uploads: true       # Allow drag-and-drop uploads
+      enable_enterprise: true         # Show Enterprise portal
+      enable_qdrant: false            # Use mock vector search (no Qdrant needed)
+      enable_dicom_server: false      # No real DICOM server needed
+      show_watermark: true            # "DEMO MODE" watermark on screens
+      auto_populate_examples: true    # Pre-load example images
+
+    # API endpoints (mock for demo)
+    api:
+      base_url: "/api/mock"
+      qdrant_url: "http://localhost:6333"  # Not used in demo
+      dicom_server: null
+      mqtt_broker: null
+      opcua_server: null
+
+    # Data limits
+    limits:
+      max_upload_size_mb: 10
+      max_batch_files: 5
+      session_timeout_minutes: 30
+
+    # Performance
+    performance:
+      enable_gpu: false
+      model_precision: "float32"      # or "int8" for quantized
+      max_concurrent_jobs: 2
+      cache_results: true
+
+    # Sample data paths
+    sample_data:
+      xray: "/examples/xray/chest_sample.jpg"
+      ct: "/examples/ct/lung_sample.dcm"
+      mri: "/examples/mri/brain_sample.nii.gz"
+
+  dev:
+    name: "Development Mode"
+    description: "Local development with real AI models"
+
+    features:
+      use_mock_ai: false              # Use real AI models
+      use_sample_data: true
+      enable_downloads: true
+      enable_user_uploads: true
+      enable_enterprise: true
+      enable_qdrant: true             # Connect to local Qdrant
+      enable_dicom_server: true       # Connect to local Orthanc
+      show_watermark: false
+      auto_populate_examples: false
+
+    api:
+      base_url: "/api/v1"
+      qdrant_url: "http://localhost:6333"
+      dicom_server: "http://localhost:8042"  # Orthanc
+      mqtt_broker: "mqtt://localhost:1883"
+      opcua_server: "opc.tcp://localhost:4840"
+
+    limits:
+      max_upload_size_mb: 50
+      max_batch_files: 20
+      session_timeout_minutes: 120
+
+    performance:
+      enable_gpu: true                # Use GPU if available
+      model_precision: "float32"
+      max_concurrent_jobs: 10
+      cache_results: true
+
+    sample_data:
+      xray: "/examples/xray/"
+      ct: "/examples/ct/"
+      mri: "/examples/mri/"
+
+  prod:
+    name: "Production Mode"
+    description: "Production deployment with full features"
+
+    features:
+      use_mock_ai: false
+      use_sample_data: false          # No sample data in production
+      enable_downloads: false         # Don't allow dataset downloads
+      enable_user_uploads: true
+      enable_enterprise: true
+      enable_qdrant: true
+      enable_dicom_server: true
+      show_watermark: false
+      auto_populate_examples: false
+
+    api:
+      base_url: "/api/v1"
+      qdrant_url: "${QDRANT_URL}"     # From environment variable
+      dicom_server: "${DICOM_SERVER_URL}"
+      mqtt_broker: "${MQTT_BROKER_URL}"
+      opcua_server: "${OPCUA_SERVER_URL}"
+
+    limits:
+      max_upload_size_mb: 100
+      max_batch_files: 100
+      session_timeout_minutes: 240
+
+    performance:
+      enable_gpu: true
+      model_precision: "float16"      # Mixed precision for speed
+      max_concurrent_jobs: 50
+      cache_results: true
+
+    sample_data:
+      xray: null
+      ct: null
+      mri: null
+
+# Application settings (common across all environments)
+application:
+  name: "CHAZON Medical Imaging SCADA"
+  version: "1.0.0"
+  description: "ISA-95 Medical Imaging Virtual Factory"
+
+  # ISA-95 Configuration
+  isa95:
+    site: "Virtual Factory"
+    area: "Medical Imaging"
+    process_cell: "AI Analysis"
+    levels:
+      l0: "Physical Devices"
+      l1: "Basic Control"
+      l2: "Supervisory Control"
+      l3: "MES Operations"
+      l4: "Business Planning"
+
+  # Security
+  security:
+    enable_auth: false                # Enable in production
+    enable_https: false               # Enable in production
+    enable_csrf: false
+    session_secret: "change-me-in-production"
+    allowed_origins: ["*"]            # Restrict in production
+
+  # Compliance
+  compliance:
+    hipaa_mode: true                  # Always de-identified data
+    fda_21cfr_part11: false           # Enable for clinical use
+    audit_logging: false              # Enable in production
+
+  # Logging
+  logging:
+    level: "info"                     # debug | info | warn | error
+    console: true
+    file: false
+    path: "./logs/chazon.log"
+
+# AI/ML Model Configuration
+models:
+  # Segmentation models
+  segmentation:
+    default: "unet"
+    available:
+      - name: "unet"
+        description: "U-Net for fast organ segmentation"
+        organs: ["liver", "kidney", "lungs", "heart", "brain"]
+        precision: "float32"
+      - name: "maskrcnn"
+        description: "Mask R-CNN for instance segmentation"
+        organs: ["tumor", "lesion"]
+        precision: "float32"
+      - name: "deeplabv3"
+        description: "DeepLab v3+ for high-resolution segmentation"
+        organs: ["liver", "pancreas", "spleen"]
+        precision: "float32"
+
+  # Classification models
+  classification:
+    default: "biomedclip"
+    available:
+      - name: "biomedclip"
+        description: "BiomedCLIP 768-dim embeddings"
+        dimensions: 768
+        precision: "float32"
+      - name: "resnet50"
+        description: "ResNet-50 ImageNet"
+        classes: 1000
+        precision: "float32"
+      - name: "densenet"
+        description: "DenseNet medical imaging"
+        classes: 14
+        precision: "float32"
+
+  # Detection models
+  detection:
+    default: "yolov8"
+    available:
+      - name: "yolov8"
+        description: "YOLOv8 real-time detection"
+        targets: ["nodule", "lesion", "tumor", "fracture"]
+        precision: "float32"
+      - name: "fasterrcnn"
+        description: "Faster R-CNN high accuracy"
+        targets: ["nodule", "tumor"]
+        precision: "float32"
+
+  # AlF-DETECT
+  alf_detect:
+    enabled: true
+    thresholds:
+      alzheimers: 0.7
+      autism: 0.65
+    brain_regions:
+      - hippocampus
+      - cortex
+      - cerebellum
+      - white_matter
+
+# Data Sources
+data_sources:
+  # Example datasets
+  examples:
+    enabled: true
+    path: "/examples/"
+    auto_index: true
+
+  # User uploads
+  uploads:
+    enabled: true
+    path: "/uploads/"
+    allowed_formats: ["dcm", "nii", "nii.gz", "jpg", "png", "h5"]
+    max_file_size_mb: 50
+
+  # PACS integration (future)
+  pacs:
+    enabled: false
+    aet: "CHAZON"
+    port: 11112
+
+# Vector Database (Qdrant)
+qdrant:
+  enabled: false                      # Set by environment
+  url: "http://localhost:6333"
+  collections:
+    medical_images_xray:
+      dimension: 768
+      distance: "Cosine"
+    medical_images_ct:
+      dimension: 768
+      distance: "Cosine"
+    medical_images_mri:
+      dimension: 768
+      distance: "Cosine"
+
+# Standards Framework
+standards:
+  packml:
+    enabled: true
+    initial_state: "Idle"
+
+  isa88:
+    enabled: true
+    batch_control: true
+
+  isa95:
+    enabled: true
+    levels: ["L0", "L1", "L2", "L3", "L4"]
+
+  isa101:
+    enabled: true
+    theme: "cream_purple"
+    alarm_management: true
+
+  mqtt:
+    enabled: false
+    broker: "localhost"
+    port: 1883
+    topics:
+      medical: "medical/#"
+      alarms: "alarms/#"
+      ai_results: "ai/+/results"
+
+  opcua:
+    enabled: false
+    endpoint: "opc.tcp://localhost:4840"
+    security_mode: "None"
+
+# UI Configuration
+ui:
+  # Theme
+  theme:
+    name: "ISA-101 Cream & Purple"
+    config_file: "/theme.yaml"
+
+  # Navigation
+  navigation:
+    default_page: "/screens/frontend/index.html"
+    enable_breadcrumbs: true
+    enable_sidebar: true
+
+  # Widgets
+  widgets:
+    enable_tooltips: true
+    enable_notifications: true
+    toast_duration_ms: 3000
+
+  # File size enforcement
+  file_limits:
+    max_html_tokens: 250
+    max_html_lines: 130
+    enforce_external_css: true
+    enforce_external_js: true
+
+# Mock Data Configuration (for demo mode)
+mock_data:
+  # AI responses
+  ai:
+    segmentation:
+      processing_time_ms: 500
+      confidence_min: 0.85
+      confidence_max: 0.98
+
+    detection:
+      processing_time_ms: 300
+      detections_min: 1
+      detections_max: 5
+      confidence_min: 0.80
+      confidence_max: 0.95
+
+    classification:
+      processing_time_ms: 200
+      confidence_min: 0.75
+      confidence_max: 0.99
+
+    alf_detect:
+      processing_time_ms: 1000
+      alzheimers_probability: 0.72
+      autism_probability: 0.45
+
+  # Vector search
+  vector_search:
+    processing_time_ms: 150
+    results_count: 10
+    similarity_min: 0.75
+    similarity_max: 0.99
+
+  # Sample images (pre-loaded)
+  sample_images:
+    - id: "xray_chest_001"
+      path: "/examples/xray/chest_sample.jpg"
+      modality: "X-Ray"
+      description: "Chest X-ray - Normal"
+    - id: "ct_lung_001"
+      path: "/examples/ct/lung_sample.dcm"
+      modality: "CT"
+      description: "Lung CT - Nodule present"
+    - id: "mri_brain_001"
+      path: "/examples/mri/brain_sample.nii.gz"
+      modality: "MRI"
+      description: "Brain MRI - T1 weighted"
+
+# Development tools
+dev_tools:
+  enable_hot_reload: true
+  enable_source_maps: true
+  enable_debug_panel: false
+  mock_latency_ms: 200              # Simulate network latency
+
+# Database Configuration (SQLite)
+database:
+  enabled: true                       # Use SQLite databases instead of JSON files
+  path: "database/chazon.db"
+  use_in_browser: true                # Load database in browser (sql.js)
+
+  # Performance
+  cache_size_mb: 64
+  mmap_size_mb: 256
+  journal_mode: "WAL"
+
+  # Tables to use from database (set false to use JSON fallback)
+  tables:
+    tags: true                        # Use tags table instead of tag.json files
+    samples: true                     # Use samples table
+    standards: true                   # Use standards table
+    models: true                      # Use models table
+    mock_data: true                   # Use mock_responses table for demo
+
+  # File size reduction estimate
+  # Before: ~100+ JSON files
+  # After: 1 SQLite database (~500KB-1MB)
+  # Reduction: ~90% fewer files, ~50% smaller size
+
+# Deployment
+deployment:
+  port: 8000
+  host: "0.0.0.0"
+  workers: 4
+  cors_enabled: true
+  static_files: "/"
+
+# lablab.ai specific settings
+lablab:
+  hackathon: true
+  demo_mode: true
+  show_banner: true
+  banner_text: "Built for lablab.ai Hackathon"
+  contact_email: "team@chazon.ai"
+  github_repo: "https://github.com/teslasolar/qdrant"
