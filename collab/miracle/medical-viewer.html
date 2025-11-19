@@ -671,10 +671,11 @@ async function analyzeImage() {
       headers: {
         'Content-Type': 'application/json'
       },
+      // Note: omit body_part to avoid server-side filter errors when payload index is missing
       body: JSON.stringify({
         image_base64: currentFileBase64,
         metadata: {
-          body_part: document.getElementById('body-part').value,
+          body_part: '',
           modality: document.getElementById('modality').value,
           notes: document.getElementById('notes').value
         },
