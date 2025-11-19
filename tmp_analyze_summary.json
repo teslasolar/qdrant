@@ -1,0 +1,52 @@
+﻿[
+    {
+        "index":  {
+
+                  },
+        "patient_id":  "UNKNOWN",
+        "diagnosis":  "",
+        "body_part":  "CHEST",
+        "modality":  "XRAY",
+        "score":  99.74
+    },
+    {
+        "index":  {
+
+                  },
+        "patient_id":  "TEST_0001",
+        "diagnosis":  "Normal",
+        "body_part":  "CHEST",
+        "modality":  "CR",
+        "score":  99.74
+    },
+    {
+        "index":  {
+
+                  },
+        "patient_id":  "TEST_0002",
+        "diagnosis":  "Normal",
+        "body_part":  "CHEST",
+        "modality":  "CR",
+        "score":  99.73
+    },
+    {
+        "index":  {
+
+                  },
+        "patient_id":  "UNKNOWN",
+        "diagnosis":  "",
+        "body_part":  "CHEST",
+        "modality":  "XRAY",
+        "score":  99.73
+    },
+    {
+        "index":  {
+
+                  },
+        "patient_id":  "TEST_0003",
+        "diagnosis":  "Normal",
+        "body_part":  "CHEST",
+        "modality":  "CR",
+        "score":  99.73
+    }
+]

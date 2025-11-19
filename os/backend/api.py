@@ -13,6 +13,9 @@ import base64
 import uuid
 from datetime import datetime
 from dotenv import load_dotenv
+import json
+import tempfile
+import requests
 
 # Qdrant client
 from qdrant_client import QdrantClient
@@ -137,6 +140,168 @@ async def create_collection(name: str, dimension: int = 512):
             vectors_config=VectorParams(size=dimension, distance=Distance.COSINE)
         )
         return {"collection": name, "dimension": dimension, "created": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/ai/case-understand")
+async def ai_case_understand(request: MedicalImageRequest):
+    """Lightweight adapter to produce a structured case understanding output.
+
+    This will call an external Gemini-style API when `GEMINI_API_KEY` is set.
+    If not available, it falls back to a simple heuristic extractor useful for
+    prototyping the Opus workflow and hackathon submission.
+    """
+    try:
+        # Basic image processing for heuristic extraction
+        image_array = process_medical_image(request.image_base64)
+
+        # Heuristic features
+        mean_intensity = float(image_array.mean())
+        std_intensity = float(image_array.std())
+
+        # Default structured output (heuristic)
+        finding = "Normal"
+        severity = "low"
+        localization = "unspecified"
+        confidence = 0.6
+        rationale = "heuristic based on image intensity and histogram"
+
+        if mean_intensity > 140 or std_intensity > 60:
+            finding = "Possible consolidation/effusion"
+            severity = "medium" if std_intensity > 60 else "low"
+            localization = "lower lobes"
+            confidence = 0.75
+
+        # If a real Gemini API key is available, provide a hook (stubbed call)
+        gemini_key = os.getenv("GEMINI_API_KEY")
+        if gemini_key:
+            # Construct endpoint URL: prefer explicit GEMINI_API_URL, else build from GEMINI_MODEL
+            model_name = os.getenv("GEMINI_MODEL", "gemini-1.0")
+            gemini_url = os.getenv("GEMINI_API_URL") or f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generate"
+            try:
+                # Minimal multimodal request wrapper for Generative Language API
+                # NOTE: adapt the request body to match the exact API schema you use.
+                payload = {
+                    "prompt": {
+                        "text": "Extract finding, severity (low/medium/high), localization, confidence (0-1) and a short rationale from the provided image. Return JSON-like keys: finding, severity, localization, confidence, rationale."
+                    },
+                    # Send image as an 'image' field if supported by your chosen API schema.
+                    "image": request.image_base64,
+                    "temperature": 0.0,
+                    "maxOutputTokens": 256
+                }
+                headers = {"Authorization": f"Bearer {gemini_key}", "Content-Type": "application/json"}
+                r = requests.post(gemini_url, json=payload, headers=headers, timeout=30)
+                if r.ok:
+                    resp = r.json()
+                    # Attempt to extract a JSON-like structured response. The exact path
+                    # depends on the model response format; this is a permissive attempt.
+                    out = {}
+                    if isinstance(resp, dict):
+                        # Common patterns: 'candidates', 'output', 'content'
+                        out = resp.get('output') or resp.get('candidates', [{}])[0].get('content') or resp.get('content') or {}
+                        if isinstance(out, str):
+                            # Try to parse JSON string
+                            try:
+                                out = json.loads(out)
+                            except Exception:
+                                out = {"rationale": out}
+                    finding = out.get("finding", finding)
+                    severity = out.get("severity", severity)
+                    localization = out.get("localization", localization)
+                    confidence = float(out.get("confidence", confidence))
+                    rationale = out.get("rationale", rationale)
+            except Exception:
+                # fall back to heuristic on any error
+                pass
+
+        return {
+            "finding": finding,
+            "severity": severity,
+            "localization": localization,
+            "confidence": confidence,
+            "rationale": rationale
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/ai/rerank")
+async def ai_rerank(payload: Dict[str, Any]):
+    """Rerank candidate results using Gemini if available; otherwise return
+    results sorted by score descending (simple fallback).
+
+    Expected payload: {"candidates": [{"id":..., "score":..., "payload": {...}}, ...], "prompt": "optional text prompt"}
+    """
+    try:
+        candidates = payload.get("candidates", [])
+        prompt = payload.get("prompt", "Rank these candidates by relevance to the query image")
+
+        gemini_key = os.getenv("GEMINI_API_KEY")
+        if gemini_key:
+            # For the hackathon minimum, we keep this as a stub; you can wire
+            # real Gemini calls here. For now, return original order.
+            return {"results": candidates}
+
+        # Fallback: sort by score
+        sorted_candidates = sorted(candidates, key=lambda x: x.get("score", 0), reverse=True)
+        return {"results": sorted_candidates}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/ai/analyze_and_audit")
+async def analyze_and_audit(request: MedicalImageRequest):
+    """Run case understanding, similarity search, and generate a compact audit artifact.
+
+    Returns: {similar_cases, audit_path}
+    """
+    try:
+        # 1) Case understanding
+        case_understanding = await ai_case_understand(request)
+
+        # 2) Similarity search (reuse existing analyze logic)
+        # Build a new MedicalImageRequest-like object for analyze
+        analyze_req = MedicalImageRequest(image_base64=request.image_base64, metadata=request.metadata, collection=request.collection)
+        analyze_resp = await analyze_medical_image(analyze_req)
+
+        # 3) Decision rules (simple example)
+        top_score = analyze_resp.get("similar_cases", [{}])[0].get("score", 0) if analyze_resp.get("similar_cases") else 0
+        rules_fired = []
+        final_decision = "auto_accept"
+        if case_understanding.get("confidence", 0) < 0.6:
+            rules_fired.append({"rule": "low_confidence", "action": "human_review"})
+            final_decision = "human_review"
+        if top_score < 0.7:
+            rules_fired.append({"rule": "low_similarity", "action": "human_review"})
+            final_decision = "human_review"
+
+        # 4) Build audit artifact
+        artifact = {
+            "id": str(uuid.uuid4()),
+            "timestamp": datetime.now().isoformat(),
+            "input_metadata": request.metadata,
+            "case_understanding": case_understanding,
+            "similar_cases": analyze_resp.get("similar_cases", []),
+            "rules_fired": rules_fired,
+            "final_decision": final_decision
+        }
+
+        out_dir = Path(tempfile.gettempdir()) / "qdrant_audit_artifacts"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = out_dir / f"audit_{artifact['id']}.json"
+        out_path.write_text(json.dumps(artifact, indent=2), encoding="utf-8")
+
+        # Return the artifact inline so the frontend can download it immediately
+        return {"similar_cases": analyze_resp.get("similar_cases", []), "audit_path": str(out_path), "audit": artifact}
+
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

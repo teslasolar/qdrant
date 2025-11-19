@@ -1,0 +1,50 @@
+{
+  "name": "Medical Intake → Understand → Decide → Review → Deliver",
+  "description": "Minimal Opus workflow for the hackathon: intake image, call AI (Gemini adapter), run similarity search, apply rules, agentic check, human review gateway, and delivery + audit artifact.",
+  "nodes": [
+    {
+      "id": "intake",
+      "type": "FileInput",
+      "config": { "source": "upload" }
+    },
+    {
+      "id": "ai_understand",
+      "type": "HTTPRequest",
+      "config": { "url": "${{API_URL}}/ai/case-understand", "method": "POST" }
+    },
+    {
+      "id": "qdrant_search",
+      "type": "HTTPRequest",
+      "config": { "url": "${{API_URL}}/medical/analyze", "method": "POST" }
+    },
+    {
+      "id": "decision",
+      "type": "Code",
+      "config": { "language": "python", "snippet": "# simple rules: if confidence<0.6 or top_score<0.7 => human_review" }
+    },
+    {
+      "id": "agentic_review",
+      "type": "HTTPRequest",
+      "config": { "url": "${{API_URL}}/ai/rerank", "method": "POST" }
+    },
+    {
+      "id": "human_review",
+      "type": "HumanReview",
+      "config": { "notify": "email", "review_template": "Please review flagged case" }
+    },
+    {
+      "id": "audit_and_deliver",
+      "type": "Code",
+      "config": { "language": "python", "snippet": "# generate artifact and deliver (e.g., write JSON and update Google Sheet)" }
+    }
+  ],
+  "edges": [
+    ["intake", "ai_understand"],
+    ["ai_understand", "qdrant_search"],
+    ["qdrant_search", "decision"],
+    ["decision", "agentic_review"],
+    ["agentic_review", "human_review"],
+    ["human_review", "audit_and_deliver"],
+    ["agentic_review", "audit_and_deliver"]
+  ]
+}

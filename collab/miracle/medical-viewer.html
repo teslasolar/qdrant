@@ -486,6 +486,14 @@
           <option value="US">Ultrasound</option>
         </select>
       </div>
+  
+      <div class="form-group">
+        <label class="form-label">AI Options</label>
+        <div style="display:flex;gap:12px;align-items:center">
+          <label style="display:flex;align-items:center;gap:8px"><input id="use_gemini" type="checkbox"> Use Gemini (case understanding)</label>
+          <span id="gemini-badge" style="display:none;padding:6px 10px;border-radius:8px;background:#0ea5a0;color:#001018;font-weight:700;font-size:0.9em">Gemini</span>
+        </div>
+      </div>
 
       <div class="form-group">
         <label class="form-label">Notes (Optional)</label>
@@ -508,6 +516,18 @@
       </div>
 
       <div id="results-container"></div>
+  
+    <div id="gemini-panel" style="margin-top:18px;display:none;">
+      <h3 style="color:#c7f9f1;margin-bottom:8px">AI (Gemini) Understanding</h3>
+      <div id="gemini-output" style="background:rgba(0,0,0,0.35);padding:12px;border-radius:8px;border:1px solid #263238;color:#e6fffa">
+        <!-- populated by JS -->
+      </div>
+    </div>
+
+    <div style="margin-top:14px;display:flex;gap:8px;align-items:center">
+      <button id="audit-btn" class="btn" style="background:linear-gradient(135deg,#10b981,#059669);">Audit & Download</button>
+      <a id="audit-download" style="display:none;margin-left:8px;color:#94f6e6;font-weight:600" href="#">Download audit JSON</a>
+    </div>
 
       <div id="empty-state" class="empty-state">
         <div class="empty-icon">📋</div>
@@ -666,6 +686,45 @@ async function analyzeImage() {
   document.getElementById('empty-state').style.display = 'none';
 
   try {
+    const useGemini = document.getElementById('use_gemini')?.checked;
+
+    // If Gemini is enabled, call the adapter to get structured understanding
+    if (useGemini) {
+      try {
+        const resp1 = await fetch(`${API_URL}/ai/case-understand`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            image_base64: currentFileBase64,
+            metadata: { body_part: '', modality: document.getElementById('modality').value, notes: document.getElementById('notes').value },
+            collection: 'medical_images'
+          })
+        });
+
+        if (resp1.ok) {
+          const gemini = await resp1.json();
+          // Show panel
+          document.getElementById('gemini-panel').style.display = 'block';
+          document.getElementById('gemini-badge').style.display = 'inline-block';
+          const confVal = (typeof gemini.confidence === 'number') ? gemini.confidence.toFixed(2) : (gemini.confidence || 'N/A');
+          document.getElementById('gemini-output').innerHTML = `
+            <div><strong>Finding:</strong> ${gemini.finding || 'N/A'}</div>
+            <div><strong>Severity:</strong> ${gemini.severity || 'N/A'}</div>
+            <div><strong>Localization:</strong> ${gemini.localization || 'N/A'}</div>
+            <div><strong>Confidence:</strong> ${confVal}</div>
+            <div style="margin-top:8px"><strong>Rationale:</strong> ${gemini.rationale || ''}</div>
+          `;
+        }
+      } catch (gerr) {
+        console.error('Gemini call failed:', gerr);
+        document.getElementById('gemini-panel').style.display = 'none';
+        document.getElementById('gemini-badge').style.display = 'none';
+      }
+    } else {
+      document.getElementById('gemini-panel').style.display = 'none';
+      document.getElementById('gemini-badge').style.display = 'none';
+    }
+
     const response = await fetch(`${API_URL}/medical/analyze`, {
       method: 'POST',
       headers: {
@@ -692,6 +751,10 @@ async function analyzeImage() {
     // Display results
     displayResults(data.similar_cases);
 
+    // Clear previous audit download
+    document.getElementById('audit-download').style.display = 'none';
+    document.getElementById('audit-download').href = '#';
+
     // Reload statistics
     loadStatistics();
 
@@ -705,6 +768,39 @@ async function analyzeImage() {
     document.getElementById('loading').classList.remove('active');
   }
 }
+
+
+// Audit & download handler
+document.getElementById('audit-btn').addEventListener('click', async () => {
+  if (!currentFileBase64) { showToast('Please upload an image first', 'error'); return; }
+  document.getElementById('loading').classList.add('active');
+  try {
+    const resp = await fetch(`${API_URL}/ai/analyze_and_audit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image_base64: currentFileBase64, metadata: { body_part: '', modality: document.getElementById('modality').value, notes: document.getElementById('notes').value }, collection: 'medical_images' })
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const result = await resp.json();
+    // show results and prepare download
+    displayResults(result.similar_cases || []);
+    const audit = result.audit || null;
+    if (audit) {
+      const blob = new Blob([JSON.stringify(audit, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.getElementById('audit-download');
+      a.href = url;
+      a.download = `audit_${(audit.id||'result')}.json`;
+      a.style.display = 'inline-block';
+      showToast('Audit generated — click Download audit JSON', 'success');
+    }
+  } catch (e) {
+    console.error('Audit failed', e);
+    showToast('Audit failed: '+e.message, 'error');
+  } finally {
+    document.getElementById('loading').classList.remove('active');
+  }
+});
 
 // Display results
 function displayResults(cases) {

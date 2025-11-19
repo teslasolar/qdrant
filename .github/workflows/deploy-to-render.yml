@@ -1,0 +1,41 @@
+name: Trigger Render Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ feature/medical-vercel-docker ]
+
+permissions:
+  contents: read
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    name: Trigger Render service deploy (if configured)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check Render secrets
+        id: check_render
+        run: |
+          if [ -n "${{ secrets.RENDER_SERVICE_ID }}" ] && [ -n "${{ secrets.RENDER_API_KEY }}" ]; then
+            echo "render_present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "render_present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Trigger Render deploy
+        if: steps.check_render.outputs.render_present == 'true'
+        run: |
+          echo "Triggering Render deploy for service ${{ secrets.RENDER_SERVICE_ID }}"
+          curl -sS -X POST \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
+            -d '{}' | jq .
+
+      - name: Render deploy skipped
+        if: steps.check_render.outputs.render_present == 'false'
+        run: |
+          echo "RENDER_SERVICE_ID and/or RENDER_API_KEY are not configured as repository secrets. Skipping Render deploy."
