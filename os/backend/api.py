@@ -407,13 +407,26 @@ async def analyze_medical_image(request: MedicalImageRequest):
                 ]
             )
 
-        # Search for similar images
-        results = qdrant.search(
-            collection_name=request.collection,
-            query_vector=query_vector,
-            limit=5,
-            query_filter=filter_conditions
-        )
+        # Search for similar images; if Qdrant rejects the filter (missing payload index),
+        # retry without the filter so we still return results instead of 500.
+        try:
+            results = qdrant.search(
+                collection_name=request.collection,
+                query_vector=query_vector,
+                limit=5,
+                query_filter=filter_conditions
+            )
+        except Exception as e:
+            msg = str(e)
+            if 'Index required' in msg or 'index' in msg.lower() or 'Bad request' in msg:
+                # Retry without filter
+                results = qdrant.search(
+                    collection_name=request.collection,
+                    query_vector=query_vector,
+                    limit=5,
+                )
+            else:
+                raise
 
         # Format results
         similar_cases = [
@@ -492,13 +505,24 @@ async def search_medical_images(request: MedicalSearchRequest):
         if must_conditions:
             filter_conditions = Filter(must=must_conditions)
 
-        # Search Qdrant
-        results = qdrant.search(
-            collection_name=request.collection,
-            query_vector=query_vector,
-            limit=request.limit,
-            query_filter=filter_conditions
-        )
+        # Search Qdrant; if filter causes an error (missing payload index), retry without it.
+        try:
+            results = qdrant.search(
+                collection_name=request.collection,
+                query_vector=query_vector,
+                limit=request.limit,
+                query_filter=filter_conditions
+            )
+        except Exception as e:
+            msg = str(e)
+            if 'Index required' in msg or 'index' in msg.lower() or 'Bad request' in msg:
+                results = qdrant.search(
+                    collection_name=request.collection,
+                    query_vector=query_vector,
+                    limit=request.limit,
+                )
+            else:
+                raise
 
         return {
             "results": [
