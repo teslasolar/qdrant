@@ -2,7 +2,7 @@
 
 AI-powered medical imaging analysis with industrial automation (ISA-95/88) architecture.
 
-**Built for lablab.ai Hackathon** 🚀 | **Live:** https://teslasolar.github.io/qdrant/ | **License:** MIT
+**Built for lablab.ai Hackathon** 🚀 | **Live:** [https://teslasolar.github.io/qdrant/](https://raw.githack.com/teslasolar/qdrant/feature/medical-vercel-docker/collab/miracle/medical-viewer.html) | **License:** MIT
 
 ---
 
