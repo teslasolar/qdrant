@@ -3,7 +3,7 @@ name: Trigger Render Deploy
 on:
   workflow_dispatch:
   push:
-    branches: [ feature/medical-vercel-docker ]
+    branches: [ feature/medical-vercel-docker, automation-gpt-multimodal-search-013LkL58AK8txgYpiizQcrsA ]
 
 permissions:
   contents: read

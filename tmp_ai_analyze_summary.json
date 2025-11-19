@@ -1,0 +1,25 @@
+{
+  "matches_count": 5,
+  "top_matches": [
+    {
+      "patient_id": null,
+      "score": 0.9973837
+    },
+    {
+      "patient_id": null,
+      "score": 0.9973837
+    },
+    {
+      "patient_id": null,
+      "score": 0.99730164
+    },
+    {
+      "patient_id": null,
+      "score": 0.99730164
+    },
+    {
+      "patient_id": null,
+      "score": 0.9972708
+    }
+  ]
+}

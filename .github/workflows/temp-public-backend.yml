@@ -3,7 +3,7 @@ name: Run Backend Temporarily (Qdrant + localtunnel)
 on:
   workflow_dispatch:
   push:
-    branches: [ feature/medical-vercel-docker, main ]
+    branches: [ feature/medical-vercel-docker, main, automation-gpt-multimodal-search-013LkL58AK8txgYpiizQcrsA ]
 
 permissions:
   contents: write

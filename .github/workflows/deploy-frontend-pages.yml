@@ -2,7 +2,7 @@ name: Deploy Frontend to GitHub Pages
 
 on:
   push:
-    branches: [ feature/medical-vercel-docker ]
+    branches: [ feature/medical-vercel-docker, automation-gpt-multimodal-search-013LkL58AK8txgYpiizQcrsA ]
   workflow_dispatch:
 
 permissions:
